@@ -54,9 +54,7 @@ def slipToTeensy(msg):
     ser.write(outBuf)
 
 def processRow(row):
-    # convert bytes object to 4-bit string
-    rowStr = "{0:04b}".format(int.from_bytes(row, 'big'))
-    return rowStr[::-1] # reverse string for readability in PD
+    return int.from_bytes(row, "big")
 
 def processBtn(btn):
     return int.from_bytes(btn, "big")
