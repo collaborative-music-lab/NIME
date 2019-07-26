@@ -2,26 +2,24 @@
 Adafruit_NeoTrellis trellis;
 
 //Header ID's for messages sent to Python
-const byte BUTTONS_CH_0 = 0;
-const byte BUTTONS_CH_1 = 1;
-const byte BUTTONS_CH_2 = 2;
-const byte BUTTONS_CH_3 = 3;
+const byte BUTTON_CH_0 = 0;
+const byte BUTTON_CH_1 = 1;
+const byte BUTTON_CH_2 = 2;
+const byte BUTTON_CH_3 = 3;
 
-const byte FADERS_CH_0 = 4;
-const byte FADERS_CH_1 = 5;
-const byte FADERS_CH_2 = 6;
-const byte FADERS_CH_3 = 7;
-const byte FADERS_CH_4 = 8;
-const byte FADERS_CH_5 = 9;
-const byte FADERS_CH_6 = 10;
+const byte FADER_CH_0 = 4;
+const byte FADER_CH_1 = 5;
+const byte FADER_CH_2 = 6;
+const byte FADER_CH_3 = 7;
+const byte FADER_CH_4 = 8;
+const byte FADER_CH_5 = 9;
+const byte FADER_CH_6 = 10;
 
 const byte IMU_CH_0 = 11;
 const byte IMU_CH_1 = 12;
 const byte IMU_CH_2 = 13;
 const byte IMU_CH_3 = 14;
 const byte IMU_CH_4 = 15;
-
-
 
 // initialize global serial buffer
 byte serialBuffer[64];
@@ -50,19 +48,13 @@ void sendButtonMessage(byte channel, byte x, byte y, byte z, bool state) {
     channel = 3;
   }
   else {
-    slipOutByte(BUTTONS_CH_0 + channel);
+    slipOutByte(BUTTON_CH_0 + channel);
     slipOutByte(x);
     slipOutByte(y);
     slipOutByte(z);
     slipOutByte(state);
-    //Serial.write(serialBuffer, bufferIndex);
-    //Serial.write(endByte)
-
-    for (int i = 0; i < bufferIndex; i++) {
-      Serial.println(serialBuffer[i]);
-    }
-    Serial.println(255);
-
+    Serial.write(serialBuffer, bufferIndex);
+    Serial.write(endByte)
     bufferIndex = 0;
   }
 }
@@ -75,21 +67,15 @@ void sendFaderMessage(byte channel, byte x, byte y, int val) {
     channel = 6;
   }
   else {
-    byte highByte = val >> 4;
+    byte highByte = val >> 8;
     byte lowByte = val;
-    slipOutByte(FADERS_CH_0 + channel);
+    slipOutByte(FADER_CH_0 + channel);
     slipOutByte(x);
     slipOutByte(y);
-    slipOutByte(highVal);
-    slipOutByte(lowVal);
-    //Serial.write(serialBuffer, bufferIndex);
-    //Serial.write(endByte)
-
-    for (int i = 0; i < bufferIndex; i++) {
-      Serial.println(serialBuffer[i]);
-    }
-    Serial.println(255);
-
+    slipOutByte(highByte);
+    slipOutByte(lowByte);
+    Serial.write(serialBuffer, bufferIndex);
+    Serial.write(endByte);
     bufferIndex = 0;
   }
 
