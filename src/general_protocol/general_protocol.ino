@@ -59,7 +59,8 @@ void sendButtonMessage(byte channel, byte x, byte y, byte z, bool state) {
   }
 }
 
-void sendFaderMessage(byte channel, byte x, byte y, int val) {
+void sendFaderMessage(byte channel, byte x, byte y, long val, byte sign) {
+  if(sign == 1) val += 32768; //doublecheck this remains within an int value (65536?)
   if (channel < 0) {
     channel = 0;
   }
@@ -72,8 +73,9 @@ void sendFaderMessage(byte channel, byte x, byte y, int val) {
     slipOutByte(FADER_CH_0 + channel);
     slipOutByte(x);
     slipOutByte(y);
-    slipOutByte(highByte);
-    slipOutByte(lowByte);
+    slipOutInt( (uint16_t)val );
+   // slipOutByte(highByte);
+   // slipOutByte(lowByte);
     Serial.write(serialBuffer, bufferIndex);
     Serial.write(endByte);
     bufferIndex = 0;
@@ -83,6 +85,17 @@ void sendFaderMessage(byte channel, byte x, byte y, int val) {
 
 // adds a byte (or escape byte and byte) to the buffer of bytes to be sent
 void slipOutByte(byte val) {
+  if ((val == endByte) or (val == escByte)){
+    serialBuffer[bufferIndex] = escByte;
+    bufferIndex++;
+  }
+  serialBuffer[bufferIndex] = val;
+  bufferIndex++;
+}
+
+// adds a byte (or escape byte and byte) to the buffer of bytes to be sent
+void slipOutInt(uint16_t val) { //uint16_t 
+  //slip up into high and low and store each separately
   if ((val == endByte) or (val == escByte)){
     serialBuffer[bufferIndex] = escByte;
     bufferIndex++;
