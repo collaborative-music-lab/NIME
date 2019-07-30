@@ -58,6 +58,8 @@ for port in ports:
     if ("USB Serial" in port.description):
         ser = serial.Serial(port.device)
         ser.baudrate=57600
+        ser.read(ser.in_waiting)
+
 
 #initialize UDP client
 client = udp_client.SimpleUDPClient("127.0.0.1", 5005)
@@ -67,6 +69,8 @@ def readNextMessage():
     bytesTotal = bytes()
     escFlag = False
     curByte = bytes()
+    endByte = bytes([255])
+    escByte = bytes([254])
 
     while (ser.in_waiting):
         curByte = ser.read()
@@ -74,6 +78,7 @@ def readNextMessage():
             bytesTotal += curByte
             escFlag = False
         elif (curByte == endByte):
+            print(bytesTotal)
             return bytesTotal
         elif (curByte == escByte):
             escFlag = True
@@ -89,18 +94,25 @@ def faderToPd(ch, x, y, value):
     client.send_message(address, value)
 
 def interpretMessage(message):
-    if (message[0] in buttonIds):
-        channel = message[1]
-        x = message[2]
-        y = message[3]
-        z = message[4]
-        state = message[5]
+    if (message == None):
+        return
+    elif (message[0] in buttonIds):
+        channel = message[0] - BUTTON_CH_0
+        x = message[1]
+        y = message[2]
+        z = message[3]
+        state = message[4]
         buttonToPd(channel, x, y, z, state)
     elif (message[0] in faderIds):
-        channel = message[1]
-        x = message[2]
-        y = message[3]
-        value = message[4] << 8 + message[5]
+        channel = message[0] - FADER_CH_0
+        x = message[1]
+        y = message[2]
+        highValByte = message[3]
+        lowValByte = message[4]
+        signed = message[5]
+        value = (highValByte << 8) + lowValByte
+        if (signed):
+            value = value - 32768
         faderToPd(channel, x, y, value)
 
 async def loop():
@@ -114,3 +126,5 @@ async def init_main():
     transport, protocol = await server.create_serve_endpoint()
     await loop()
     transport.close()
+
+asyncio.run(init_main())

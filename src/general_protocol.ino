@@ -32,10 +32,11 @@ const byte escByte = 254;
 
 TrellisCallback blink (keyEvent evt) {
   if (evt.bit.EDGE == SEESAW_KEYPAD_EDGE_RISING) {
-    sendButtonMessage(0, evt.bit.NUM % 4, evt.bit.NUM / 4, 0, true);
+    sendFaderMessage(0, 0, 0, random(-32768, 32767), 1);
+    //sendButtonMessage(0, evt.bit.NUM % 4, evt.bit.NUM / 4, 0, true);
   }
   else if (evt.bit.EDGE == SEESAW_KEYPAD_EDGE_FALLING) {
-    sendButtonMessage(0, evt.bit.NUM % 4, evt.bit.NUM / 4, 0, false);
+    //sendButtonMessage(0, evt.bit.NUM % 4, evt.bit.NUM / 4, 0, false);
   }
   return 0;
 }
@@ -54,13 +55,14 @@ void sendButtonMessage(byte channel, byte x, byte y, byte z, bool state) {
     slipOutByte(z);
     slipOutByte(state);
     Serial.write(serialBuffer, bufferIndex);
-    Serial.write(endByte)
+    Serial.write(endByte);
     bufferIndex = 0;
+    // byte order: [id][x][y][z][state]
   }
 }
 
-void sendFaderMessage(byte channel, byte x, byte y, long val, byte sign) {
-  if(sign == 1) val += 32768; //doublecheck this remains within an int value (65536?)
+void sendFaderMessage(byte channel, byte x, byte y, long val, bool isSigned) {
+  if (isSigned) val += 32768;
   if (channel < 0) {
     channel = 0;
   }
@@ -68,17 +70,15 @@ void sendFaderMessage(byte channel, byte x, byte y, long val, byte sign) {
     channel = 6;
   }
   else {
-    byte highByte = val >> 8;
-    byte lowByte = val;
     slipOutByte(FADER_CH_0 + channel);
     slipOutByte(x);
     slipOutByte(y);
-    slipOutInt( (uint16_t)val );
-   // slipOutByte(highByte);
-   // slipOutByte(lowByte);
+    slipOutInt((uint16_t) val);
+    slipOutByte(isSigned);
     Serial.write(serialBuffer, bufferIndex);
     Serial.write(endByte);
     bufferIndex = 0;
+    // byte order: [id][x][y][highValByte][lowValByte][signed]
   }
 
 }
@@ -93,15 +93,12 @@ void slipOutByte(byte val) {
   bufferIndex++;
 }
 
-// adds a byte (or escape byte and byte) to the buffer of bytes to be sent
-void slipOutInt(uint16_t val) { //uint16_t 
-  //slip up into high and low and store each separately
-  if ((val == endByte) or (val == escByte)){
-    serialBuffer[bufferIndex] = escByte;
-    bufferIndex++;
-  }
-  serialBuffer[bufferIndex] = val;
-  bufferIndex++;
+// writes a two-byte int to the buffer, adding escape bytes if necessary
+void slipOutInt(uint16_t val) { //uint16_t
+  uint8_t lowValByte = val & 0xff;
+  uint8_t highValByte = (val >> 8);
+  slipOutByte(highValByte);
+  slipOutByte(lowValByte);
 }
 
 void setup() {
