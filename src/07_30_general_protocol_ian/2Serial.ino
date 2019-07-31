@@ -13,3 +13,14 @@ byte SerialAvailable(){
   return 0;
 }
 
+byte SerialSend( byte val[], byte num){
+  if( SerialAvailable ){
+    for( int i=0; i<num ; i++){
+      slipOutByte( val[i] );
+    }
+  }
+  Serial.write(serialBuffer, bufferIndex);
+  Serial.write(endByte);
+  bufferIndex = 0;
+}
+
