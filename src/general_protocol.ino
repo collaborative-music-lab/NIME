@@ -121,7 +121,6 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
   trellis.read(); // Polls state of buttons and triggers necessary callbacks
   delay(20); //the trellis has a resolution of around 60hz
 }
