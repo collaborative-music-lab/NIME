@@ -55,20 +55,26 @@ ImuIds = {
 ports = list(serial.tools.list_ports.comports())
 
 for port in ports:
-    if ("USB Serial" in port.description):
+    if ("USB Serial" in port.description): #Teensy description is "USB Serial Device"
         ser = serial.Serial(port.device)
         ser.baudrate=57600
-        ser.read(ser.in_waiting)
+        ser.read(ser.in_waiting) # if anything in input buffer, discard it
 
 
 #initialize UDP client
 client = udp_client.SimpleUDPClient("127.0.0.1", 5005)
+# dispatcher in charge of executing functions in response to RECIEVED OSC messages
 dispatcher = Dispatcher()
 
 def readNextMessage():
+    #buffer to decode message into (reading from serial port)
     bytesTotal = bytes()
+
+    # if escape flag is true, next byte is part of message (even if a reserved byte)
     escFlag = False
+
     curByte = bytes()
+    # defines reserved bytes signifying end of message and escape character
     endByte = bytes([255])
     escByte = bytes([254])
 
@@ -78,9 +84,10 @@ def readNextMessage():
             bytesTotal += curByte
             escFlag = False
         elif (curByte == endByte):
-            print(bytesTotal)
+            #if we reach a true end byte, we've read a full message, return buffer
             return bytesTotal
         elif (curByte == escByte):
+            # if we reach a true escape byte, set the flag, but don't write the reserved byte to the buffer
             escFlag = True
         else:
             bytesTotal += curByte
@@ -97,6 +104,7 @@ def interpretMessage(message):
     if (message == None):
         return
     elif (message[0] in buttonIds):
+        # based on byte order of msg type, interpret what kind of data we have recieved
         channel = message[0] - BUTTON_CH_0
         x = message[1]
         y = message[2]
@@ -117,8 +125,9 @@ def interpretMessage(message):
 
 async def loop():
     while(1):
-        currentMessage = readNextMessage()
+        currentMessage = readNextMessage() # can be None if nothing in input buffer
         interpretMessage(currentMessage)
+        #allows dispatcher to take over and check for recieved OSC messages
         await asyncio.sleep(0)
 
 async def init_main():
