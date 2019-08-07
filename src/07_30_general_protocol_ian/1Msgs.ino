@@ -44,15 +44,17 @@ void sendFaderMessage(byte channel, byte x, byte y, long val, bool isSigned) {
     channel = 6;
   }
   else {
-    /*slipOutByte(FADER_CH_0 + channel);
-    slipOutByte(x);
-    slipOutByte(y);
-    slipOutInt((uint16_t) val);
-    slipOutByte(isSigned);*/
-    Serial.write(serialBuffer, bufferIndex);
-    Serial.write(endByte);
-    bufferIndex = 0;
-    // byte order: [id][x][y][highValByte][lowValByte][signed]
+    //convert all values to a byte array
+    byte testVal[4];
+    testVa[0] = channel;
+    testVal[1] = num;
+    
+    testVal[2] =getHighByte( val );
+    testVal[3] =getLowByte( val );
+    
+    byte state = WifiSend( testVal, 4 );
+    byte serialSstate = SerialSend( testVal, 4 );
+
   }
 
 }
