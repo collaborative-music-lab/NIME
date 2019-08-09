@@ -2,6 +2,7 @@
 /*********************************************
 Setup and loop
 *********************************************/
+static byte serialBuffer[64] ;
 
 void SerialSetup(){
   Serial.begin(115200);
@@ -14,13 +15,15 @@ byte SerialAvailable(){
 }
 
 byte SerialSend( byte val[], byte num){
+  
   if( SerialAvailable ){
     for( int i=0; i<num ; i++){
       slipOutByte( val[i] );
     }
+  
+    Serial.write(serialBuffer, bufferIndex);
+    Serial.write(endByte);
+    bufferIndex = 0;
   }
-  Serial.write(serialBuffer, bufferIndex);
-  Serial.write(endByte);
-  bufferIndex = 0;
 }
 

@@ -44,7 +44,8 @@ void loop() {
   led_val = !led_val;
   digitalWrite(LED_PIN, led_val);
 
-  static byte testVal[] = {0,1,2 };
+  static uint16_t testVal[64] = {0,1,2 };
+  
   byte state = WifiSend( testVal, ARRAY_SIZE(testVal) );
   byte serialSstate = SerialSend( testVal, ARRAY_SIZE( testVal) );
   
