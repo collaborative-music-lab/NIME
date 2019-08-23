@@ -37,7 +37,14 @@ void MsgsSetup(){
   
 }
 
-void sendButtonMessage(byte channel, byte num, int state) {
+void sendButtonMessage(byte channel, byte num, int state, int interval, int lastTime) {
+  if (curTime - lastTime < interval) {
+    return;
+  }
+  else {
+    lastTime = curTime;
+  }
+  
   if (channel < 0) {
     channel = 0;
   }
@@ -59,7 +66,13 @@ void sendButtonMessage(byte channel, byte num, int state) {
   }
 }
 
-void sendFaderMessage(byte channel, byte num, int val) {
+void sendFaderMessage(byte channel, byte num, int val, int interval, int lastTime) {
+  if (curTime - lastTime < interval) {
+    return;
+  }
+  else {
+    lastTime = curTime;
+  }
   if (channel < 0) {
     channel = 0;
   }

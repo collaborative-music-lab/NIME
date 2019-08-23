@@ -51,13 +51,17 @@ ImuIds = {
     IMU_CH_4
 }
 
+deviceNames = {
+    "Silicon Labs CP210x USB to UART Bridge (COM4)"
+    }
+
 #set up serial port
 ports = list(serial.tools.list_ports.comports())
 
 for port in ports:
-    if ("USB Serial" in port.description): #Teensy description is "USB Serial Device"
+    if (port.description in deviceNames): #Teensy description is "USB Serial Device"
         ser = serial.Serial(port.device)
-        ser.baudrate=57600
+        ser.baudrate=115200
         ser.read(ser.in_waiting) # if anything in input buffer, discard it
 
 
@@ -78,27 +82,28 @@ def readNextMessage():
     endByte = bytes([255])
     escByte = bytes([254])
 
-    while (ser.in_waiting):
-        curByte = ser.read()
-        if (escFlag):
-            bytesTotal += curByte
-            escFlag = False
-        elif (curByte == endByte):
-            #if we reach a true end byte, we've read a full message, return buffer
-            return bytesTotal
-        elif (curByte == escByte):
-            # if we reach a true escape byte, set the flag, but don't write the reserved byte to the buffer
-            escFlag = True
-        else:
-            bytesTotal += curByte
+    while (True):
+        if (ser.in_waiting):
+            curByte = ser.read()
+            if (escFlag):
+                bytesTotal += curByte
+                escFlag = False
+            elif (curByte == endByte):
+                #if we reach a true end byte, we've read a full message, return buffer
+                return bytesTotal
+            elif (curByte == escByte):
+                # if we reach a true escape byte, set the flag, but don't write the reserved byte to the buffer
+                escFlag = True
+            else:
+                bytesTotal += curByte
 
-def buttonToPd(ch, x, y, z, state):
-    address = "/button/ch{}/x{}/y{}/z{}".format(ch, x, y, z)
-    client.send_message(address, state)
+def buttonToPd(ch, num, state):
+    address = "/button/ch{}".format(ch)
+    client.send_message(address, [num, state])
 
-def faderToPd(ch, x, y, value):
-    address = "/fader/ch{}/x{}/y{}".format(ch, x, y)
-    client.send_message(address, value)
+def faderToPd(ch, num, value):
+    address = "/fader/ch{}".format(ch)
+    client.send_message(address, [num, value])
 
 def interpretMessage(message):
     if (message == None):
@@ -106,26 +111,23 @@ def interpretMessage(message):
     elif (message[0] in buttonIds):
         # based on byte order of msg type, interpret what kind of data we have recieved
         channel = message[0] - BUTTON_CH_0
-        x = message[1]
-        y = message[2]
-        z = message[3]
-        state = message[4]
-        buttonToPd(channel, x, y, z, state)
+        num = message[1]
+        highStateByte = message[2]
+        lowStateByte = message[3]
+        state = (highStateByte << 8) + lowStateByte
+        buttonToPd(channel, num, state)
     elif (message[0] in faderIds):
         channel = message[0] - FADER_CH_0
-        x = message[1]
-        y = message[2]
-        highValByte = message[3]
-        lowValByte = message[4]
-        signed = message[5]
+        num = message[1]
+        highValByte = message[2]
+        lowValByte = message[3]
         value = (highValByte << 8) + lowValByte
-        if (signed):
-            value = value - 32768
-        faderToPd(channel, x, y, value)
+        faderToPd(channel, num, value)
 
 async def loop():
     while(1):
         currentMessage = readNextMessage() # can be None if nothing in input buffer
+        print(currentMessage);
         interpretMessage(currentMessage)
         #allows dispatcher to take over and check for recieved OSC messages
         await asyncio.sleep(0)
