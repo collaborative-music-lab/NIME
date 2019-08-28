@@ -19,6 +19,10 @@
  * 07_30: test patch, sends test data over both wifi and serial
  */
 
+#include <Wire.h>
+#include <SPI.h>
+#include <Adafruit_LSM9DS1.h>
+#include <Adafruit_Sensor.h>
 #include <WiFi.h>
 #include <WiFiUdp.h>
 
@@ -48,12 +52,40 @@ int runAvgBuf1[64];
 int runAvgBuf2[64];
 
 int curTime = 0;
+
 int lastSentBtn0 = 0;
 int lastSentBtn1 = 0;
 int lastSentBtn2 = 0;
+
 int lastSentFdr0 = 0;
 int lastSentFdr1 = 0;
 int lastSentFdr2 = 0;
+
+int lastSentImuRaw0 = 0;
+
+Adafruit_LSM9DS1 lsm = Adafruit_LSM9DS1();
+
+void setupSensor()
+{
+  lsm.begin();
+  
+  // 1.) Set the accelerometer range
+  lsm.setupAccel(lsm.LSM9DS1_ACCELRANGE_2G);
+  //lsm.setupAccel(lsm.LSM9DS1_ACCELRANGE_4G);
+  //lsm.setupAccel(lsm.LSM9DS1_ACCELRANGE_8G);
+  //lsm.setupAccel(lsm.LSM9DS1_ACCELRANGE_16G);
+  
+  // 2.) Set the magnetometer sensitivity
+  lsm.setupMag(lsm.LSM9DS1_MAGGAIN_4GAUSS);
+  //lsm.setupMag(lsm.LSM9DS1_MAGGAIN_8GAUSS);
+  //lsm.setupMag(lsm.LSM9DS1_MAGGAIN_12GAUSS);
+  //lsm.setupMag(lsm.LSM9DS1_MAGGAIN_16GAUSS);
+
+  // 3.) Setup the gyroscope
+  lsm.setupGyro(lsm.LSM9DS1_GYROSCALE_245DPS);
+  //lsm.setupGyro(lsm.LSM9DS1_GYROSCALE_500DPS);
+  //lsm.setupGyro(lsm.LSM9DS1_GYROSCALE_2000DPS);
+}
 
 int oversample(int adcPin, int numSamples) {
   int total = 0;
@@ -90,17 +122,23 @@ void setup() {
 
 void loop() {
   curTime = millis();
-  potValue0 = runningAverage(potPin0, runAvgBuf0, 64);
-  potValue1 = runningAverage(potPin1, runAvgBuf1, 64);
-  potValue2 = runningAverage(potPin2, runAvgBuf2, 64);
-  btnValue0 = digitalRead(btnPin0);
-  btnValue1 = digitalRead(btnPin1);
-  btnValue2 = digitalRead(btnPin2);
-  sendButtonMessage(0, 0, btnValue0, 100, &lastSentBtn0);
-  sendButtonMessage(0, 1, btnValue1, 400, &lastSentBtn1);
-  sendButtonMessage(0, 2, btnValue2, 1000, &lastSentBtn2);
-  sendFaderMessage(0, 0, potValue0, 50, &lastSentFdr0);
-  sendFaderMessage(0, 1, potValue1, 50, &lastSentFdr1);
-  sendFaderMessage(0, 2, potValue2, 50, &lastSentFdr2);
+//  btnValue0 = digitalRead(btnPin0);
+//  btnValue1 = digitalRead(btnPin1);
+//  btnValue2 = digitalRead(btnPin2);
+//  sendButtonMessage(0, 0, btnValue0, 100, &lastSentBtn0);
+//  sendButtonMessage(0, 1, btnValue1, 400, &lastSentBtn1);
+//  sendButtonMessage(0, 2, btnValue2, 1000, &lastSentBtn2);
+//  
+//  potValue0 = runningAverage(potPin0, runAvgBuf0, 64);
+//  potValue1 = runningAverage(potPin1, runAvgBuf1, 64);
+//  potValue2 = runningAverage(potPin2, runAvgBuf2, 64);
+//  sendFaderMessage(0, 0, potValue0, 50, &lastSentFdr0);
+//  sendFaderMessage(0, 1, potValue1, 50, &lastSentFdr1);
+//  sendFaderMessage(0, 2, potValue2, 50, &lastSentFdr2);
+
+  lsm.read();
+  sensors_event_t a, m, g, temp;
+  lsm.getEvent(&a, &m, &g, &temp);
+  sendImuRaw(0, a, m, g, 50, &lastSentImuRaw0);
   delay(0);
 }

@@ -4,6 +4,7 @@ from pythonosc import udp_client
 from pythonosc.osc_server import AsyncIOOSCUDPServer
 from pythonosc.dispatcher import Dispatcher
 import asyncio
+import struct
 
 # Header ID's of messages recieved from the Teensy
 BUTTON_CH_0 = 0
@@ -19,11 +20,17 @@ FADER_CH_4 = 8
 FADER_CH_5 = 9
 FADER_CH_6 = 10
 
-IMU_CH_0 = 11
-IMU_CH_1 = 12
-IMU_CH_2 = 13
-IMU_CH_3 = 14
-IMU_CH_4 = 15
+IMU_RAW_CH_0 = 11
+IMU_RAW_CH_1 = 12
+IMU_RAW_CH_2 = 13
+IMU_RAW_CH_3 = 14
+IMU_RAW_CH_4 = 15
+
+IMU_FUSION_CH_0 = 16
+IMU_FUSION_CH_1 = 17
+IMU_FUSION_CH_2 = 18
+IMU_FUSION_CH_3 = 19
+IMU_FUSION_CH_4 = 20
 
 # sets grouping of ID's by type
 buttonIds = {
@@ -43,12 +50,12 @@ faderIds = {
     FADER_CH_6
 }
 
-ImuIds = {
-    IMU_CH_0,
-    IMU_CH_1,
-    IMU_CH_2,
-    IMU_CH_3,
-    IMU_CH_4
+imuRawIds = {
+    IMU_RAW_CH_0,
+    IMU_RAW_CH_1,
+    IMU_RAW_CH_2,
+    IMU_RAW_CH_3,
+    IMU_RAW_CH_4,
 }
 
 deviceNames = {
@@ -105,10 +112,13 @@ def faderToPd(ch, num, value):
     address = "/fader/ch{}".format(ch)
     client.send_message(address, [num, value])
 
+def imuRawToPd(ch, a, m, g):
+    address = "/imu/ch{}".format(ch)
+    client.send_message(address, [a])
+    
+
 def interpretMessage(message):
-    if (message == None):
-        return
-    elif (message[0] in buttonIds):
+    if (message[0] in buttonIds):
         # based on byte order of msg type, interpret what kind of data we have recieved
         channel = message[0] - BUTTON_CH_0
         num = message[1]
@@ -123,11 +133,17 @@ def interpretMessage(message):
         lowValByte = message[3]
         value = (highValByte << 8) + lowValByte
         faderToPd(channel, num, value)
+    elif (message[0] in imuRawIds):
+        channel = message[0] - IMU_RAW_CH_0
+        allSensorVals = struct.unpack('fffffffff', message[1:])
+        a = list(allSensorVals[:3])
+        m = list(allSensorVals[3:6])
+        g = list(allSensorVals[6:9])
+        imuRawToPd(channel, a[0], a[1], a[2])
 
 async def loop():
     while(1):
         currentMessage = readNextMessage() # can be None if nothing in input buffer
-        print(currentMessage);
         interpretMessage(currentMessage)
         #allows dispatcher to take over and check for recieved OSC messages
         await asyncio.sleep(0)
