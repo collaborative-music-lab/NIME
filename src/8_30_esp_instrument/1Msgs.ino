@@ -43,6 +43,16 @@ void MsgsSetup(){
   
 }
 
+void readBtn(int pin, int * stateVar, int interval, int * lastTime) {
+  if (curTime - *lastTime < interval) {
+    return;
+  }
+  else {
+    *lastTime = curTime;
+  }
+  *stateVar = analogRead(pin);
+}
+
 void sendButtonMessage(byte channel, byte num, int state, int interval, int * lastTime) {
   if (curTime - *lastTime < interval) {
     return;

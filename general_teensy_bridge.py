@@ -26,11 +26,11 @@ IMU_RAW_CH_2 = 13
 IMU_RAW_CH_3 = 14
 IMU_RAW_CH_4 = 15
 
-IMU_FUSION_CH_0 = 16
-IMU_FUSION_CH_1 = 17
-IMU_FUSION_CH_2 = 18
-IMU_FUSION_CH_3 = 19
-IMU_FUSION_CH_4 = 20
+IMU_ANGLES_CH_0 = 16
+IMU_ANGLES_CH_1 = 17
+IMU_ANGLES_CH_2 = 18
+IMU_ANGLES_CH_3 = 19
+IMU_ANGLES_CH_4 = 20
 
 # sets grouping of ID's by type
 buttonIds = {
@@ -56,6 +56,14 @@ imuRawIds = {
     IMU_RAW_CH_2,
     IMU_RAW_CH_3,
     IMU_RAW_CH_4,
+}
+
+imuAnglesIds = {
+    IMU_ANGLES_CH_0,
+    IMU_ANGLES_CH_1,
+    IMU_ANGLES_CH_2,
+    IMU_ANGLES_CH_3,
+    IMU_ANGLES_CH_4,
 }
 
 deviceNames = {
@@ -113,8 +121,14 @@ def faderToPd(ch, num, value):
     client.send_message(address, [num, value])
 
 def imuRawToPd(ch, a, m, g):
-    address = "/imu/ch{}".format(ch)
-    client.send_message(address, [a])
+    address = "/imu/raw/ch{}".format(ch)
+    imuRawMsg = ["a"] + a + ["m"] + m +["g"] + g
+    client.send_message(address, imuRawMsg)
+    
+def imuAnglesToPd(ch, pitch, roll):
+    address = "/imu/angles/ch{}".format(ch)
+    imuAnglesMsg = ["pitch", pitch, "roll", roll]
+    client.send_message(address, imuAnglesMsg)
     
 
 def interpretMessage(message):
@@ -139,7 +153,13 @@ def interpretMessage(message):
         a = list(allSensorVals[:3])
         m = list(allSensorVals[3:6])
         g = list(allSensorVals[6:9])
-        imuRawToPd(channel, a[0], a[1], a[2])
+        imuRawToPd(channel, a, m, g)
+    elif (message[0] in imuAnglesIds):
+        channel = message[0] - IMU_ANGLES_CH_0
+        allSensorVals = struct.unpack('ff', message[1:])
+        pitch = allSensorVals[0]
+        roll = allSensorVals[1]
+        imuAnglesToPd(channel, pitch, roll);
 
 async def loop():
     while(1):
