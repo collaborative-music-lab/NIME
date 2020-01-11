@@ -1,3 +1,15 @@
+#python bridge between sensor data and puredata
+# based on general_teensy_bridge
+# Ian Hattwick and Fred Kelly
+# Created Jan 10 2020
+
+# Receives data from either the UART serial port or WiFi network bus
+# - received data is SLIP encoded
+# maps incoming messages to osc addresses
+#- mapping is stored in 
+
+
+
 import serial, serial.tools.list_ports, socket, sys
 from pythonosc import osc_message_builder
 from pythonosc import udp_client
