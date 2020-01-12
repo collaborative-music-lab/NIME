@@ -1,14 +1,14 @@
 #python bridge between sensor data and puredata
 # based on general_teensy_bridge
 # Ian Hattwick and Fred Kelly
-# Created Jan 10 2020
+# This file created Jan 10 2020
 
 # Receives data from either the UART serial port or WiFi network bus
 # - received data is SLIP encoded
 # maps incoming messages to osc addresses
 #- mapping is stored in 
 
-
+INCOMING_SERIAL_MONITOR = 0
 
 import serial, serial.tools.list_ports, socket, sys
 from pythonosc import osc_message_builder
@@ -79,17 +79,23 @@ imuAnglesIds = {
 }
 
 deviceNames = {
-    "Silicon Labs CP210x USB to UART Bridge (COM4)"
+    "/dev/cu.Bluetooth-Incoming-Port"
     }
 
 #set up serial port
 ports = list(serial.tools.list_ports.comports())
+for x in range(len(ports)): 
+    print (ports[x])
 
-for port in ports:
-    if (port.description in deviceNames): #Teensy description is "USB Serial Device"
-        ser = serial.Serial(port.device)
-        ser.baudrate=115200
-        ser.read(ser.in_waiting) # if anything in input buffer, discard it
+# for port in ports:
+#     if (port.description in deviceNames): #Teensy description is "USB Serial Device"
+#         ser = serial.Serial("/dev/cu.Bluetooth-Incoming-Port")
+#         ser.baudrate=115200
+#         ser.read(ser.in_waiting) # if anything in input buffer, discard it
+
+ser = serial.Serial("/dev/cu.usbserial-1410")
+ser.baudrate=115200
+ser.read(ser.in_waiting) # if anything in input buffer, discard it
 
 
 #initialize UDP client
@@ -112,6 +118,10 @@ def readNextMessage():
     while (True):
         if (ser.in_waiting):
             curByte = ser.read()
+            
+            if(INCOMING_SERIAL_MONITOR):
+                print (curByte)
+
             if (escFlag):
                 bytesTotal += curByte
                 escFlag = False
