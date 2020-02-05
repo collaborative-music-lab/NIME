@@ -1,4 +1,4 @@
-# NIME
+# 21M.370 Framework
 
 Repo for MIT course 21M.370 Digital Instrument Design
 Taught by Ian Hattwick
