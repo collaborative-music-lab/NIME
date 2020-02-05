@@ -1,14 +1,8 @@
-# 21M.370 Framework
+# 21M.370 Python Scripts
 
-Repo for MIT course 21M.370 Digital Instrument Design
-Taught by Ian Hattwick
-- created Spring 2020
+Requirements:
+* Python 3.5 or greater (tested on 3.7)
+* The python-osc module: https://pypi.org/project/python-osc/
+(Note you also will want to use the pip python package installer. You probably already have it - if not, installation instructions are here: https://pip.pypa.io/en/stable/installing/)
+* The pyserial module: follow instructions here to install: https://pip.pypa.io/en/stable/installing/
 
-## Getting started
-
-This framework consists of three elements:
-* Firmware for the ESP32, developed using the Arduino IDE
-* Python scripts for processing sensor data
-* Pure Data patches for sound synthesis
-
-Information on how to install the necessary environment for each element is located on the respective elements subfolder in this repo.
