@@ -34,7 +34,7 @@ ports = list(serial.tools.list_ports.comports())
 for x in range(len(ports)): 
     print (ports[x])
 
-ser = serial.Serial("/dev/cu.usbserial-1410")
+ser = serial.Serial("/dev/cu.usbserial-1420")
 ser.baudrate=115200
 ser.read(ser.in_waiting) # if anything in input buffer, discard it
 
@@ -59,6 +59,7 @@ def readNextMessage():
 
     
     curByte = ser.read(1)
+    #print("run")
     bytesTotal += curByte
     msgInProgress = 1
 
@@ -105,6 +106,10 @@ def interpretMessage(message):
     if message is None:
         return
 
+    if(len(message) != 3):
+        ser.read(ser.in_waiting)
+        print(len(message))
+        return
 
     address = data[message[0]]
     val = (message[1]<<8) + message[2]
@@ -144,6 +149,8 @@ async def loop():
 async def init_main():
     server = AsyncIOOSCUDPServer(("127.0.0.1", 5006), dispatcher, asyncio.get_event_loop())
     transport, protocol = await server.create_serve_endpoint()
+    print (ser.timeout)
+    ser.read(ser.in_waiting)
     await loop()
     transport.close()
 
