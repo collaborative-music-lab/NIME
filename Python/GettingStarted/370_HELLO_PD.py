@@ -34,7 +34,7 @@ ports = list(serial.tools.list_ports.comports())
 for x in range(len(ports)): 
     print (ports[x])
 
-ser = serial.Serial("/dev/cu.usbserial-1420")
+ser = serial.Serial("/dev/cu.usbserial-14440")
 ser.baudrate=115200
 ser.read(ser.in_waiting) # if anything in input buffer, discard it
 
@@ -59,7 +59,7 @@ def readNextMessage():
 
     
     curByte = ser.read(1)
-    #print("run")
+    #print("newserial packet")
     bytesTotal += curByte
     msgInProgress = 1
 
