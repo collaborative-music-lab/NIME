@@ -21,10 +21,20 @@ import struct
 import time
 
 data = {
-    27:'/analog/0',
-    33:'/analog/1',
-    34:'/button/0',
-    35:'/button/1'
+    27:'/analog0',
+    33:'/analog1',
+    27:'/analog2',
+    33:'/analog3',
+    32:'/analog4',
+    14:'/analog5',
+    4:'/analog6',
+    0:'/analog7',
+    15:'/analog8',
+    14:'/analog9',
+    36:'/analog10',
+    39:'/analog11',
+    34:'/button0',
+    35:'/button1'
     }
 
 #set up serial port
@@ -32,7 +42,7 @@ ports = list(serial.tools.list_ports.comports())
 for x in range(len(ports)): 
     print (ports[x])
 
-ser = serial.Serial("/dev/cu.usbserial-1410")
+ser = serial.Serial("/dev/cu.usbserial-14430")
 ser.baudrate=115200
 ser.read(ser.in_waiting) # if anything in input buffer, discard it
 

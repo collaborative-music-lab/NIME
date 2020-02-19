@@ -23,6 +23,14 @@ import time
 data = {
     27:'/analog0',
     33:'/analog1',
+    32:'/analog2',
+    14:'/analog3',
+    4:'/analog4',
+    0:'/analog5',
+    15:'/analog6',
+    14:'/analog7',
+    36:'/analog8',
+    39:'/analog9',
     34:'/button0',
     35:'/button1'
     }
@@ -33,6 +41,8 @@ data = {
 ports = list(serial.tools.list_ports.comports())
 for x in range(len(ports)): 
     print (ports[x])
+    if "USB" in ports[x]:
+        print("serial")
 
 ser = serial.Serial("/dev/cu.usbserial-14310")
 ser.baudrate=115200
