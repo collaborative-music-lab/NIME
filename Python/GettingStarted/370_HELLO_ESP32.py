@@ -42,7 +42,7 @@ ports = list(serial.tools.list_ports.comports())
 for x in range(len(ports)): 
     print (ports[x])
 
-ser = serial.Serial("/dev/cu.usbserial-14430")
+ser = serial.Serial("/dev/cu.usbserial-14310")
 ser.baudrate=115200
 ser.read(ser.in_waiting) # if anything in input buffer, discard it
 
