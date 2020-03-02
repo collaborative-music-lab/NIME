@@ -36,6 +36,10 @@ https://puredata.info/docs/faq/pdsettings
 
 Control/Command + Shift + L
 
+- How do i create an object?
+
+Make sure you are in edit mode, and then go to the 'put' menu. All of the available object types and their hot keys will be displayed. For a list of the available objects check the cheat sheet below, or right click the blank PD canvas and select 'help'.
+
 # PD resources
 1. The PD cheat sheet - overview of all available objects in vanilla; https://puredata.info/docs/tutorials/pd-refcard
 2.FLOSS manual: http://write.flossmanuals.net/pure-data/introduction2/
