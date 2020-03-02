@@ -21,6 +21,12 @@ One of the quirks of PD and automatonism is that you need to duplicate the ENTIR
 3. There are different versions of PD. We are using the vanilla version, which contains just the basic objects. Other versions exist with many more objects but they may not be compatible with the Raspberry Pi or other small computers.
 4. For math operations the 'expr' object is extremely useful. Check out its documentation: http://yadegari.org/expr/expr.html
 
+### FAQ
+1. PD can't find an object, either the console gives a warning or the object outline is dashed.
+This normally happens if your file preferences aren't set correctly. I recommend having two folders on your computer: one for the github repo,  which will only contain files pulled from githubl and another folder for your own files. In PD->Preferences->Path make sure to add both folders. You may also need to directly include the externals folder from NIME/Puredata/externals
+2. How can I clear the PD console? 
+Control/Command + Shift + L
+
 # PD resources
 1. The PD cheat sheet - overview of all available objects in vanilla; https://puredata.info/docs/tutorials/pd-refcard
 2.FLOSS manual: http://write.flossmanuals.net/pure-data/introduction2/
