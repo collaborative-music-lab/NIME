@@ -23,8 +23,11 @@ One of the quirks of PD and automatonism is that you need to duplicate the ENTIR
 
 ### FAQ
 1. PD can't find an object, either the console gives a warning or the object outline is dashed.
+
 This normally happens if your file preferences aren't set correctly. I recommend having two folders on your computer: one for the github repo,  which will only contain files pulled from githubl and another folder for your own files. In PD->Preferences->Path make sure to add both folders. You may also need to directly include the externals folder from NIME/Puredata/externals
+
 2. How can I clear the PD console? 
+
 Control/Command + Shift + L
 
 # PD resources
