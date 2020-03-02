@@ -44,7 +44,7 @@ for x in range(len(ports)):
     if "USB" in ports[x]:
         print("serial")
 
-ser = serial.Serial("/dev/cu.usbserial-14440")
+ser = serial.Serial("/dev/cu.usbserial-14410")
 ser.baudrate=115200
 ser.read(ser.in_waiting) # if anything in input buffer, discard it
 
