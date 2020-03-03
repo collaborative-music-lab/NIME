@@ -27,15 +27,15 @@
 #X obj 153 143 route;
 #X obj 203 165 route;
 #X obj 288 165 route;
-#X text 23 9 generates a numeric value representing a combination of
-discrete input values. Each input value is represented as a power of
-two (or toggles a bit in the output value);
 #X obj 126 88 init 120 \$2;
 #X obj 177 114 init 99 \$3;
 #X obj 230 136 init 118 \$4;
 #X obj 320 140 init 98 \$5;
 #X text 264 68 by default it is setup to use ASCII keys 'z''x''c''v''b'
 as input. Arguments 1-5 can be used to change this default;
+#X text 23 9 generates a numeric value representing a combination of
+up to 5 discrete input values. Each input value is represented as a
+power of two (or toggles a bit in the output value);
 #X connect 0 0 1 0;
 #X connect 0 1 2 0;
 #X connect 1 0 2 0;
@@ -75,7 +75,7 @@ as input. Arguments 1-5 can be used to change this default;
 #X connect 26 0 12 0;
 #X connect 26 1 27 0;
 #X connect 27 0 18 0;
-#X connect 29 0 24 1;
-#X connect 30 0 25 1;
-#X connect 31 0 26 1;
-#X connect 32 0 27 1;
+#X connect 28 0 24 1;
+#X connect 29 0 25 1;
+#X connect 30 0 26 1;
+#X connect 31 0 27 1;
