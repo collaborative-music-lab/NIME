@@ -22,10 +22,23 @@ One of the quirks of PD and automatonism is that you need to duplicate the ENTIR
 4. For math operations the 'expr' object is extremely useful. Check out its documentation: http://yadegari.org/expr/expr.html
 
 ### FAQ
-1. PD can't find an object, either the console gives a warning or the object outline is dashed.
+- PD can't find an object, either the console gives a warning or the object outline is dashed.
+
 This normally happens if your file preferences aren't set correctly. I recommend having two folders on your computer: one for the github repo,  which will only contain files pulled from githubl and another folder for your own files. In PD->Preferences->Path make sure to add both folders. You may also need to directly include the externals folder from NIME/Puredata/externals
-2. How can I clear the PD console? 
+
+- PD doesn't remember my filepaths even though I set them
+
+Try selecting PD->preferences->save all preferences. This should save them in a standard location for your OS. This link talks about where that location might be so you can take a look and see if the preferences are being saved correctly:
+https://puredata.info/docs/faq/pdsettings
+
+
+- How can I clear the PD console? 
+
 Control/Command + Shift + L
+
+- How do i create an object?
+
+Make sure you are in edit mode, and then go to the 'put' menu. All of the available object types and their hot keys will be displayed. For a list of the available objects check the cheat sheet below, or right click the blank PD canvas and select 'help'.
 
 # PD resources
 1. The PD cheat sheet - overview of all available objects in vanilla; https://puredata.info/docs/tutorials/pd-refcard
