@@ -4407,7 +4407,7 @@ more elaborate pd-code for deeper control.;
 #X obj 204 151 r open-organelle-map!;
 #X msg 204 198 \; pd-organelle-map vis \$1;
 #X obj 203 272 r open-modules!;
-#N canvas 655 23 1025 1005 modules 0;
+#N canvas 655 23 1025 1005 modules 1;
 #X obj 13 425 cnv 15 180 15 empty empty MODULATION: 10 8 0 12 -158136
 -262144 0;
 #X obj 13 446 bng 15 250 50 0 \$0-create-basic-lfo! empty <--BASIC-LFO
@@ -5544,17 +5544,17 @@ depth;
 #X obj 1203 276 * 12;
 #X obj 100 769 / 127;
 #X obj 739 73 hsl 128 15 0 127 0 0 VCO3_FOLD empty VCO_3_Fold -2 -8
-0 10 -262144 -1 -1 6650 1;
+0 10 -262144 -1 -1 0 1;
 #X obj 1100 817 scale 0 127 0.1 0.5 1.5;
 #X obj 738 114 hsl 128 15 0 127 0 0 VCO1FM empty VCO_1_FM -2 -8 0 10
--262144 -1 -1 5900 1;
+-262144 -1 -1 0 1;
 #X obj 740 155 hsl 128 30 0 127 0 0 MASTER_VOLUME empty Master_Volume
-15 -8 1 14 -262144 -1 -1 10800 1;
+15 -8 1 14 -262144 -1 -1 0 1;
 #X obj 816 1018 scale 0 127 0.3 0.7 1;
 #X obj 337 147 hsl 256 40 0 127 0 0 empty empty Bowing_Control 60 -8
-1 18 -262144 -1 -1 20800 1;
+1 18 -262144 -1 -1 0 1;
 #X obj 738 34 hsl 128 15 0 127 0 0 VCF_FREQ empty VCF_Frequency -2
--8 0 10 -262144 -1 -1 6650 1;
+-8 0 10 -262144 -1 -1 0 1;
 #X obj 276 23 vradio 25 1 0 4 empty empty Bowing_Mode -30 -10 0 15
 -262144 -1 -1 0;
 #X msg 629 1309 \$1 50;
@@ -5564,7 +5564,7 @@ depth;
 #X obj 522 1179 r BOW_AMPLITUDE;
 #X obj 275 238 s BOW_AMPLITUDE;
 #X obj 522 1200 vline~;
-#N canvas -211 23 1658 740 bowing_signal_processing 1;
+#N canvas 0 23 1658 740 bowing_signal_processing 0;
 #X obj 45 105 inlet;
 #X obj 55 563 outlet;
 #X obj 17 13 inlet;
@@ -5700,6 +5700,7 @@ value \, in addition to the triggered amplitude;
 #X connect 29 0 20 1;
 #X connect 32 0 33 0;
 #X connect 33 0 28 0;
+#X connect 33 0 32 1;
 #X connect 34 0 35 0;
 #X connect 35 0 42 0;
 #X connect 36 0 3 0;

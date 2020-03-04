@@ -44,7 +44,7 @@ for x in range(len(ports)):
     if "USB" in ports[x]:
         print("serial")
 
-ser = serial.Serial("/dev/cu.usbserial-14410")
+ser = serial.Serial("/dev/cu.usbserial-14340")
 ser.baudrate=115200
 ser.read(ser.in_waiting) # if anything in input buffer, discard it
 
@@ -52,6 +52,7 @@ ser.read(ser.in_waiting) # if anything in input buffer, discard it
 client = udp_client.SimpleUDPClient("127.0.0.1", 5005)
 # dispatcher in charge of executing functions in response to RECEIVED OSC messages
 dispatcher = Dispatcher()
+print("Sending data to port", 5005)
 
 ######################
 #READ SERIAL MESSAGES
@@ -118,7 +119,7 @@ def interpretMessage(message):
 
     if(len(message) != 3):
         ser.read(ser.in_waiting)
-        print(len(message))
+        #print(len(message))
         return
 
     address = data[message[0]]

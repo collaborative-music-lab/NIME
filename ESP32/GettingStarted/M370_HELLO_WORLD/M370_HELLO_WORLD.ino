@@ -21,6 +21,8 @@ const byte SERIAL_ENABLE = 1;
 
 Sensor button_0( BUTTON_0,"/button/0" );
 Sensor button_1( BUTTON_1,"/button/1" );
+Sensor analog_0( espPin[0],"/analog/0" );
+Sensor analog_1( espPin[1],"/analog/1" );
 
 
 /*********************************************
@@ -32,6 +34,8 @@ void setup() {
 
   button_0.setup();
   button_1.setup();
+  analog_0.setup();
+  analog_1.setup();
   
 }
 
@@ -42,4 +46,6 @@ void loop() {
   curMillis = millis();
   button_0.loop();
   button_1.loop();
+  analog_0.loop();
+  analog_1.loop();
 }
