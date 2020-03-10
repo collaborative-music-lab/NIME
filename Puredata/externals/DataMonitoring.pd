@@ -3,9 +3,9 @@
 #X obj 26 18 netreceive -u -b 5005;
 #X obj 26 64 list trim;
 #X obj 1198 135 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1
-4095 1;
+0 1;
 #X obj 1276 134 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1
-4095 1;
+0 1;
 #X floatatom 26 115 5 0 0 0 - - -;
 #X floatatom 130 116 5 0 0 0 - - -;
 #N canvas 0 22 450 278 (subpatch) 0;
@@ -296,7 +296,7 @@ analog6 analog7 analog8 analog9 button0 button1, f 208;
 #X msg 259 180 analog2 \$1;
 #X obj 1365 205 print;
 #X obj 1397 155 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1
-1 1;
+0 1;
 #X obj 1365 181 spigot;
 #X obj 1394 40 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
@@ -312,6 +312,7 @@ analog6 analog7 analog8 analog9 button0 button1, f 208;
 #X obj 782 132 / 2047.5;
 #X obj 899 132 / 2047.5;
 #X obj 1001 132 / 2047.5;
+#X obj 180 15 r m370pdSlipInput;
 #X connect 0 0 2 0;
 #X connect 1 0 0 0;
 #X connect 2 0 34 0;
@@ -471,3 +472,4 @@ analog6 analog7 analog8 analog9 button0 button1, f 208;
 #X connect 137 0 105 0;
 #X connect 138 0 99 0;
 #X connect 138 0 106 0;
+#X connect 139 0 2 0;
