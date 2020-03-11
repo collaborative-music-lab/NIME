@@ -24,3 +24,4 @@ Once the ESP32 hardware support is installed:
 ## FAQ/good to know
 
 1. If GPIO 4 on the ESP32 board is pulled low it will cause a boot failure for the ESP32. Better to not use this pin for now?
+2. GPIO 7 was incorrectly assigned to pin 14 in 370.h. It should be pin 13.
