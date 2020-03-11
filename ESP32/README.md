@@ -20,3 +20,7 @@ Once the ESP32 hardware support is installed:
 1. Select the "TTGO T1" hardware definition from the Tools->Board menu. There will be a bunch of boards listed - scroll down and select the "TTGO T1" board.
 2. Change the Upload Speed (Tools->Upload Speed) to 460800. If you experience problems uploading the the board you may try a lower speed. The default 921600 will likely fail to upload.
 3. Go to Tools->Port and look for something that looks like 'usbserial' or something like that. If you don't see it you can try restarting Arduino with the board plugged in. Or verify that the board is plugged in correctly and powered on.
+
+## FAQ/good to know
+
+1. If GPIO 4 on the ESP32 board is pulled low it will cause a boot failure for the ESP32. Better to not use this pin for now?
