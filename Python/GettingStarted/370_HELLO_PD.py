@@ -8,7 +8,7 @@
 # maps incoming messages to osc addresses
 #- mapping is stored in 
 
-RAW_INCOMING_SERIAL_MONITOR = 1
+RAW_INCOMING_SERIAL_MONITOR = 0
 PACKET_INCOMING_SERIAL_MONITOR = 0
 
 import serial, serial.tools.list_ports, socket, sys
@@ -44,7 +44,7 @@ for x in range(len(ports)):
     if "USB" in ports[x]:
         print("serial")
 
-ser = serial.Serial("/dev/cu.usbserial-1430")
+ser = serial.Serial("/dev/cu.usbserial-14320")
 ser.baudrate=115200
 ser.read(ser.in_waiting) # if anything in input buffer, discard it
 
