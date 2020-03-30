@@ -1,9 +1,12 @@
-# 370_HELLO_ESP32.py
-# based on general_teensy_bridge
+# 370_ANALOG_SELECT.py
 # Ian Hattwick and Fred Kelly
-# This file created Jan 10 2020
-
-# Receives data from either the UART serial port or WiFi network bus
+# This file created Mar 20  2020
+#
+# This script allows for changing settings for sensor data:
+# - enable individual analog inputs
+# - set the data rate for analog inputs
+#
+# Receives data from the UART serial port 
 # - received data is SLIP encoded
 # maps incoming messages to osc addresses
 #- mapping is stored in 
@@ -20,21 +23,6 @@ import asyncio
 import struct
 import time
 
-data = {
-    27:'/analog0',
-    33:'/analog1',
-    32:'/analog2',
-    14:'/analog3',
-    4: '/analog4',
-    0: '/analog5',
-    15:'/analog6',
-    13:'/analog7',
-    36:'/analog8',
-    39:'/analog9',
-    34:'/button0',
-    35:'/button1'
-    }
-
 #set up serial port
 ports = list(serial.tools.list_ports.comports())
 for x in range(len(ports)): 
@@ -42,8 +30,11 @@ for x in range(len(ports)):
     if "USB" in ports[x]:
         print("serial")
 
-ser = serial.Serial("/dev/cu.usbserial-14330")
+ser = serial.Serial("/dev/cu.usbserial-14340")
 ser.baudrate=115200
+ser.setDTR(False) # Drop DTR
+time.sleep(0.022)    # Read somewhere that 22ms is what the UI does.
+ser.setDTR(True)  # UP the DTR back
 ser.read(ser.in_waiting) # if anything in input buffer, discard it
 
 #initialize UDP client
@@ -52,18 +43,54 @@ client = udp_client.SimpleUDPClient("127.0.0.1", 5005)
 dispatcher = Dispatcher()
 print("Sending data to port", 5005)
 
+#sensor inputs
+OSC_ADDRESSES = {
+    27:{ 'address':'/analog0', 'enable': 0, 'rate':10 },
+    33:{ 'address':'/analog1', 'enable': 0, 'rate':10 },
+    32:{ 'address':'/analog2', 'enable': 1, 'rate':10 },
+    14:{ 'address':'/analog3', 'enable': 0, 'rate':250 },
+    4: { 'address':'/analog4', 'enable': 0, 'rate':10 },
+    0: { 'address':'/analog5', 'enable': 0, 'rate':10 },
+    15:{ 'address':'/analog6', 'enable': 0, 'rate':10 },
+    13:{ 'address':'/analog7', 'enable': 0, 'rate':10 },
+    36:{ 'address':'/analog8', 'enable': 0, 'rate':10 },
+    39:{ 'address':'/analog9', 'enable': 0, 'rate':10 },
+    34:{ 'address':'/button0', 'enable': 0, 'rate':15 },
+    35:{ 'address':'/button1', 'enable': 0, 'rate':15 }
+}
+
+#OSC_INDEX = {0:27,1:33,2:32,3:14,4:4,5:0,6:15,7:13,8:36,9:39,10:34,11:35}
+OSC_INDEX_ARRAY = [27,33,32,14,4,0,15,13,36,39,34,35]
+
+enableMsg = [0,0,0,255]
+enableMsg[0] = 1;
+
+def setEnables():
+    print('\nsetting enabled inputs <input#><enableStatus>')
+    for i in range(len(OSC_INDEX_ARRAY)):
+        enableMsg[0] = 1; 
+        enableMsg[1]=i;
+        enableMsg[2]=OSC_ADDRESSES[OSC_INDEX_ARRAY[i]]['enable']
+        ser.write(bytearray(enableMsg)) 
+        print('enable', enableMsg[1], enableMsg[2])
+        time.sleep(0.05)
+
+
+    print('\nsetting sensor data rate <input#><dataRateInMS>')
+    for i in range(len(OSC_INDEX_ARRAY)):
+        enableMsg[0] = 2; 
+        enableMsg[1]=i;
+        enableMsg[2]=OSC_ADDRESSES[OSC_INDEX_ARRAY[i]]['rate']
+        ser.write(bytearray(enableMsg)) 
+        print('rate', enableMsg[1], enableMsg[2])
+        time.sleep(0.05)
+
+
 ######################
 #READ SERIAL MESSAGES
 ######################
 
-count23 = 0
-
 def readNextMessage():
-    # global count23
-
-    # print(count23)
-    # count23 = count23+1
-
     bytesTotal = bytes()
 
     # defines reserved bytes signifying end of message and escape character
@@ -72,14 +99,13 @@ def readNextMessage():
 
     
     curByte = ser.read(1)
-    #print("newserial packet")
     bytesTotal += curByte
     msgInProgress = 1
 
     while(msgInProgress):
         curByte = ser.read(1)
         if(RAW_INCOMING_SERIAL_MONITOR):
-            print (curByte)
+            print (int.from_bytes(curByte,byteorder='big'))
 
         elif (curByte == endByte):
             #if we reach a true end byte, we've read a full message, return buffer
@@ -100,36 +126,35 @@ def readNextMessage():
 
 def interpretMessage(message):
     # print('interp')
-
     if message is None:
         return
 
+    if(0):
+        print ('mirror', message)
+
     if(len(message) < 3):
         ser.read(ser.in_waiting)
-        #print(len(message))
         return
 
-    address = data[message[0]]
-    val = (message[1]<<8) + message[2]
+    if( message[0]==1):
+        print(message[1],message[2])
+        return
 
-    if( PACKET_INCOMING_SERIAL_MONITOR ):
-        print(address,val)
+    if( message[0] in OSC_INDEX_ARRAY):
+        address = OSC_ADDRESSES[message[0]]['address']
 
-    client.send_message(address, val)
+        val = (message[1]<<8) + message[2]
 
+        if( PACKET_INCOMING_SERIAL_MONITOR ):
+            print(address,val)
 
+        client.send_message(address, val)
+    
 
 ######################
 #DISPATCHER
 #sends received OSC messages over serial
 ######################
-
-def rateHandler(address, *osc_args):
-    rate = int(osc_args[0])
-    rateA = [0]
-    rateA.append((rate>>8)&127)
-    rateA.append((rate)&255)
-    slipOutPacket(rateA)
 
 def slipOutPacket(val = []):
     print ('val', val)
@@ -144,15 +169,22 @@ def slipOutPacket(val = []):
             outMessage.append(i)
     outMessage += (endByte)
     print(outMessage)
-    outMessage = [0,0,34    ,255]
-    ser.write(bytearray(outMessage))
+    outMessage = [0,0,34 ,255]
+    #ser.write(bytearray(outMessage))
 
 #dispatcher.map("/serialRate", rateHandler)
 
 ######################
 #LOOP
 ######################
+
 async def loop():
+    debugVal = 0
+    time.sleep(0.1)
+    ser.flushInput() 
+    time.sleep(0.1)  
+    setEnables()
+    
     while(1):
         currentMessage = readNextMessage() # can be None if nothing in input buffer
         interpretMessage(currentMessage)
