@@ -1,6 +1,6 @@
-# 370_ANALOG_SELECT.py
+# 370_PythonMappingExample.py
 # Ian Hattwick and Fred Kelly
-# This file created Mar 20  2020
+# This file created Mar 28  2020
 #
 # This script allows for changing settings for sensor data:
 # - enable individual analog inputs
@@ -45,9 +45,9 @@ print("Sending data to port", 5005)
 
 #sensor inputs
 OSC_ADDRESSES = {
-    27:{ 'address':'/analog0', 'enable': 1, 'rate':50 },
-    33:{ 'address':'/analog1', 'enable': 1, 'rate':50 },
-    32:{ 'address':'/analog2', 'enable': 1, 'rate':50 },
+    27:{ 'address':'/analog0', 'enable': 1, 'rate':20 },
+    33:{ 'address':'/analog1', 'enable': 1, 'rate':20 },
+    32:{ 'address':'/analog2', 'enable': 0, 'rate':50 },
     14:{ 'address':'/analog3', 'enable': 0, 'rate':250 },
     4: { 'address':'/analog4', 'enable': 0, 'rate':10 },
     0: { 'address':'/analog5', 'enable': 0, 'rate':10 },

@@ -45,8 +45,8 @@ print("Sending data to port", 5005)
 
 #sensor inputs
 OSC_ADDRESSES = {
-    27:{ 'address':'/analog0', 'enable': 0, 'rate':10 },
-    33:{ 'address':'/analog1', 'enable': 0, 'rate':10 },
+    27:{ 'address':'/analog0', 'enable': 1, 'rate':10 },
+    33:{ 'address':'/analog1', 'enable': 1, 'rate':10 },
     32:{ 'address':'/analog2', 'enable': 1, 'rate':10 },
     14:{ 'address':'/analog3', 'enable': 0, 'rate':250 },
     4: { 'address':'/analog4', 'enable': 0, 'rate':10 },
