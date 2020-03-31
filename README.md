@@ -57,9 +57,9 @@ If you don't have the git tools installed on your computer, follow the direction
 You can check communication in the python script by enabling either one or the other of the below settings to 1. 
 
   * RAW_INCOMING_SERIAL_MONITOR = 1
- - will show raw data coming over serial from ESP32
+   * - will show raw data coming over serial from ESP32
   * PACKET_INCOMING_SERIAL_MONITOR = 1
-- will show packets being sent over UDP
+  * - will show packets being sent over UDP
 
 Make sure to set these back to 0 after debugging as they slow things down a lot
 
