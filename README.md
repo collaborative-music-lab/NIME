@@ -40,18 +40,19 @@ Cloning creates a fresh copy of the MLE library, whereas pulling just updates th
   * To clone, navigate to the folder you want to store in and type `git clone https://github.com/collaborative-music-lab/MLE/`
   * To pull, navigate to the MLE directory and type `git pull`
   * The main MLE directory is the one that contains the folders for code, doc, externals, etc
-  
-* **git pull doesn't work!**
-  * If git pull is saying that there is a conflict, trying typing `git stash` and then `git pull`
-  * If get pull is saying `failed: not a git repository` you may be in the wronng folder (see the question above for the command to pull a repo)
-  * If you are in the right folder but still get a failure message, you may want to trash and reclone the MLE library. 
-  * Make sure your folder is not in a dropbox or google drive or anything like that.
-  
+   
 * **I don't seem to have git installed**
 If you don't have the git tools installed on your computer, follow the directions here:
   * https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
   
 ## Troubleshooting
+
+* **git pull doesn't work!**
+  * If git pull is saying that there is a conflict, trying typing `git stash` and then `git pull`
+  * If get pull is saying `failed: not a git repository` you may be in the wronng folder (see the question above for the command to pull a repo)
+  * If you are in the right folder but still get a failure message, you may want to trash and reclone the MLE library. 
+  * Make sure your folder is not in a dropbox or google drive or anything like that.
+  * If nothing else works, try trashing your local NIME folder and recloning frmo github. Or you can also do a cirect download of all of these files. You'll need to reset your file preferences in PD if you do this.
   
 * **I don't see data getting to PD**
 You can check communication in the python script by enabling either one or the other of the below settings to 1. 
