@@ -51,9 +51,9 @@ Cloning creates a fresh copy of the MLE library, whereas pulling just updates th
 If you don't have the git tools installed on your computer, follow the directions here:
   * https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
   
-  ## Troubleshooting
+## Troubleshooting
   
-  * **I don't see data getting to PD**
+* **I don't see data getting to PD**
 You can check communication in the python script by enabling either one or the other of the below settings to 1. 
 
 RAW_INCOMING_SERIAL_MONITOR = 1
@@ -63,9 +63,9 @@ PACKET_INCOMING_SERIAL_MONITOR = 1
 
 Make sure to set these back to 0 after debugging as they slow things down a lot
 
-  * **I set 'RAW_INCOMING_SERIAL_MONITOR' to 1 and don't see anything in the Python console'**
+* **I set 'RAW_INCOMING_SERIAL_MONITOR' to 1 and don't see anything in the Python console'**
 Try reprogramming the ESP32 with a recent firmware
 
-  * **I can see raw data, and packets in python but don't see anything in PD**
+* **I can see raw data, and packets in python but don't see anything in PD**
 Make sure there isn't another PD or python script running in the background. Try looking in your activity monitor or other list of running processes and kill any python scripts, and quit and restart PD.
 
