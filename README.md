@@ -61,11 +61,11 @@ You can check communication in the python script by enabling either one or the o
   * PACKET_INCOMING_SERIAL_MONITOR = 1
   * - will show packets being sent over UDP
 
-Make sure to set these back to 0 after debugging as they slow things down a lot
+  * Make sure to set these back to 0 after debugging as they slow things down a lot
 
 * **I set 'RAW_INCOMING_SERIAL_MONITOR' to 1 and don't see anything in the Python console'**
-Try reprogramming the ESP32 with a recent firmware
+  * Try reprogramming the ESP32 with a recent firmware
 
 * **I can see raw data, and packets in python but don't see anything in PD**
-Make sure there isn't another PD or python script running in the background. Try looking in your activity monitor or other list of running processes and kill any python scripts, and quit and restart PD.
+  * Make sure there isn't another PD or python script running in the background. Try looking in your activity monitor or other list of running processes and kill any python scripts, and quit and restart PD.
 
