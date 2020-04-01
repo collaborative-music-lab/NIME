@@ -61,6 +61,8 @@ You can check communication in the python script by enabling either one or the o
    * - will show raw data coming over serial from ESP32
   * PACKET_INCOMING_SERIAL_MONITOR = 1
   * - will show packets being sent over UDP
+  
+  * You can also monitor data in the dataMonitoring PD patch, but you have to enable monitoring by clicking the toggle or else you won't see anything.
 
   * Make sure to set these back to 0 after debugging as they slow things down a lot
 
