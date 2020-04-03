@@ -91,7 +91,7 @@ void setup() {
   if( SERIAL_ENABLE) SerialSetup();
 
   MPR121setup();
-  //MPR121test(); //comment out for normal use
+  MPR121test(); //comment out for normal use
 
   for(byte i=0;i< numSensors; i++) sensors[i].setup();
   
