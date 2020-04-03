@@ -3,9 +3,9 @@
 #X obj 26 18 netreceive -u -b 5005;
 #X obj 26 64 list trim;
 #X obj 1198 183 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1
-4095 1;
+0 1;
 #X obj 1276 182 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1
-4095 1;
+0 1;
 #N canvas 0 22 450 278 (subpatch) 0;
 #X array analog0 100 float 3;
 #A 0 0.220513 0.216117 0.216117 0.218071 0.22149 0.219048 0.221001
@@ -182,7 +182,7 @@ analog6 analog7 analog8 analog9 button0 button1, f 208;
 #X obj 180 15 r m370pdSlipInput;
 #X obj 24 146 dataMonitorAnalog analog0;
 #X obj 309 14 tgl 30 0 empty empty monitor -5 -8 0 10 -262144 -1 -1
-1 1;
+0 1;
 #X floatatom 173 172 5 0 0 0 - - -;
 #X floatatom 272 234 5 0 0 0 - - -;
 #X floatatom 392 182 5 0 0 0 - - -;
@@ -245,6 +245,7 @@ analog6 analog7 analog8 analog9 button0 button1, f 208;
 #X connect 31 0 49 1;
 #X connect 31 0 50 1;
 #X connect 31 0 48 1;
+#X connect 31 0 44 1;
 #X connect 42 0 9 0;
 #X connect 42 1 33 0;
 #X connect 43 0 9 0;
