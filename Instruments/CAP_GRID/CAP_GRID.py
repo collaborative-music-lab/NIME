@@ -40,16 +40,16 @@ print("Sending data to port", 5005)
 #INITIALIZE ANALOG INPUTS
 ######################
 OSC_ADDRESSES = {
-    27:{ 'address':'/analog0', 'enable': 1, 'rate':100, 'mode':'MEAN' },
-    33:{ 'address':'/analog1', 'enable': 1, 'rate':100, 'mode':'MEAN' },
-    32:{ 'address':'/analog2', 'enable': 1, 'rate':100, 'mode':'MEAN' },
+    27:{ 'address':'/analog0', 'enable': 0, 'rate':200, 'mode':'MEAN' },
+    33:{ 'address':'/analog1', 'enable': 0, 'rate':200, 'mode':'MEAN' },
+    32:{ 'address':'/analog2', 'enable': 0, 'rate':100, 'mode':'MEAN' },
     14:{ 'address':'/analog3', 'enable': 0, 'rate':50, 'mode':'MEAN' },
     4: { 'address':'/analog4', 'enable': 0, 'rate':50, 'mode':'MEAN' },
     0: { 'address':'/analog5', 'enable': 0, 'rate':150, 'mode':'MEAN' },
     15:{ 'address':'/analog6', 'enable': 0, 'rate':150, 'mode':'MEAN' },
     13:{ 'address':'/analog7', 'enable': 0, 'rate':150, 'mode':'MEAN' },
     36:{ 'address':'/analog8', 'enable': 0, 'rate':10, 'mode':'MEAN' },
-    39:{ 'address':'/analog9', 'enable': 0, 'rate':10, 'mode':'MEAN' },
+    39:{ 'address':'/analog9', 'enable': 1, 'rate':50, 'mode':'MEAN' },
     34:{ 'address':'/button0', 'enable': 0, 'rate':15, 'mode':'MEAN' },
     35:{ 'address':'/button1', 'enable': 0, 'rate':25, 'mode':'MEAN' }
 }
@@ -105,7 +105,7 @@ def setEnables():
 ######################
 NUM_ELECTRODES = 12;
 chargeCurrent = 63; #0-63
-capInterval = 100;
+capInterval = 20;
 
 def setCapSense():
     capMessage = [10,NUM_ELECTRODES, 255]
@@ -185,6 +185,27 @@ def interpretMessage(message):
     #capacitive inputs
     elif(message[0] >= 64 and message[0]<76):
         address = '/capsense' + str(message[0]-64);
+
+        val = (message[1]<<8) + message[2] - 4096
+
+        if( PACKET_INCOMING_SERIAL_MONITOR ):
+            print(address,val)
+
+        client.send_message(address, val)
+
+    #special inputs for CAP_GRID
+    elif(message[0] == 100): #touchedSensors
+        address = '/touched';
+
+        val = (message[1]<<8) + message[2]
+
+        if( PACKET_INCOMING_SERIAL_MONITOR ):
+            print(address,val)
+
+        client.send_message(address, val)
+
+    elif(message[0] == 101): #totalCapacitance
+        address = '/totalCap';
 
         val = (message[1]<<8) + message[2] - 4096
 
