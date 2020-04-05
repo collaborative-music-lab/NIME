@@ -99,7 +99,7 @@ LOOP
 void loop() {
   curMillis = millis();
   
-  //for(byte i=0;i < numSensors; i++) sensors[i].loop();
+  for(byte i=0;i < numSensors; i++) sensors[i].loop();
   for(byte i=0;i < NUM_ELECTRODES; i++) capSense[i].loop(i);
 
   sendCapValues();
@@ -109,16 +109,24 @@ void loop() {
 
 void sendCapValues(){
   static uint32_t timer = 0;
-  int interval = 10;
+  static int prevTouchedSensors = 0;
+  if(touchedSensors != prevTouchedSensors){
+    SlipOutByte(100);
+    SlipOutInt(touchedSensors);
+    SerialOutSlip();
+    prevTouchedSensors = touchedSensors;
+  
+  }
+  int interval = 50;
 
   if(millis()-timer>interval){
     timer = millis();
     
 //    Serial.print("touched: ");
 //    Serial.println(touchedSensors);
-    SlipOutByte(100);
-    SlipOutInt(touchedSensors);
-    SerialOutSlip();
+//    SlipOutByte(100);
+//    SlipOutInt(touchedSensors);
+//    SerialOutSlip();
   
     totalCapacitance = 4096;
     for(byte i=0;i < NUM_ELECTRODES; i++) totalCapacitance += (capSense[i].outVal-4096);

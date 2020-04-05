@@ -40,16 +40,16 @@ print("Sending data to port", 5005)
 #INITIALIZE ANALOG INPUTS
 ######################
 OSC_ADDRESSES = {
-    27:{ 'address':'/analog0', 'enable': 0, 'rate':200, 'mode':'MEAN' },
-    33:{ 'address':'/analog1', 'enable': 0, 'rate':200, 'mode':'MEAN' },
-    32:{ 'address':'/analog2', 'enable': 0, 'rate':100, 'mode':'MEAN' },
+    27:{ 'address':'/analog0', 'enable': 1, 'rate':200, 'mode':'MEAN' },
+    33:{ 'address':'/analog1', 'enable': 1, 'rate':200, 'mode':'MEAN' },
+    32:{ 'address':'/analog2', 'enable': 1, 'rate':100, 'mode':'MEAN' },
     14:{ 'address':'/analog3', 'enable': 0, 'rate':50, 'mode':'MEAN' },
     4: { 'address':'/analog4', 'enable': 0, 'rate':50, 'mode':'MEAN' },
     0: { 'address':'/analog5', 'enable': 0, 'rate':150, 'mode':'MEAN' },
     15:{ 'address':'/analog6', 'enable': 0, 'rate':150, 'mode':'MEAN' },
     13:{ 'address':'/analog7', 'enable': 0, 'rate':150, 'mode':'MEAN' },
     36:{ 'address':'/analog8', 'enable': 0, 'rate':10, 'mode':'MEAN' },
-    39:{ 'address':'/analog9', 'enable': 1, 'rate':50, 'mode':'MEAN' },
+    39:{ 'address':'/analog9', 'enable': 1, 'rate':20, 'mode':'MEAN' },
     34:{ 'address':'/button0', 'enable': 0, 'rate':15, 'mode':'MEAN' },
     35:{ 'address':'/button1', 'enable': 0, 'rate':25, 'mode':'MEAN' }
 }
@@ -76,7 +76,7 @@ def setEnables():
         enableMsg[2]=OSC_ADDRESSES[OSC_INDEX_ARRAY[i]]['enable']
         ser.write(bytearray(enableMsg)) 
         print('enable', enableMsg[1], enableMsg[2])
-        time.sleep(0.05)
+        time.sleep(0.01)
 
 
     print('\nsetting sensor data rate <input#><dataRateInMS>')
@@ -86,7 +86,7 @@ def setEnables():
         enableMsg[2]=OSC_ADDRESSES[OSC_INDEX_ARRAY[i]]['rate']
         ser.write(bytearray(enableMsg)) 
         print('rate', enableMsg[1], enableMsg[2])
-        time.sleep(0.05)
+        time.sleep(0.01)
 
     print('\nsetting sensor data mode <input#><mode>')
     for i in range(len(OSC_INDEX_ARRAY)):
@@ -96,7 +96,7 @@ def setEnables():
         enableMsg[2]=ANALOG_MODES[_mode]
         ser.write(bytearray(enableMsg)) 
         print('mode', enableMsg[1], enableMsg[2])
-        time.sleep(0.05)
+        time.sleep(0.01)
 
 
 
@@ -154,7 +154,10 @@ def readNextMessage():
    
 ######################
 #INTERPRET MESSAGE
-######################    
+###################### 
+
+prevTouchVal = 0   
+numPadsTouched = 0
 
 def interpretMessage(message):
     # print('interp')
@@ -182,6 +185,29 @@ def interpretMessage(message):
             print(address,val)
 
         client.send_message(address, val)
+
+    #potentiometers
+    if( message[0] == 27):
+        address = '/wtable'
+        val = (message[1]<<8) + message[2]
+        msg = ['WTABLE_X', scale(val,0,4096,0,1,2),50]
+        client.send_message(address, msg)
+        #print(address, msg)
+
+    if( message[0] == 33):
+        address = '/wtable'
+        val = (message[1]<<8) + message[2]
+        msg = ['WTABLE_Y', scale(val,0,4096,0,1,2),50]
+        client.send_message(address, msg)
+        #print(address, msg)
+
+    if( message[0] == 32):
+        address = '/wtable'
+        val = (message[1]<<8) + message[2]
+        msg = ['WTABLE_Z', scale(val,0,4096,1.,0.,2),50]
+        client.send_message(address, msg)
+        #print(address, msg)
+
     #capacitive inputs
     elif(message[0] >= 64 and message[0]<76):
         address = '/capsense' + str(message[0]-64);
@@ -195,17 +221,37 @@ def interpretMessage(message):
 
     #special inputs for CAP_GRID
     elif(message[0] == 100): #touchedSensors
-        address = '/touched';
+        #assemble bit map with touched pads
+        val = (message[1]<<8) + message[2] 
 
-        val = (message[1]<<8) + message[2]
+        #remap bit map to match physical layout
+        touchedRemap = [8,4,0,9,5,1,10,6,2,3,7,11]
+
+        val2 = 0;
+        global prevTouchVal
+        global numPadsTouched
+        numPadsTouched=0
+
+        for i in range(12):
+            val2 += (((val>>i)&1)<<touchedRemap[i])
+            numPadsTouched += (val2>>i) & 1
+
+        for i in range(12):
+            curState = (val2>>i) & 1 
+            prevState = (prevTouchVal>>i) & 1
+            if(curState != prevState):
+                address = '/touch'
+                msg = ['cap-t-' + str(i+1) + '-r', curState]
+                client.send_message(address, msg)
 
         if( PACKET_INCOMING_SERIAL_MONITOR ):
-            print(address,val)
+            print(address,val2)
 
-        client.send_message(address, val)
+        #client.send_message(address, val2)
+        prevTouchVal = val2
 
     elif(message[0] == 101): #totalCapacitance
-        address = '/totalCap';
+        address = '/totalCap'
 
         val = (message[1]<<8) + message[2] - 4096
 
@@ -213,7 +259,28 @@ def interpretMessage(message):
             print(address,val)
 
         client.send_message(address, val)
-    
+
+        address = '/meanCap'
+        if( numPadsTouched > 0): client.send_message(address, val/numPadsTouched)
+        else: client.send_message(address, 0 )
+  
+######################
+#SCALE FUNCTION
+######################
+
+def scale(data, inLow, inHigh,outLow,outHigh, curve=1, clip = 1):
+    val = (data - inLow) / (inHigh-inLow)
+    sign = (data)>0
+    val = pow(abs(val),curve)* (sign*2-1)
+    val = (val * (outHigh-outLow)) + outLow
+    if(clip==1):
+        if(outLow<outHigh):
+            if(val<outLow): val = outLow
+            elif (val>outHigh): val = outHigh
+        else :
+            if(val<outHigh): val = outHigh
+            elif (val>outLow): val = outLow
+    return val  
 
 ######################
 #DISPATCHER
