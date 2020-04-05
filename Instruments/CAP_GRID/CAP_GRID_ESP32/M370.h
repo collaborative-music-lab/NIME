@@ -239,6 +239,7 @@ class Cap{
   void setup(){}
 
   void loop(byte num){
+    //take sample of current value
     if(curMillis - samplePeriod > sampleMillis){
         sampleMillis = curMillis;
         if(sampleIndex<32){
@@ -247,12 +248,11 @@ class Cap{
         }
     }
 
+    //process samples and output
     if(curMillis - interval > prevMillis){
       prevMillis = curMillis;
 
-      //debug(address, analogRead( pin ));
       if(sampleIndex > 0){
-
         outVal = Mean(val, sampleIndex);
         //outVal -= 4096;
         int curVal = outVal-4096;
@@ -269,6 +269,7 @@ class Cap{
         prevVal = outVal;
         sampleIndex=0;
 
+        //calculate touch state
         if(curVal > maxVal) maxVal = curVal;
         if(curVal < minVal) minVal = curVal;
         if( (curVal > ((maxVal*2)/3))){
@@ -277,6 +278,12 @@ class Cap{
         } else if ( (curVal < ((maxVal*2)/4))){
           state = 0;
           touchedSensors = touchedSensors & ~(1<<num);
+        }
+        if(state != prevState){
+          prevState = state;
+          SlipOutByte(num+110);
+          SlipOutInt(state);
+          SerialOutSlip();
         }
       } 
     }
@@ -294,6 +301,7 @@ class Cap{
   uint32_t sampleMillis=0;
   int sampleIndex=0;
   int prevVal=0;
-  int maxVal;
-  int minVal;
+  int maxVal = 5;
+  int minVal = 0;
+  byte prevState = 0;
 };//sensor class

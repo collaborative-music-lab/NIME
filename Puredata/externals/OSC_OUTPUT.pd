@@ -1,0 +1,16 @@
+#N canvas 263 23 1013 584 12;
+#X obj 258 154 netsend -u -b;
+#X obj 320 21 oscformat red;
+#X obj 257 77 list prepend send;
+#X obj 258 103 list trim;
+#X msg 86 105 connect localhost 5006;
+#X obj 82 71 loadbang;
+#X obj 196 23 r m370_OSC_SEND;
+#X obj 388 133 print;
+#X connect 1 0 2 0;
+#X connect 2 0 3 0;
+#X connect 3 0 0 0;
+#X connect 3 0 7 0;
+#X connect 4 0 0 0;
+#X connect 5 0 4 0;
+#X connect 6 0 2 0;

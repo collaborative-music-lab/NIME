@@ -40,16 +40,16 @@ print("Sending data to port", 5005)
 #INITIALIZE ANALOG INPUTS
 ######################
 OSC_ADDRESSES = {
-    27:{ 'address':'/analog0', 'enable': 1, 'rate':200, 'mode':'MEAN' },
-    33:{ 'address':'/analog1', 'enable': 1, 'rate':200, 'mode':'MEAN' },
-    32:{ 'address':'/analog2', 'enable': 1, 'rate':100, 'mode':'MEAN' },
+    27:{ 'address':'/analog0', 'enable': 0, 'rate':200, 'mode':'MEAN' },
+    33:{ 'address':'/analog1', 'enable': 0, 'rate':200, 'mode':'MEAN' },
+    32:{ 'address':'/analog2', 'enable': 0, 'rate':100, 'mode':'MEAN' },
     14:{ 'address':'/analog3', 'enable': 0, 'rate':50, 'mode':'MEAN' },
     4: { 'address':'/analog4', 'enable': 0, 'rate':50, 'mode':'MEAN' },
     0: { 'address':'/analog5', 'enable': 0, 'rate':150, 'mode':'MEAN' },
     15:{ 'address':'/analog6', 'enable': 0, 'rate':150, 'mode':'MEAN' },
     13:{ 'address':'/analog7', 'enable': 0, 'rate':150, 'mode':'MEAN' },
     36:{ 'address':'/analog8', 'enable': 0, 'rate':10, 'mode':'MEAN' },
-    39:{ 'address':'/analog9', 'enable': 1, 'rate':20, 'mode':'MEAN' },
+    39:{ 'address':'/analog9', 'enable': 0, 'rate':20, 'mode':'MEAN' },
     34:{ 'address':'/button0', 'enable': 0, 'rate':15, 'mode':'MEAN' },
     35:{ 'address':'/button1', 'enable': 0, 'rate':25, 'mode':'MEAN' }
 }
@@ -220,35 +220,40 @@ def interpretMessage(message):
         client.send_message(address, val)
 
     #special inputs for CAP_GRID
-    elif(message[0] == 100): #touchedSensors
-        #assemble bit map with touched pads
+    elif(message[0] >= 110 and message[0]<122): #touchedSensors
+        #get new touch state
         val = (message[1]<<8) + message[2] 
 
         #remap bit map to match physical layout
         touchedRemap = [8,4,0,9,5,1,10,6,2,3,7,11]
+        _num = touchedRemap[message[0]-110]+1
 
-        val2 = 0;
-        global prevTouchVal
-        global numPadsTouched
-        numPadsTouched=0
+        address = '/touch'
+        msg = ['cap-t-' + str(_num) + '-r', val]
+        client.send_message(address, msg)
 
-        for i in range(12):
-            val2 += (((val>>i)&1)<<touchedRemap[i])
-            numPadsTouched += (val2>>i) & 1
+        # val2 = 0;
+        # global prevTouchVal
+        # global numPadsTouched
+        # numPadsTouched=0
 
-        for i in range(12):
-            curState = (val2>>i) & 1 
-            prevState = (prevTouchVal>>i) & 1
-            if(curState != prevState):
-                address = '/touch'
-                msg = ['cap-t-' + str(i+1) + '-r', curState]
-                client.send_message(address, msg)
+        # for i in range(12):
+        #     val2 += (((val>>i)&1)<<touchedRemap[i])
+        #     numPadsTouched += (val2>>i) & 1
+
+        # for i in range(12):
+        #     curState = (val2>>i) & 1 
+        #     prevState = (prevTouchVal>>i) & 1
+        #     if(curState != prevState):
+        #         address = '/touch'
+        #         msg = ['cap-t-' + str(i+1) + '-r', curState]
+        #         client.send_message(address, msg)
 
         if( PACKET_INCOMING_SERIAL_MONITOR ):
-            print(address,val2)
+            print(address,msg)
 
         #client.send_message(address, val2)
-        prevTouchVal = val2
+        #prevTouchVal = val2
 
     elif(message[0] == 101): #totalCapacitance
         address = '/totalCap'
@@ -256,7 +261,8 @@ def interpretMessage(message):
         val = (message[1]<<8) + message[2] - 4096
 
         if( PACKET_INCOMING_SERIAL_MONITOR ):
-            print(address,val)
+            #print(address,val)
+            temp=0
 
         client.send_message(address, val)
 

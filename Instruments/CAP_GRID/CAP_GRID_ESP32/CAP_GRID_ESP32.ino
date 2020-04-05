@@ -2,7 +2,7 @@
  *  
  *  Regular m370 analog inputs
  *  capacitive sensor returns
- * - list of touched sensors
+ * - individual touched sensors
  * - total capacitance
  *   
  * _______
@@ -107,28 +107,20 @@ void loop() {
   CheckSerial();
 }
 
+/*********************************************
+ADDITIONAL FUNCTIONS
+*********************************************/
+
 void sendCapValues(){
   static uint32_t timer = 0;
   static int prevTouchedSensors = 0;
-  if(touchedSensors != prevTouchedSensors){
-    SlipOutByte(100);
-    SlipOutInt(touchedSensors);
-    SerialOutSlip();
-    prevTouchedSensors = touchedSensors;
-  
-  }
   int interval = 50;
 
   if(millis()-timer>interval){
     timer = millis();
-    
-//    Serial.print("touched: ");
-//    Serial.println(touchedSensors);
-//    SlipOutByte(100);
-//    SlipOutInt(touchedSensors);
-//    SerialOutSlip();
   
     totalCapacitance = 4096;
+    //make sure totalCap >= 0
     for(byte i=0;i < NUM_ELECTRODES; i++) totalCapacitance += (capSense[i].outVal-4096);
     SlipOutByte(101);
     SlipOutInt(totalCapacitance);
