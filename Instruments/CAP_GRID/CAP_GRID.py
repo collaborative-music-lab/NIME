@@ -263,7 +263,25 @@ def interpretMessage(message):
         address = '/meanCap'
         if( numPadsTouched > 0): client.send_message(address, val/numPadsTouched)
         else: client.send_message(address, 0 )
+
   
+######################
+#GRID PITCHES
+######################
+
+gridPitches = [
+    [0,4,7,12, 2,5,9,14, 5,7,9,12],
+    [0,2,4,5, 7,9,11,12, 14,16,17,19],
+    [0,7,12,19, 4,11,16,23, 7,14,19,26]
+];
+
+def setGridPitch(num):
+    for i in range(12):
+        address = '/pitchGrid'
+        msg = ('cap-p-' + str(i+1) + '-r', (gridPitches[num][i]+0))
+        client.send_message(address, msg)
+
+
 ######################
 #SCALE FUNCTION
 ######################
@@ -316,6 +334,7 @@ async def loop():
     time.sleep(0.1)  
     setEnables()
     setCapSense()
+    setGridPitch(1)
     
     while(1):
         currentMessage = readNextMessage() # can be None if nothing in input buffer
