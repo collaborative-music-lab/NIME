@@ -76,7 +76,7 @@ int touchedSensors = 0;
 uint16_t totalCapacitance = 0;
 
 /******************************
-GLOBAL VARIABLES
+FUNCTION DELCARATIONS
 ******************************/
 
 void debug(String type, int val);
@@ -272,6 +272,7 @@ class Cap{
         //calculate touch state
         if(curVal > maxVal) maxVal = curVal;
         if(curVal < minVal) minVal = curVal;
+        
         if( (curVal > ((maxVal*2)/3))){
           state = 1;
           touchedSensors = touchedSensors | (1<<num);
@@ -281,7 +282,7 @@ class Cap{
         }
         if(state != prevState){
           prevState = state;
-          SlipOutByte(num+110);
+          SlipOutByte(num+110); //pin, numerical indicator
           SlipOutInt(state);
           SerialOutSlip();
         }

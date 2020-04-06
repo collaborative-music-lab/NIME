@@ -32,7 +32,7 @@ Adafruit_MPR121 _MPR121 = Adafruit_MPR121();
 byte chargeCurrent = 63; //from 0-63, def 63
 byte chargeTime = 1; //from 0-7, def 1
 byte NUM_ELECTRODES = 12;
-int capSenseInterval = 250;
+int capSenseInterval = 100;
 
 Cap capSense[12] ={
   Cap ( capSenseInterval ),
@@ -113,7 +113,6 @@ ADDITIONAL FUNCTIONS
 
 void sendCapValues(){
   static uint32_t timer = 0;
-  static int prevTouchedSensors = 0;
   int interval = 50;
 
   if(millis()-timer>interval){
