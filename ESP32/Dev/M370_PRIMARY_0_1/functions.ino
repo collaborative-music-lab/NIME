@@ -1,8 +1,3 @@
-void SendOutSlip(){
-  if( SERIAL_ENABLE ) SerialOutSlip();
-  if ( WIFI_ENABLE ) WiFiOutSlip();
-}
-
 //read analog input multiple times to reduce noise
 int oversample(int adcPin, int numSamples) {
   int total = 0;
@@ -11,8 +6,6 @@ int oversample(int adcPin, int numSamples) {
   }
   return total / numSamples;
 }
-
-
 
 //getPing()
 //reads distance value from ultrasonic sensor

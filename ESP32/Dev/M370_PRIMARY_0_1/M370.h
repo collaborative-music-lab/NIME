@@ -90,7 +90,6 @@ void debug(String type, int val);
 void SlipOutInt(int val);
 void SlipOutByte(byte val);
 void SerialOutSlip();
-void SendOutSlip();
 int oversample(int adcPin, int numSamples);
 int Mean(int vals[], byte num);
 int Median(int vals[], byte num);
@@ -211,13 +210,8 @@ class Sensor{
           //delay(100);
           SlipOutByte(pin);
           SlipOutInt(outVal);
-          SendOutSlip();
-          if(ANALOG_DEBUG) {
-            Serial.print(pin);
-            Serial.print(": ");
-            Serial.println(outVal);
-          }
-          
+          SerialOutSlip();
+  
           prevVal = outVal;
           sampleIndex=0;
         } 
@@ -308,7 +302,7 @@ class Cap{
           prevState = state;
           SlipOutByte(num+110); //pin, numerical indicator
           SlipOutInt(state);
-          SendOutSlip();
+          SerialOutSlip();
         }
       } 
     }

@@ -5,7 +5,7 @@
 # Adds support for reading capacitive sensor data from the MPR121
 
 RAW_INCOMING_SERIAL_MONITOR = 0
-PACKET_INCOMING_SERIAL_MONITOR = 0
+PACKET_INCOMING_SERIAL_MONITOR = 1
 
 import serial, serial.tools.list_ports, socket, sys
 from pythonosc import osc_message_builder

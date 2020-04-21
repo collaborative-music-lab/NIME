@@ -13,11 +13,8 @@ Setup and loop
 *********************************************/
 
 void SerialSetup(){
-  if( SERIAL_ENABLE || ANALOG_DEBUG){
-    Serial.begin(115200);
-    delay(100);
-    if(ANALOG_DEBUG) Serial.println("Serial enabled");
-  }
+  Serial.begin(115200);
+  delay(500);
 }
 
 byte SerialAvailable(){
@@ -26,23 +23,22 @@ byte SerialAvailable(){
 }
 
 void CheckSerial(){
-  if( SERIAL_ENABLE){
-    while(Serial.available()){
-      byte val = Serial.read();
-      //Serial.write(val);
-      if(val == ESC_BYTE){
-        inBuffer[inBufferIndex]=Serial.read();
-        inBufferIndex++;
-      } else if (val == END_BYTE){
-        ProcessSerialMessage(inBuffer, inBufferIndex);
-        inBufferIndex = 0;
-      } else {
-        inBuffer[inBufferIndex]=val;
-        inBufferIndex++;
-      }  
+
+  while(Serial.available()){
+    byte val = Serial.read();
+
+    if(val == ESC_BYTE){
+      inBuffer[inBufferIndex]=Serial.read();
+      inBufferIndex++;
+    } else if (val == END_BYTE){
+      ProcessSerialMessage(inBuffer, inBufferIndex);
+      inBufferIndex = 0;
+    } else {
+      inBuffer[inBufferIndex]=val;
+      inBufferIndex++;
     }
   }
-}//checkSerial
+}
 
 void ProcessSerialMessage(byte message[], byte len){
   if(SERIAL_DEBUG){
@@ -50,13 +46,6 @@ void ProcessSerialMessage(byte message[], byte len){
     SlipOutByte(message[1]);
     SlipOutByte(message[2]);
     SerialOutSlip();
-  }
-  if(WIFI_DEBUG){
-    for(byte i=0;i<len;i++){
-      Serial.print(message[i]);
-      Serial.print(" ");
-    }
-    Serial.println();
   }
 
         
@@ -135,13 +124,13 @@ void SlipOutByte(byte val) {
 
 void SerialOutSlip(){
   for(byte i=0;i<serBufferIndex;i++){
-    if(0) {
+    if(SERIAL_DEBUG) {
       Serial.print (serialBuffer[i]);
       Serial.print(" ");
     }
     else Serial.write(serialBuffer[i]);
   }
-  if(0) {
+  if(SERIAL_DEBUG) {
       Serial.print (END_BYTE);
       Serial.println(" ");
     }
