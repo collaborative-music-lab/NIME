@@ -21,8 +21,8 @@
 #include <WiFi.h>
 #include <WiFiUdp.h>
 
-byte SERIAL_ENABLE = 0; //enables communication over USB
-byte WIFI_ENABLE = 1; //enables communication over USB
+byte SERIAL_ENABLE = 1; //enables communication over USB
+byte WIFI_ENABLE = 0; //enables communication over USB
 
 // WiFi network name and password:
 const char * ssid = "MLE";
