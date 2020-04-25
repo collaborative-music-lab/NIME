@@ -74,9 +74,9 @@ void ProcessSerialMessage(byte message[], byte len){
 
     case 2: //set analog transmission rate
     if(message[1]<12)  sensors[message[1]].SetInterval(message[2]);
-    else if( message[1]<15) accels[message[1]-12].SetInterval( message[2]>0); 
-    else if( message[1]<18) gyros[message[1]-15].SetInterval( message[2]>0 ); 
-    else if( message[1]<19) temps.SetInterval(message[2]>0);
+    else if( message[1]<15) accels[message[1]-12].SetInterval( message[2]); 
+    else if( message[1]<18) gyros[message[1]-15].SetInterval( message[2]); 
+    else if( message[1]<19) temps.SetInterval(message[2]);
     break;
 
     case 3: //set analog mode
