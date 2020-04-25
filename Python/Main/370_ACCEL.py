@@ -12,7 +12,7 @@
 
 
 RAW_INCOMING_SERIAL_MONITOR = 0
-PACKET_INCOMING_SERIAL_MONITOR = 1
+PACKET_INCOMING_SERIAL_MONITOR = 0
 
 import serial, serial.tools.list_ports, socket, sys
 from pythonosc import osc_message_builder
@@ -110,7 +110,7 @@ print("Sending data to port", 5005)
 
 #sensor inputs
 OSC_ADDRESSES = {
-    27:{ 'address':'/analog0', 'enable': 0, 'rate':200, 'mode':'MEAN' },
+    27:{ 'address':'/analog0', 'enable': 1, 'rate':200, 'mode':'MEAN' },
     33:{ 'address':'/analog1', 'enable': 0, 'rate':200, 'mode':'MEAN' },
     32:{ 'address':'/analog2', 'enable': 0, 'rate':20, 'mode':'MEAN' },
     14:{ 'address':'/analog3', 'enable': 0, 'rate':200, 'mode':'MEAN' },
@@ -123,8 +123,8 @@ OSC_ADDRESSES = {
     34:{ 'address':'/button0', 'enable': 0, 'rate':125, 'mode':'MEAN' },
     35:{ 'address':'/button1', 'enable': 0, 'rate':125, 'mode':'MEAN' },
     150:{ 'address':'/accelX', 'enable': 1, 'rate':200, 'mode':'MEAN' },
-    151:{ 'address':'/accelY', 'enable': 1, 'rate':200, 'mode':'MEAN' },
-    152:{ 'address':'/accelZ', 'enable': 1, 'rate':200, 'mode':'MEAN' },
+    151:{ 'address':'/accelY', 'enable': 0, 'rate':200, 'mode':'MEAN' },
+    152:{ 'address':'/accelZ', 'enable': 0, 'rate':200, 'mode':'MEAN' },
     153:{ 'address':'/gyroX', 'enable': 0, 'rate':200, 'mode':'MEAN' },
     154: { 'address':'/gyroY', 'enable': 0, 'rate':200, 'mode':'MEAN' },
     155: { 'address':'/gyroZ', 'enable': 0, 'rate':200, 'mode':'MEAN' },
@@ -226,7 +226,7 @@ def interpretMessage(message):
         val = (message[1]<<8) + message[2]
         if(message[0]>=150  and message[0]<156): 
             val = (val -32767) / 327
-            val =  '%.3f'%(val)
+            #val =  '%.3f'%(val)
 
         if( PACKET_INCOMING_SERIAL_MONITOR ):
             print(address,val)
@@ -241,20 +241,7 @@ def interpretMessage(message):
         if( PACKET_INCOMING_SERIAL_MONITOR ):
             print(address,val)
 
-        client.send_message(address, val)
-    #IMU
-    elif(message[0] >= 150 and message[0]<157):
-        address = '/imu' + str(message[0]-150);
-
-        #the scaling here is arbitrary
-        val = ((message[1]<<8) + message[2] - 32767) / 327
-
-        if( PACKET_INCOMING_SERIAL_MONITOR ):
-            print(address,val)
-
-        client.send_message(address, val)
-
-    
+        client.send_message(address, val)  
 
 ######################
 #COMMUNICATION INPUT
