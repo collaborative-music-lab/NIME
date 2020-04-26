@@ -30,7 +30,7 @@ byte WIFI_ENABLE = 1; //enables communication over USB
 const char * ssid = "MLE";
 const char * password = "mitmusictech";
 
-const byte SERIAL_DEBUG = 1; //for debugging serial communication over USB
+const byte SERIAL_DEBUG = 0; //for debugging serial communication over USB
 const byte WIFI_DEBUG = 0; //for debuggiing wifi communiication
 const byte ANALOG_DEBUG = 0; //for debuggiing analog inputs using arduino console 
 

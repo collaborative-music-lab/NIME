@@ -159,16 +159,18 @@ class Sensor{
 
   void setup(){
     pinMode(pin,INPUT);
+    if( sampleProcessMode == DIGITAL )  samplePeriod = 1;
   }
 
   void loop(){
     if (enable==1) {
+
+    if(curMillis - samplePeriod > sampleMillis){
       if( sampleProcessMode == DIGITAL ){
         val[sampleIndex] = digitalRead(pin);
         byte temp = 0;
         for(byte i=0;i<16;i++)temp+=val[i];
         if( temp == 0 || temp == 16){
-          //Serial.print(digitalRead(pin));
           temp  /= 16;
           if(temp != prevVal) {
             outVal = temp;
@@ -180,15 +182,14 @@ class Sensor{
         }
         sampleIndex++;
         if(sampleIndex>15)sampleIndex=0;
-        //Serial.print(outVal);
-      }
-      else if(curMillis - samplePeriod > sampleMillis){
+      } else{
           sampleMillis = curMillis;
           if(sampleIndex<32){
             val[sampleIndex] = oversample(pin,overSample);
             sampleIndex++;
           }
-      }
+        }
+      }//sample period
   
       if(curMillis - interval > prevMillis){
         prevMillis = curMillis;
@@ -251,8 +252,10 @@ class Sensor{
             Serial.println(outVal);
           }
           
-          prevVal = outVal;
-          sampleIndex=0;
+          if( sampleProcessMode != DIGITAL ) {
+            prevVal = outVal;
+            sampleIndex=0;
+          }
         } 
       }
     }
