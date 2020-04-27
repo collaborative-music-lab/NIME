@@ -16,12 +16,12 @@
 threshold \, but won't retrigger until input goes below (threshold*schmitt
 ratio);
 #X obj 293 107 init 0.8 \$2;
-#X obj 32 175 expr $f1>0.5;
 #X text 329 84 release threshold;
 #X text 161 87 trigger threshold;
 #X text 29 54 arguments: trigger threshold value \, release threshold
 ;
 #X obj 146 185 expr $f1<($f3);
+#X obj 32 175 expr $f1>$f2;
 #X connect 0 0 8 0;
 #X connect 1 0 3 0;
 #X connect 1 0 6 0;
@@ -30,11 +30,11 @@ ratio);
 #X connect 4 0 5 0;
 #X connect 5 0 1 1;
 #X connect 7 0 1 0;
-#X connect 8 0 15 0;
+#X connect 8 0 18 0;
 #X connect 8 0 19 0;
 #X connect 9 0 8 1;
 #X connect 10 0 9 0;
 #X connect 11 0 14 0;
 #X connect 14 0 8 2;
-#X connect 15 0 7 0;
-#X connect 19 0 2 0;
+#X connect 18 0 2 0;
+#X connect 19 0 7 0;

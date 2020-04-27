@@ -12,7 +12,7 @@
 
 
 RAW_INCOMING_SERIAL_MONITOR = 0
-PACKET_INCOMING_SERIAL_MONITOR = 1
+PACKET_INCOMING_SERIAL_MONITOR = 0
 
 import serial, serial.tools.list_ports, socket, sys
 from pythonosc import osc_message_builder
@@ -112,18 +112,18 @@ print("Sending data to port", 5005)
 #sensor inputs
 OSC_ADDRESSES = {
     27:{ 'address':'/analog0', 'enable': 1, 'rate':250, 'mode':'DIGITAL' },
-    33:{ 'address':'/analog1', 'enable': 0, 'rate':200, 'mode':'MEAN' },
-    32:{ 'address':'/analog2', 'enable': 0, 'rate':200, 'mode':'MEAN' },
+    33:{ 'address':'/analog1', 'enable': 1, 'rate':200, 'mode':'MEAN' },
+    32:{ 'address':'/analog2', 'enable': 1, 'rate':200, 'mode':'MEAN' },
     14:{ 'address':'/analog3', 'enable': 0, 'rate':200, 'mode':'MEAN' },
     4: { 'address':'/analog4', 'enable': 0, 'rate':200, 'mode':'MEAN' },
     0: { 'address':'/analog5', 'enable': 0, 'rate':200, 'mode':'MEAN' },#pulled high by ESP32
     15:{ 'address':'/analog6', 'enable': 0, 'rate':200, 'mode':'MEAN' },#boot fail if pulled low
     13:{ 'address':'/analog7', 'enable': 0, 'rate':200, 'mode':'MEAN' },
     36:{ 'address':'/analog8', 'enable': 0, 'rate':200, 'mode':'MEAN' },
-    39:{ 'address':'/analog9', 'enable': 0, 'rate':200, 'mode':'MEAN' },
+    39:{ 'address':'/analog9', 'enable': 1, 'rate':200, 'mode':'MEAN' },
     #alternate analog inputs
-    34:{ 'address':'/button0', 'enable': 0, 'rate':125, 'mode':'MEAN' }, #button
-    35:{ 'address':'/button1', 'enable': 0, 'rate':125, 'mode':'MEAN' }, #button
+    34:{ 'address':'/button0', 'enable': 1, 'rate':125, 'mode':'MEAN' }, #button
+    35:{ 'address':'/button1', 'enable': 1, 'rate':125, 'mode':'MEAN' }, #button
     2: { 'address':'/analog10', 'enable': 0, 'rate':200, 'mode':'MEAN' }, #CS0
     12:{ 'address':'/analog11', 'enable': 0, 'rate':200, 'mode':'MEAN' }, #CS1, boot fail if pulled high
     25:{ 'address':'/analog12', 'enable': 0, 'rate':125, 'mode':'MEAN' }, #DAC1
@@ -136,9 +136,9 @@ OSC_ADDRESSES = {
     23:{ 'address':'/digital4', 'enable': 0, 'rate':200, 'mode':'DIGITAL' },#MOSI
     5:{ 'address':'/digital5', 'enable': 0, 'rate':200, 'mode':'DIGITAL' },#MIDI, boot fail if pulled low
     #IMU
-    150:{ 'address':'/accelX', 'enable': 0, 'rate':20, 'mode':'MEAN' },
-    151:{ 'address':'/accelY', 'enable': 0, 'rate':20, 'mode':'MEAN' },
-    152:{ 'address':'/accelZ', 'enable': 0, 'rate':20, 'mode':'MEAN' },
+    150:{ 'address':'/accelX', 'enable': 1, 'rate':200, 'mode':'MEAN' },
+    151:{ 'address':'/accelY', 'enable': 1, 'rate':200, 'mode':'MEAN' },
+    152:{ 'address':'/accelZ', 'enable': 1, 'rate':200, 'mode':'MEAN' },
     153:{ 'address':'/gyroX',  'enable': 0, 'rate':20, 'mode':'MEAN' },
     154: { 'address':'/gyroY', 'enable': 0, 'rate':20, 'mode':'MEAN' },
     155: { 'address':'/gyroZ', 'enable': 0, 'rate':20, 'mode':'MEAN' },
