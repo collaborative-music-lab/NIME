@@ -109,19 +109,19 @@ print("Sending data to port", 5005)
 
 #sensor inputs
 OSC_ADDRESSES = {
-    27:{ 'address':'/analog0', 'enable': 1, 'rate':250, 'mode':'DIGITAL' },
-    33:{ 'address':'/analog1', 'enable': 1, 'rate':100, 'mode':'MEAN' },
-    32:{ 'address':'/analog2', 'enable': 1, 'rate':100, 'mode':'MEAN' },
+    27:{ 'address':'/analog0', 'enable': 0, 'rate':250, 'mode':'DIGITAL' },
+    33:{ 'address':'/analog1', 'enable': 0, 'rate':100, 'mode':'MEAN' },
+    32:{ 'address':'/analog2', 'enable': 0, 'rate':100, 'mode':'MEAN' },
     14:{ 'address':'/analog3', 'enable': 0, 'rate':200, 'mode':'MEAN' },
     4: { 'address':'/analog4', 'enable': 0, 'rate':200, 'mode':'MEAN' },
     0: { 'address':'/analog5', 'enable': 0, 'rate':200, 'mode':'MEAN' },#pulled high by ESP32
     15:{ 'address':'/analog6', 'enable': 0, 'rate':200, 'mode':'MEAN' },#boot fail if pulled low
     13:{ 'address':'/analog7', 'enable': 0, 'rate':200, 'mode':'MEAN' },
     36:{ 'address':'/analog8', 'enable': 1, 'rate':20, 'mode':'MEAN' },
-    39:{ 'address':'/analog9', 'enable': 1, 'rate':100, 'mode':'MEAN' },
+    39:{ 'address':'/analog9', 'enable': 0, 'rate':100, 'mode':'MEAN' },
     #alternate analog inputs
-    34:{ 'address':'/button0', 'enable': 1, 'rate':100, 'mode':'MEAN' }, #button
-    35:{ 'address':'/button1', 'enable': 1, 'rate':100, 'mode':'MEAN' }, #button
+    34:{ 'address':'/button0', 'enable': 0, 'rate':100, 'mode':'MEAN' }, #button
+    35:{ 'address':'/button1', 'enable': 0, 'rate':100, 'mode':'MEAN' }, #button
     2: { 'address':'/analog10', 'enable': 0, 'rate':200, 'mode':'MEAN' }, #CS0
     12:{ 'address':'/analog11', 'enable': 0, 'rate':200, 'mode':'MEAN' }, #CS1, boot fail if pulled high
     25:{ 'address':'/analog12', 'enable': 0, 'rate':125, 'mode':'MEAN' }, #DAC1
@@ -134,12 +134,12 @@ OSC_ADDRESSES = {
     23:{ 'address':'/digital4', 'enable': 0, 'rate':200, 'mode':'DIGITAL' },#MOSI
     5:{ 'address':'/digital5', 'enable': 0, 'rate':200, 'mode':'DIGITAL' },#MIDI, boot fail if pulled low
     #IMU
-    150:{ 'address':'/accelX', 'enable': 1, 'rate':50, 'mode':'MEAN' },
-    151:{ 'address':'/accelY', 'enable': 1, 'rate':50, 'mode':'MEAN' },
-    152:{ 'address':'/accelZ', 'enable': 1, 'rate':50, 'mode':'MEAN' },
-    153:{ 'address':'/gyroX',  'enable': 1, 'rate':100, 'mode':'MEAN' },
-    154: { 'address':'/gyroY', 'enable': 1, 'rate':100, 'mode':'MEAN' },
-    155: { 'address':'/gyroZ', 'enable': 1, 'rate':100, 'mode':'MEAN' },
+    150:{ 'address':'/accelX', 'enable': 0, 'rate':50, 'mode':'MEAN' },
+    151:{ 'address':'/accelY', 'enable': 0, 'rate':50, 'mode':'MEAN' },
+    152:{ 'address':'/accelZ', 'enable': 0, 'rate':50, 'mode':'MEAN' },
+    153:{ 'address':'/gyroX',  'enable': 0, 'rate':100, 'mode':'MEAN' },
+    154: { 'address':'/gyroY', 'enable': 0, 'rate':100, 'mode':'MEAN' },
+    155: { 'address':'/gyroZ', 'enable': 0, 'rate':100, 'mode':'MEAN' },
     156: { 'address':'/temp',  'enable': 0, 'rate':250, 'mode':'MEAN' }
 }
 
@@ -249,6 +249,10 @@ def interpretMessage(message):
             print(address,val)
 
         client.send_message(address, val)
+
+        if message[0] == 36:
+            #print(val)
+            hr.process(val)
     #capacitive inputs
     elif(message[0] >= 64 and message[0]<76):
         address = '/capsense' + str(message[0]-64);
@@ -259,6 +263,43 @@ def interpretMessage(message):
             print(address,val)
 
         client.send_message(address, val)  
+
+
+class  heartRateSensor:
+    def __init__(self,interval):
+        self.interval =  interval
+
+    val =  [0]
+    prevData = 0
+    index =  0;
+    peak=0.
+
+    def process(self,data):
+        delta = data - self.prevData
+        self.prevData=data
+
+        self.val.append(delta)
+        
+        self.index+=1
+
+        #calc peak value
+        if(self.index>99):
+            self.peak=0
+            for i in range(self.index):
+                if self.val[i] > self.peak:
+                    self.peak = self.val[i]
+
+            address = '/HRpeak'
+            client.send_message(address,self.peak)
+
+            self.index=0
+            self.val.clear()
+
+        address = '/HR'
+        if self.peak > 0:
+            client.send_message(address,delta/self.peak)
+
+hr = heartRateSensor(20)
 
 ######################
 #COMMUNICATION INPUT
