@@ -23,7 +23,7 @@ for x in range(len(ports)):
     if "USB" in ports[x]:
         print("serial")
 
-ser = serial.Serial("/dev/cu.usbserial-14340")
+ser = serial.Serial("/dev/cu.usbserial-1434120")
 ser.baudrate=115200
 ser.setDTR(False) # Drop DTR
 time.sleep(0.022)    # Read somewhere that 22ms is what the UI does.
