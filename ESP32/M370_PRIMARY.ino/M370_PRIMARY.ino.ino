@@ -1,9 +1,14 @@
-/* M370_ACCEL
+/* M370_PRIMARY
  *  
  *  Main m370 firmware for ESP32
+ *  
+ *  Note: I2C pins are different than the defaults:
+ *  - I2C libraries may need to be modified to allow this
+ *  - this is he reason that they are included with this sketch
  * _______
  * 
  * version history
+ * 20_05_01: added support for digital inputs
  * 20_04_21: added initial support for LSM6DS3
  * 20_04_20: added analog debugging - prints analogRead values to console
  * 20_04_20: added support for wifi

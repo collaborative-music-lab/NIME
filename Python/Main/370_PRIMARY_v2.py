@@ -3,11 +3,11 @@
 # This file created Mar 20  2020
 #
 # Primary script for interfacing with the ESP32
-# Setup for serial communication, change communication mode below to try with ESP32
+# Setup for serial communication, change communication mode below to try wifi with ESP32
 # For wifi:
 # 1. set mode below
 # 2. set WIFI network and password in arduino, 
-# 3. set arduiino mode to wifi
+# 3. set arduino mode to wifi
 # 4. reset ESP32 using side button (or power cycling) before running python script
 
 
