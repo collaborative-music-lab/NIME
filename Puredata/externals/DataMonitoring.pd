@@ -1,11 +1,11 @@
 #N canvas 76 23 1604 1005 10;
 #X obj 26 40 oscparse;
-#X obj 26 18 netreceive -u -b 5005;
+#X obj 27 17 netreceive -u -b 5005;
 #X obj 26 64 list trim;
 #X obj 1198 183 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1
-1104 1;
+0 1;
 #X obj 1276 182 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1
-1215 1;
+0 1;
 #N canvas 0 22 450 278 (subpatch) 0;
 #X array analog0 100 float 3;
 #A 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
@@ -195,7 +195,7 @@ analog6 analog7 analog8 analog9 button0 button1, f 208;
 #X obj 180 15 r m370pdSlipInput;
 #X obj 24 146 dataMonitorAnalog analog0;
 #X obj 309 14 tgl 30 0 empty empty monitor -5 -8 0 10 -262144 -1 -1
-1 1;
+0 1;
 #X floatatom 173 172 5 0 0 0 - - -;
 #X floatatom 272 234 5 0 0 0 - - -;
 #X floatatom 392 182 5 0 0 0 - - -;
@@ -218,6 +218,10 @@ analog6 analog7 analog8 analog9 button0 button1, f 208;
 #X obj 1427 144 outlet;
 #X msg 1124 127 button0raw \$1;
 #X msg 1235 126 button1raw \$1;
+#X obj 30 -27 inlet;
+#X msg 30 -5 listen \$1;
+#X text 65 -26 incoming port number to change port in case of problems
+;
 #X connect 0 0 2 0;
 #X connect 1 0 0 0;
 #X connect 2 0 14 0;
@@ -283,3 +287,5 @@ analog6 analog7 analog8 analog9 button0 button1, f 208;
 #X connect 50 1 41 0;
 #X connect 52 0 51 0;
 #X connect 53 0 51 0;
+#X connect 54 0 55 0;
+#X connect 55 0 1 0;
