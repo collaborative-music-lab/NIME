@@ -1,4 +1,4 @@
-#N canvas 0 23 1600 817 10;
+#N canvas 0 23 1680 1005 10;
 #X declare -path patch_editor_abs;
 #X obj 7 2 cnv 5 5 5 empty empty AUTOMATONISM 0 12 0 15 -262144 -66577
 0;
@@ -15,7 +15,8 @@
 #X floatatom 8 146 5 0 0 1 CPU% CPU -;
 #X obj 8 105 bng 15 250 50 0 open-reset-warning! empty <--RESET! 17
 7 0 10 -262144 -1 -1;
-#X obj 47 280 mtof, f 5;
+#X obj 47 280 mtof;
+#X obj 47 314 phasor~;
 #X obj 20 1119 declare -path patch_editor_abs;
 #N canvas 447 23 707 551 patch-editor-do-not-delete 0;
 #X msg 26 128 \; pd dsp 0;
@@ -2098,7 +2099,7 @@
 #X msg 177 81 0;
 #X msg 83 341 \; pd-main.pd obj 200 200 \$1 \$2;
 #X obj 162 280 nbx 5 14 -1e+37 1e+37 0 1 empty empty empty 0 -8 0 10
--262144 -1 -1 2 256;
+-262144 -1 -1 3 256;
 #X obj 64 387 t b b;
 #X msg 64 509 loadbang;
 #X obj 91 411 s SAVE-S;
@@ -4317,7 +4318,7 @@
 #X msg 177 81 0;
 #X msg 83 341 \; pd-main.pd obj 200 200 \$1 \$2;
 #X obj 162 280 nbx 5 14 -1e+37 1e+37 0 1 empty empty empty 0 -8 0 10
--262144 -1 -1 0 256;
+-262144 -1 -1 2 256;
 #X obj 64 387 t b b;
 #X msg 64 509 loadbang;
 #X obj 91 411 s SAVE-S;
@@ -5194,7 +5195,7 @@ more elaborate pd-code for deeper control.;
 #X obj 204 151 r open-organelle-map!;
 #X msg 204 198 \; pd-organelle-map vis \$1;
 #X obj 203 272 r open-modules!;
-#N canvas 474 92 799 751 modules 1;
+#N canvas 474 92 799 751 modules 0;
 #X obj 196 91 cnv 15 180 15 empty empty MODULATION: 10 8 0 12 -158136
 -262144 0;
 #X obj 196 112 bng 15 250 50 0 \$0-create-basic-lfo! empty <--BASIC-LFO
@@ -6614,7 +6615,7 @@ and send to the name of the module \, for example [s basic-osc];
 #X connect 23 0 4 0;
 #X restore 20 1140 pd patch-editor-do-not-delete;
 #X text 32 1103 DO NOT DELETE THESE OBJECTS:;
-#X obj 241 468 scope 3;
+#X obj 222 301 scope 3;
 #N canvas 824 106 651 544 fft-analysis 0;
 #X obj 15 164 *~;
 #X obj 14 99 inlet~;
@@ -6671,12 +6672,12 @@ of "fft".;
 #N canvas 0 0 450 300 (subpatch) 0;
 #X array \$0-magnitude 256 float 0;
 #X coords 0 256 255 0 256 100 1;
-#X restore 220 285 graph;
+#X restore 487 421 graph;
 #X text 642 391 magnitude;
 #X text 481 516 0;
 #X text 470 502 0;
-#X text 188 330 128;
-#X text 187 280 256;
+#X text 455 466 128;
+#X text 454 416 256;
 #N canvas 0 0 450 300 (subpatch) 0;
 #X array \$0-hann 1024 float 1;
 #A 0 0 1.88351e-05 3.76403e-05 9.41157e-05 0.000150591 0.000244677
@@ -6830,109 +6831,148 @@ of "fft".;
 #X text 463 577 recalculate Hann;
 #X text 498 592 window table;
 #X text 876 740 511;
-#X obj 46 669 maestro4 2;
+#X obj -92 745 maestro4 2;
 #X obj 473 649 / 1024;
 #X text 719 516 512;
 #N canvas 0 50 450 250 (subpatch) 0;
 #X array analogVal 70 float 3;
-#A 0 0.0551181 0.102362 0.165354 0.212598 0.244094 0.244094 0.244094
-0.244094 0.244094 0.244094 0.244094 0.244094 0.244094 0.244094 0.244094
-0.244094 0.244094 0.244094 0.244094 0.244094 0.244094 0.244094 0.244094
-0.244094 0.244094 0.244094 0.244094 0.244094 0.244094 0.244094 0.244094
-0.244094 0.244094 0.244094 0.244094 0.244094 0.244094 0.244094 0.244094
-0.244094 0.244094 0.244094 0.244094 0.244094 -0.275591 -0.291339 -0.354331
--0.354331 -0.354331 -0.354331 -0.354331 -0.354331 -0.354331 -0.354331
--0.354331 -0.354331 -0.354331 -0.354331 -0.354331 -0.354331 -0.354331
--0.354331 -0.354331 -0.338583 -0.259843 -0.181102 -0.0708661 -0.0708661
--0.023622 0.0393701;
+#A 0 0.800227 0.787864 0.787864 0.237774 0.237774 0.231536 0.231536
+0.286635 0.286635 0.0771921 0.0771921 -0.0158729 -0.0158729 -0.127787
+-0.127787 -0.160788 -0.160788 -0.135203 -0.135203 -0.149003 -0.149003
+-0.148817 -0.148817 -0.0517815 -0.0517815 0.0720686 0.0720686 0.0470629
+0.0470629 0.025574 0.025574 0.106397 0.106397 0.105721 0.105721 0.160238
+0.160238 0.178102 0.178102 0.176243 0.176243 0.16483 0.16483 0.15729
+0.15729 0.0300187 0.0300187 -0.0987262 -0.0987262 -0.155401 -0.155401
+-0.154508 -0.154508 -0.158822 -0.158822 -0.104184 -0.104184 0.062527
+0.062527 0.19079 0.19079 0.232045 0.232045 0.398137 0.398137 0.440623
+0.440623 0.792795 0.792795 0.800227;
 #X coords 0 1 70 -1 200 140 1 0 0;
-#X restore 269 32 graph;
-#X obj 575 243 f;
-#X obj 604 242 + 1;
-#X floatatom 575 283 5 0 0 0 - - -;
-#X obj 502 212 t f b;
-#X obj 508 311 tabwrite analogVal;
-#X obj 496 180 spigot;
+#X restore 174 126 graph;
+#X obj 635 222 f;
+#X obj 664 221 + 1;
+#X floatatom 635 262 5 0 0 0 - - -;
+#X obj 519 361 tabwrite analogVal;
+#X obj 523 76 spigot;
 #X obj 48 378 tabread4~ analogVal;
 #X floatatom 47 244 5 0 0 0 - - -;
-#X obj 44 508 vca 2;
-#X obj 1763 427 random-voltages 1;
-#X obj 1771 337 clock 4;
-#X obj 1769 547 snapshot~;
-#X obj 1670 475 loadbang;
-#X obj 1634 490 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
--1 -1;
-#X floatatom 1770 572 5 0 0 0 - - -;
-#X obj 1681 517 metro 300;
-#X obj 575 265 mod 70;
+#X obj -98 561 vca 2;
+#X obj 635 244 mod 70;
 #X obj 47 341 *~ 70;
-#X msg 1760 629 \$1 300;
-#X obj 1770 678 line;
-#X obj 1770 597 + 1, f 4;
-#X obj 1760 741 s detune;
-#X obj 491 39 vsl 15 128 -1 1 0 0 empty empty empty 0 -9 0 10 -262144
--1 -1 0 1;
-#X obj 586 107 tgl 15 0 empty empty empty 17 7 0 10 -4032 -4160 -1
-0 1;
-#X obj 571 196 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
--1 -1;
-#X floatatom 484 255 5 0 0 0 - - -;
-#X obj 579 151 metro 50;
-#X text 530 49 use the slider to draw the waveform in analogval;
-#X text 221 254 This is the spectrum;
-#X text 615 105 <- press the toggle switch to start;
+#X obj 518 -152 vsl 15 128 0 2 0 0 empty empty empty 0 -9 0 10 -262144
+-1 -1 13400 1;
+#X obj 606 40 tgl 15 0 empty empty empty 17 7 0 10 -4032 -4160 -1 1
+1;
+#X floatatom 523 98 5 0 0 0 - - -;
+#X text 544 -154 use the slider to draw the waveform in analogval;
+#X text 487 393 This is the spectrum;
+#X text 630 39 <- press the toggle switch to start;
 #X text 24 213 Change the MIDI pitch here;
-#X obj 47 314 phasor~ 400;
-#X obj 122 486 vline~;
-#X obj 123 463 r MASTER_VOLUME;
-#X obj 141 76 s MASTER_VOLUME;
-#X obj 142 9 hsl 128 15 0 127 0 0 empty empty empty -2 -8 0 10 -262144
+#X obj 98 531 vline~;
+#X obj 98 503 r MASTER_VOLUME;
+#X obj -51 -42 s MASTER_VOLUME;
+#X obj -50 -109 hsl 128 15 0 127 0 0 empty empty empty -2 -8 0 10 -262144
 -1 -1 0 1;
-#X msg 139 50 \$1 20;
-#X obj 139 29 expr pow($f1/127 \, 2);
-#X connect 8 0 71 0;
-#X connect 21 0 22 1;
-#X connect 22 0 24 0;
-#X connect 23 0 37 0;
-#X connect 24 0 25 0;
+#X msg -53 -68 \$1 20;
+#X obj -53 -89 expr pow($f1/127 \, 2);
+#X obj 508 120 f;
+#X obj 507 224 * 1;
+#X obj 636 199 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 521 -14 - 1;
+#X text 544 -142 made bipolar -1 to 1;
+#X obj -102 436 analog-filter 3;
+#X obj -37 359 loadbang;
+#X obj -37 401 sig~;
+#X msg -37 380 0.4;
+#X obj 508 201 t f b;
+#X msg 508 150 \$1 25;
+#X text 551 141 line object smooths out incoming values and writes
+new data every 5 ms;
+#X obj 652 284 tabread analogVal;
+#X floatatom 652 306 5 0 0 0 - - -;
+#X obj 514 305 pack f f 0.5;
+#X floatatom 447 199 5 0 0 0 - - -;
+#X text 761 282 tabread reads current value of sample and averages
+it with new data. Creates a feedback loop smooths discontinuities between
+new and old sample;
+#X text 556 218 xfade between old and new sample, f 14;
+#X obj 606 66 metro 20;
+#X obj 509 175 line 0 20;
+#X obj 238 -159 env-follower 1;
+#X obj 513 331 expr ($f1*(1-$f3))+($f2*$f3)*0.9;
+#X obj 252 9 snapshot~;
+#X obj 247 -16 metro 50;
+#X obj 247 -39 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
+1;
+#X floatatom 255 30 5 0 0 0 - - -;
+#X obj 521 7 * 0.5;
+#X obj 436 227 * 1;
+#X floatatom 434 260 5 0 0 0 - - -;
+#X floatatom 256 100 5 0 0 0 - - -;
+#X obj 258 57 scale -0.5 -0.54 1 0.2;
+#X obj 258 78 clip 0 1;
+#X text 413 147 feedback (try -0.9 and -2);
+#X text 315 28 tweak scale values to change response, f 21;
+#X connect 8 0 9 0;
+#X connect 9 0 50 0;
+#X connect 22 0 23 1;
+#X connect 23 0 25 0;
+#X connect 24 0 38 0;
 #X connect 25 0 26 0;
-#X connect 30 0 23 0;
-#X connect 30 0 21 0;
-#X connect 30 0 26 0;
-#X connect 37 0 22 0;
-#X connect 40 0 41 0;
-#X connect 40 0 56 0;
-#X connect 41 0 40 1;
-#X connect 42 0 44 1;
-#X connect 45 0 43 0;
-#X connect 45 0 44 0;
-#X connect 45 0 65 0;
-#X connect 46 0 12 0;
-#X connect 46 0 48 0;
+#X connect 26 0 27 0;
+#X connect 31 0 24 0;
+#X connect 31 0 22 0;
+#X connect 31 0 27 0;
+#X connect 38 0 23 0;
+#X connect 41 0 42 0;
+#X connect 41 0 49 0;
+#X connect 42 0 41 1;
+#X connect 43 0 44 1;
+#X connect 43 0 76 0;
+#X connect 45 0 53 0;
 #X connect 46 0 13 0;
+#X connect 46 0 14 0;
+#X connect 46 0 69 0;
+#X connect 46 0 84 0;
 #X connect 47 0 8 0;
-#X connect 48 0 36 0;
-#X connect 49 0 51 0;
-#X connect 50 0 49 0;
-#X connect 51 0 54 0;
-#X connect 52 0 55 0;
-#X connect 53 0 55 0;
-#X connect 54 0 60 0;
-#X connect 55 0 51 0;
-#X connect 56 0 42 0;
-#X connect 57 0 46 0;
-#X connect 58 0 59 0;
-#X connect 60 0 58 0;
-#X connect 62 0 45 0;
-#X connect 63 0 66 0;
-#X connect 63 0 45 1;
-#X connect 64 0 40 0;
-#X connect 64 0 65 0;
-#X connect 65 0 44 0;
-#X connect 66 0 64 0;
-#X connect 71 0 57 0;
-#X connect 72 0 48 1;
-#X connect 73 0 72 0;
-#X connect 75 0 77 0;
-#X connect 76 0 74 0;
-#X connect 77 0 76 0;
+#X connect 48 0 37 0;
+#X connect 49 0 43 0;
+#X connect 50 0 46 0;
+#X connect 51 0 67 0;
+#X connect 52 0 45 1;
+#X connect 52 0 82 0;
+#X connect 53 0 64 1;
+#X connect 58 0 48 1;
+#X connect 59 0 58 0;
+#X connect 61 0 63 0;
+#X connect 62 0 60 0;
+#X connect 63 0 62 0;
+#X connect 64 0 74 0;
+#X connect 65 0 78 0;
+#X connect 66 0 41 0;
+#X connect 67 0 90 0;
+#X connect 69 0 48 0;
+#X connect 70 0 72 0;
+#X connect 71 0 69 1;
+#X connect 72 0 71 0;
+#X connect 73 0 65 0;
+#X connect 73 1 41 0;
+#X connect 74 0 83 0;
+#X connect 76 0 77 0;
+#X connect 76 0 78 1;
+#X connect 78 0 85 0;
+#X connect 79 0 91 1;
+#X connect 82 0 64 0;
+#X connect 83 0 73 0;
+#X connect 84 0 86 0;
+#X connect 85 0 44 0;
+#X connect 86 0 89 0;
+#X connect 87 0 86 0;
+#X connect 88 0 87 0;
+#X connect 89 0 94 0;
+#X connect 90 0 45 0;
+#X connect 91 0 78 2;
+#X connect 91 0 92 0;
+#X connect 93 0 91 0;
+#X connect 94 0 95 0;
+#X connect 95 0 93 0;
