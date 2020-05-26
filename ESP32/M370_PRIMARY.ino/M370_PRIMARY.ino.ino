@@ -28,8 +28,8 @@
 #include <WiFi.h>
 #include <WiFiUdp.h>
 
-byte SERIAL_ENABLE = 0; //enables communication over USB
-byte WIFI_ENABLE = 1; //enables communication over USB
+byte SERIAL_ENABLE = 1; //enables communication over USB
+byte WIFI_ENABLE = 0; //enables communication over USB
 
 // WiFi network name and password:
 const char * ssid = "MLE";
@@ -66,9 +66,9 @@ IMUclass temps =  {
   IMUclass( 6,"temp", imuInterval, 8, MEAN )
 };
 
-byte ACCEL_ENABLE = 1;
-byte GYRO_ENABLE = 1;
-byte TEMP_ENABLE = 1;
+byte ACCEL_ENABLE = 0;
+byte GYRO_ENABLE = 0;
+byte TEMP_ENABLE = 0;
 
 /*********************************************
 CAPACITIVE SETUP
