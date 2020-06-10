@@ -29,7 +29,7 @@
 #include <WiFiUdp.h>
 #include "Esp32Encoder.h"
 
-byte SERIAL_ENABLE = 1; //enables communication over USB
+byte SERIAL_ENABLE = 0; //enables communication over USB
 byte WIFI_ENABLE = 0; //enables communication over USB
 
 // WiFi network name and password:
@@ -38,7 +38,7 @@ const char * password = "mitmusictech";
 
 const byte SERIAL_DEBUG = 0; //for debugging serial communication over USB
 const byte WIFI_DEBUG = 0; //for debuggiing wifi communiication
-const byte ANALOG_DEBUG = 0; //for debuggiing analog inputs using arduino console 
+const byte ANALOG_DEBUG = 1; //for debuggiing analog inputs using arduino console 
 
 LSM6DS3 IMU; //Default constructor is I2C, addr 0x6B
 
@@ -98,6 +98,20 @@ Cap capSense[12] ={
 };
 
 /*********************************************
+ENCODERS SETUP
+*********************************************/
+//encoders rely on the  ESP32Encoder library being installed in  ~/documents/Arduino/libraries
+//Esp32Encoder rotaryEncoder = Esp32Encoder(18,2,4);//A,B,Button
+//optional divider argument:
+const byte NUM_ENCODERS = 2;
+
+Esp32Encoder enc[NUM_ENCODERS] = {
+  Esp32Encoder(pCLK,pMISO,-1,4),//A,B,Button, Divider
+  Esp32Encoder(p2,p4,-1,4)//A,B,Button, Divider
+};
+
+
+/*********************************************
 ANALOG SETUP
 *********************************************/
 //we can choose how fast to send analog sensors here
@@ -109,22 +123,27 @@ int analogSendRate = 250;
 //argument 3 (optional) is how fast the data is sent in MS
 //argument 4 is oversampling (val from 1 to 32)
 //argument 5 is how to process oversampling 
-const byte numSensors = 12;
+const byte numSensors = 4;
 
-Sensor sensors[12] = {
+Sensor sensors[4] = {
   Sensor ( p0,"/analog/0", analogSendRate, 8, DIGITAL ),
-  Sensor ( p1,"/analog/1", analogSendRate, 8, MEAN ),
-  Sensor ( p2,"/analog/2", analogSendRate, 8, MEAN ),
-  Sensor ( p3,"/analog/3", analogSendRate, 8, MEAN ),
-  Sensor ( p4,"/analog/4", analogSendRate, 8, MEAN ),
-  Sensor ( p5,"/analog/5", analogSendRate, 8, MEAN ),
-  Sensor ( p6,"/analog/6", analogSendRate, 8, MEAN ),
-  Sensor ( p7,"/analog/7", analogSendRate, 8, MEAN ),
-  Sensor ( p8,"/analog/8", analogSendRate, 8, MEAN ),
   Sensor ( p9,"/analog/9", analogSendRate, 8, MEAN ),
-  Sensor ( BUTTON_0,"/button/0", 250, 16, MIN ),
-  Sensor ( BUTTON_1,"/button/1", 250, 16, MIN)
-};
+  Sensor ( p1,"/analog/1", analogSendRate, 8, MEAN ),
+  Sensor ( p8,"/analog/8", analogSendRate, 8, MEAN )
+  };
+//  ,
+//  Sensor ( p1,"/analog/1", analogSendRate, 8, MEAN ),
+//  Sensor ( p2,"/analog/2", analogSendRate, 8, MEAN ),
+//  Sensor ( p3,"/analog/3", analogSendRate, 8, MEAN ),
+//  Sensor ( p4,"/analog/4", analogSendRate, 8, MEAN ),
+//  Sensor ( p5,"/analog/5", analogSendRate, 8, MEAN ),
+//  Sensor ( p6,"/analog/6", analogSendRate, 8, MEAN ),
+//  Sensor ( p7,"/analog/7", analogSendRate, 8, MEAN ),
+//  Sensor ( p8,"/analog/8", analogSendRate, 8, MEAN ),
+//  Sensor ( p9,"/analog/9", analogSendRate, 8, MEAN ),
+//  Sensor ( BUTTON_0,"/button/0", 250, 16, MIN ),
+//  Sensor ( BUTTON_1,"/button/1", 250, 16, MIN)
+//};
 
 
 /*********************************************
@@ -135,6 +154,7 @@ void setup() {
   SerialSetup();
   WiFiSetup();
   IMUSetup();
+  EncoderSetup();
 
   //MPR121setup(); <- UNCOMMENT TO USE MPR121
   //MPR121test(); //comment out for normal use
@@ -157,6 +177,7 @@ void loop() {
   
   //sendCapValues();
   WiFiLoop();
+  EncoderLoop();
   CheckSerial();
 
   IMULoop();

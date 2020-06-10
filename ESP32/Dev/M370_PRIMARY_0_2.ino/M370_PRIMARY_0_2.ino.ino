@@ -27,7 +27,6 @@
 #include "NewPing.h"
 #include <WiFi.h>
 #include <WiFiUdp.h>
-#include "Esp32Encoder.h"
 
 byte SERIAL_ENABLE = 1; //enables communication over USB
 byte WIFI_ENABLE = 0; //enables communication over USB
