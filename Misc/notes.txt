@@ -1,1 +1,1 @@
-curl -sS https://raw.githubusercontent.com/adafruit/Raspberry-Pi-Installer-Scripts/master/i2samp.sh | bash
+I think this is the audio interface you should get. It's brand-new, has really great performance, will work with your phone as well as a laptop.
