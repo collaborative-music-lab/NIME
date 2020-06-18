@@ -1,10 +1,15 @@
 /* M370_PRIMARY
  *  
  *  Main m370 firmware for ESP32
+ *  
+ *  Note: I2C pins are different than the defaults:
+ *  - I2C libraries may need to be modified to allow this
+ *  - this is he reason that they are included with this sketch
  * _______
  * 
  * version history
- * 20_05_04: added  support the LED strips. Requires the FastLED library is installed. . . 
+ * 20_05_01: added support for digital inputs
+ * 20_04_21: added initial support for LSM6DS3
  * 20_04_20: added analog debugging - prints analogRead values to console
  * 20_04_20: added support for wifi
  * 20_04_12: added ultrasonic support
@@ -16,11 +21,22 @@
  * 20_01_20: created
  */
 
+const byte SERIAL_DEBUG = 0; //for debugging serial communication over USB
+const byte WIFI_DEBUG = 0; //for debuggiing wifi communiication
+const byte ANALOG_DEBUG = 0; //for debuggiing analog inputs using arduino console 
+
+//external libraries are saved in the /src folder. This allows us to make
+//minor modifications  to work with the m370 framework
+#include "src/SparkFunLSM6DS3.h"
 #include <Wire.h>
-#include "Adafruit_MPR121.h"
-#include "NewPing.h"
+#include "src/Adafruit_MPR121.h"
+#include "src/NewPing.h"
 #include <WiFi.h>
 #include <WiFiUdp.h>
+#include "src/Esp32Encoder.h"
+#include "src/Adafruit_MCP4728.h"
+
+
 
 byte SERIAL_ENABLE = 0; //enables communication over USB
 byte WIFI_ENABLE = 0; //enables communication over USB
@@ -29,13 +45,35 @@ byte WIFI_ENABLE = 0; //enables communication over USB
 const char * ssid = "MLE";
 const char * password = "mitmusictech";
 
-const byte SERIAL_DEBUG = 0; //for debugging serial communication over USB
-const byte WIFI_DEBUG = 0; //for debuggiing wifi communiication
-const byte ANALOG_DEBUG = 1; //for debuggiing analog inputs using arduino console 
+LSM6DS3 IMU; //Default constructor is I2C, addr 0x6B
 
 //some version of M370.h will be included in all your firmware
 //it declares global variables and objects 
-#include "M370.h"
+#include "m370.h"
+/*********************************************
+IMU SETUP
+*********************************************/
+int  imuInterval = 100;
+
+IMUclass accels[3] =  {
+  IMUclass( 0,"accelX", imuInterval, 8, MEAN ),
+  IMUclass( 1,"accelY", imuInterval, 8, MEAN ),
+  IMUclass( 2,"accelZ", imuInterval, 8, MEAN )
+};
+
+IMUclass gyros[3] =  {
+  IMUclass( 3,"gyroX", imuInterval, 8, MEAN ),
+  IMUclass( 4,"gyroY", imuInterval, 8, MEAN ),
+  IMUclass( 5,"gyroZ", imuInterval, 8, MEAN )
+};
+
+IMUclass temps =  {
+  IMUclass( 6,"temp", imuInterval, 8, MEAN )
+};
+
+byte ACCEL_ENABLE = 0;
+byte GYRO_ENABLE = 0;
+byte TEMP_ENABLE = 0;
 
 /*********************************************
 CAPACITIVE SETUP
@@ -64,10 +102,24 @@ Cap capSense[12] ={
 };
 
 /*********************************************
+ENCODERS SETUP
+*********************************************/
+//encoders rely on the  ESP32Encoder library being installed in  ~/documents/Arduino/libraries
+//Esp32Encoder rotaryEncoder = Esp32Encoder(18,2,4);//A,B,Button
+//optional divider argument:
+const byte NUM_ENCODERS = 2;
+
+Esp32Encoder enc[NUM_ENCODERS] = {
+  Esp32Encoder(pCLK,pMISO,-1,4),//A,B,Button, Divider
+  Esp32Encoder(p2,p4,-1,4)//A,B,Button, Divider
+};
+
+
+/*********************************************
 ANALOG SETUP
 *********************************************/
 //we can choose how fast to send analog sensors here
-int analogSendRate = 250;
+int analogSendRate = 10;
 
 //Sensor objects can have multiple kinds of arguments:
 //argument 1 is the physical pin on the PCB
@@ -77,36 +129,47 @@ int analogSendRate = 250;
 //argument 5 is how to process oversampling 
 const byte numSensors = 4;
 
-Sensor sensors[numSensors] = {
-  Sensor ( pMOSI,"/analog/0", analogSendRate, 8, MEAN ),
-  Sensor ( pMISO,"/analog/1", analogSendRate, 8, MEAN ),
-  Sensor ( pCLK,"/analog/2", analogSendRate, 8, MEAN ),
-  Sensor ( pSS,"/analog/3", analogSendRate, 8, MEAN )
+Sensor sensors[4] = {
+  Sensor ( p0,"/analog/0", analogSendRate, 8, DIGITAL ),
+  Sensor ( p9,"/analog/9", analogSendRate, 8, MEAN ),
+  Sensor ( p1,"/analog/1", analogSendRate, 8, MEAN ),
+  Sensor ( p8,"/analog/8", analogSendRate, 8, MEAN )
+  };
+//  ,
+//  Sensor ( p1,"/analog/1", analogSendRate, 8, MEAN ),
+//  Sensor ( p2,"/analog/2", analogSendRate, 8, MEAN ),
+//  Sensor ( p3,"/analog/3", analogSendRate, 8, MEAN ),
 //  Sensor ( p4,"/analog/4", analogSendRate, 8, MEAN ),
 //  Sensor ( p5,"/analog/5", analogSendRate, 8, MEAN ),
 //  Sensor ( p6,"/analog/6", analogSendRate, 8, MEAN ),
- // Sensor ( p7,"/analog/7", analogSendRate, 8, MEAN ),
+//  Sensor ( p7,"/analog/7", analogSendRate, 8, MEAN ),
 //  Sensor ( p8,"/analog/8", analogSendRate, 8, MEAN ),
 //  Sensor ( p9,"/analog/9", analogSendRate, 8, MEAN ),
 //  Sensor ( BUTTON_0,"/button/0", 250, 16, MIN ),
 //  Sensor ( BUTTON_1,"/button/1", 250, 16, MIN)
-};
+//};
 
+Adafruit_MCP4728 dac;
 
 /*********************************************
 SETUP
 *********************************************/
 void setup() {
+  Serial.begin(115200);
   //Be sure to select  either USB or WiFi using enables at top of script
   SerialSetup();
   WiFiSetup();
-  ledSetup();
+  IMUSetup();
+  DacSetup();
+  AudioSetup();
+  EncoderSetup();
 
   //MPR121setup(); <- UNCOMMENT TO USE MPR121
   //MPR121test(); //comment out for normal use
   
   for(byte i=0;i< numSensors; i++) sensors[i].setup();
-  
+
+  pinMode(MIDI, OUTPUT);
 }
 
 /*********************************************
@@ -117,11 +180,16 @@ void loop() {
   
   for(byte i=0;i < numSensors; i++) sensors[i].loop();
   //for(byte i=0;i < NUM_ELECTRODES; i++) capSense[i].loop(i);
-
+ 
+  
   //sendCapValues();
-  WiFiLoop();
-  CheckSerial();
-  ledLoop();
+  //WiFiLoop();
+  EncoderLoop();
+  //CheckSerial();
+  AudioLoop();
+  ClockLoop();
+  //DacLoop();
+  //IMULoop();
   
   //testData();
   if(WIFI_DEBUG) pingMe();

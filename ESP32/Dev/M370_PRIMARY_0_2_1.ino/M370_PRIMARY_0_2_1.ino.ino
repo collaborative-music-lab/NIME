@@ -4,18 +4,19 @@
  *  
  *  Note: I2C pins are different than the defaults:
  *  - I2C libraries may need to be modified to allow this
- *  - this is he reason that they are included with this sketch
+ *  - this is the reason that they are included with this sketch
  * _______
  * 
  * version history
+ * 20_06_10: added support for encoders
  * 20_05_01: added support for digital inputs
  * 20_04_21: added initial support for LSM6DS3
  * 20_04_20: added analog debugging - prints analogRead values to console
  * 20_04_20: added support for wifi
  * 20_04_12: added ultrasonic support
  *           commented out MPR121 on line 88. 
- *           You can uncomment if you want to use it
- *           may cause your ESP32 to crash - but try it!
+ *           You can uncomment if you want to use MPR121
+ *           but may cause your ESP32 to crash if  MPR121 is not connected
  * 20_04_01: added MPR121 functions
  * 20_03_25: added array notation and input
  * 20_01_20: created

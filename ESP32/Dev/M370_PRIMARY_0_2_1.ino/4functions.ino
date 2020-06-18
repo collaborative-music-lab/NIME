@@ -100,9 +100,3 @@ void combSort11(int *ar, uint8_t n)
     }
   }
 }
-
-void debug(String type, int val){
-  Serial.print(type);
-  Serial.print("\t");
-  Serial.println(val);
-}

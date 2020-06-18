@@ -5,7 +5,7 @@
 # Adds support for reading capacitive sensor data from the MPR121
 
 RAW_INCOMING_SERIAL_MONITOR = 0
-PACKET_INCOMING_SERIAL_MONITOR = 1
+PACKET_INCOMING_SERIAL_MONITOR = 0
 
 import serial, serial.tools.list_ports, socket, sys
 from pythonosc import osc_message_builder
@@ -23,7 +23,7 @@ for x in range(len(ports)):
     if "USB" in ports[x]:
         print("serial")
 
-ser = serial.Serial("/dev/cu.usbserial-14340")
+ser = serial.Serial("/dev/cu.usbserial-1440")
 ser.baudrate=115200
 ser.setDTR(False) # Drop DTR
 time.sleep(0.022)    # Read somewhere that 22ms is what the UI does.

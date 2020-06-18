@@ -4,30 +4,42 @@
  *  
  *  Note: I2C pins are different than the defaults:
  *  - I2C libraries may need to be modified to allow this
- *  - this is he reason that they are included with this sketch
+ *  - this is the reason that they are included with this sketch
+ *  
+ *  Note: LED functionality requires  the  <FastLED.h> library 
+ *  - to install go to  sketch->include library->Manage Libraries
+ *  - and search  for FastLED
  * _______
  * 
  * version history
+ * 20_06_17: added digital input class
+ * 20_06_17: added LED functions from NIME/class/ledExample 
+ * 20_06_17: moved external libraries to subfolder
+ * 20_06_10: added support for encoders
  * 20_05_01: added support for digital inputs
  * 20_04_21: added initial support for LSM6DS3
  * 20_04_20: added analog debugging - prints analogRead values to console
  * 20_04_20: added support for wifi
  * 20_04_12: added ultrasonic support
  *           commented out MPR121 on line 88. 
- *           You can uncomment if you want to use it
- *           may cause your ESP32 to crash - but try it!
+ *           You can uncomment if you want to use MPR121
+ *           but may cause your ESP32 to crash if  MPR121 is not connected
  * 20_04_01: added MPR121 functions
  * 20_03_25: added array notation and input
  * 20_01_20: created
  */
 
-#include "SparkFunLSM6DS3.h"
+//external libraries are saved in the /src folder. This allows us to make
+//minor modifications  to work with the m370 framework
+#include "src/SparkFunLSM6DS3.h"
 #include <Wire.h>
-#include "Adafruit_MPR121.h"
-#include "NewPing.h"
+#include "src/Adafruit_MPR121.h"
+#include "src/NewPing.h"
 #include <WiFi.h>
 #include <WiFiUdp.h>
-#include "Esp32Encoder.h"
+#include "src/Esp32Encoder.h"
+#include "src/Adafruit_MCP4728.h"
+#include "src/digitalInput.h" 
 
 byte SERIAL_ENABLE = 0; //enables communication over USB
 byte WIFI_ENABLE = 0; //enables communication over USB
@@ -98,20 +110,6 @@ Cap capSense[12] ={
 };
 
 /*********************************************
-ENCODERS SETUP
-*********************************************/
-//encoders rely on the  ESP32Encoder library being installed in  ~/documents/Arduino/libraries
-//Esp32Encoder rotaryEncoder = Esp32Encoder(18,2,4);//A,B,Button
-//optional divider argument:
-const byte NUM_ENCODERS = 2;
-
-Esp32Encoder enc[NUM_ENCODERS] = {
-  Esp32Encoder(pCLK,pMISO,-1,4),//A,B,Button, Divider
-  Esp32Encoder(p2,p4,-1,4)//A,B,Button, Divider
-};
-
-
-/*********************************************
 ANALOG SETUP
 *********************************************/
 //we can choose how fast to send analog sensors here
@@ -123,43 +121,76 @@ int analogSendRate = 250;
 //argument 3 (optional) is how fast the data is sent in MS
 //argument 4 is oversampling (val from 1 to 32)
 //argument 5 is how to process oversampling 
-const byte numSensors = 4;
+const byte numSensors = 3;
 
-Sensor sensors[4] = {
-  Sensor ( p0,"/analog/0", analogSendRate, 8, DIGITAL ),
-  Sensor ( p9,"/analog/9", analogSendRate, 8, MEAN ),
+Sensor sensors[12] = {
+  Sensor ( p9,"/analog/0", analogSendRate, 8, MEAN ),
   Sensor ( p1,"/analog/1", analogSendRate, 8, MEAN ),
-  Sensor ( p8,"/analog/8", analogSendRate, 8, MEAN )
-  };
-//  ,
-//  Sensor ( p1,"/analog/1", analogSendRate, 8, MEAN ),
-//  Sensor ( p2,"/analog/2", analogSendRate, 8, MEAN ),
-//  Sensor ( p3,"/analog/3", analogSendRate, 8, MEAN ),
-//  Sensor ( p4,"/analog/4", analogSendRate, 8, MEAN ),
-//  Sensor ( p5,"/analog/5", analogSendRate, 8, MEAN ),
-//  Sensor ( p6,"/analog/6", analogSendRate, 8, MEAN ),
-//  Sensor ( p7,"/analog/7", analogSendRate, 8, MEAN ),
-//  Sensor ( p8,"/analog/8", analogSendRate, 8, MEAN ),
-//  Sensor ( p9,"/analog/9", analogSendRate, 8, MEAN ),
-//  Sensor ( BUTTON_0,"/button/0", 250, 16, MIN ),
-//  Sensor ( BUTTON_1,"/button/1", 250, 16, MIN)
-//};
+  Sensor ( p2,"/analog/2", analogSendRate, 8, MEAN ),
+  Sensor ( p3,"/analog/3", analogSendRate, 8, MEAN ),
+  Sensor ( p4,"/analog/4", analogSendRate, 8, MEAN ),
+  Sensor ( p5,"/analog/5", analogSendRate, 8, MEAN ),
+  Sensor ( p6,"/analog/6", analogSendRate, 8, MEAN ),
+  Sensor ( p7,"/analog/7", analogSendRate, 8, MEAN ),
+  Sensor ( p8,"/analog/8", analogSendRate, 8, MEAN ),
+  Sensor ( p9,"/analog/9", analogSendRate, 8, MEAN ),
+  Sensor ( BUTTON_0,"/button/0", 250, 16, MIN ),
+  Sensor ( BUTTON_1,"/button/1", 250, 16, MIN)
+};
 
+/*********************************************
+DIGITAL INPUT SETUP
+*********************************************/
+//we can choose how fast to send analog sensors here
+int digitalSendRate = 1;
+
+//Sensor objects can have multiple kinds of arguments:
+//argument 1 is the physical pin on the PCB
+//argument 2 is the OSC address of the sensor
+//argument 3 (optional) is how fast the data is sent in MS
+//argument 4 is oversampling (val from 1 to 32)
+//argument 5 is how to process oversampling 
+const byte numDigitalInputs = 4;
+
+DigitalIn dIn[numDigitalInputs] = {
+  DigitalIn ( pMISO,"/digital/0", digitalSendRate, 8 ),
+  DigitalIn ( pMOSI,"/digital/1", digitalSendRate, 8 ),
+  DigitalIn ( pCLK,"/digital/2", digitalSendRate, 8 ),
+  DigitalIn ( pCS0,"/digital/3", digitalSendRate, 8 )
+};
+
+/*********************************************
+ENCODERS SETUP
+*********************************************/
+//encoders rely on the  ESP32Encoder library being installed in  ~/documents/Arduino/libraries
+//Esp32Encoder rotaryEncoder = Esp32Encoder(18,2,4);//A,B,Button
+//optional divider argument:
+const byte NUM_ENCODERS = 3;
+
+Esp32Encoder enc[3] = {
+  Esp32Encoder(p0,p3,-1,4),//A,B,Button, Divider
+  Esp32Encoder(p4,pCS1,-1,4),//A,B,Button, Divider
+  Esp32Encoder(p5,p6,-1,4)//A,B,Button, Divider
+};
 
 /*********************************************
 SETUP
 *********************************************/
 void setup() {
   //Be sure to select  either USB or WiFi using enables at top of script
+  Serial.begin(115200);
   SerialSetup();
   WiFiSetup();
   IMUSetup();
-  EncoderSetup();
+  
 
   //MPR121setup(); <- UNCOMMENT TO USE MPR121
   //MPR121test(); //comment out for normal use
   
   for(byte i=0;i< numSensors; i++) sensors[i].setup();
+  EncoderSetup();
+  
+  for(byte i=0;i < numDigitalInputs; i++) dIn[i].setup();
 
   Serial.begin(115200);
   
@@ -172,6 +203,7 @@ void loop() {
   curMillis = millis();
   
   for(byte i=0;i < numSensors; i++) sensors[i].loop();
+  for(byte i=0;i < numDigitalInputs; i++) dIn[i].loop();
   //for(byte i=0;i < NUM_ELECTRODES; i++) capSense[i].loop(i);
  
   

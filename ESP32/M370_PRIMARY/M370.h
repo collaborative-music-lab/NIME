@@ -85,6 +85,8 @@ enum dataType{
 int touchedSensors = 0;
 uint16_t totalCapacitance = 0;
 
+int m2v [64];
+
 /******************************
 FUNCTION DECLARATIONS
 ******************************/
@@ -124,6 +126,7 @@ class Sensor{
   byte overSample=1;
   byte pin = 22;
   PROCESS_MODE sampleProcessMode = MEDIAN;
+  int outVal=0;
 
   //constructors
   Sensor(byte _pin, String _address) : 
@@ -267,7 +270,6 @@ class Sensor{
   }
 
   private:
-  int outVal=0;
   uint32_t prevMillis=0;
   int samplePeriod=interval;
   uint32_t sampleMillis=0;
