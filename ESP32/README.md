@@ -27,26 +27,28 @@ Once the ESP32 hardware support is installed:
 2. GPIO 7 was incorrectly assigned to pin 14 in 370.h. It should be pin 13.
 3. ESP32 pin to m370 pin mapping for board v2.06:
 ```
-m370 pin	ESP32 GPIO	
-0		27
-1		33
-2		32
-3		14
-4		4
-5		0
-6		15
-7		13
-8		36
-9		39
-cs0		2
-cs1		12
-MISO		19
-MOSI		23
-SCK		18
-SCL		22
-SDA		21
-MIDI		5
-dac1		25
-dac2		26
+m370 	ESP32	Notes
+pin	GPIO 
+-----------------------------
+0	27
+1	33
+2	32
+3	14
+4	4	strapping pin
+5	0	strapping pin
+6	15	strapping pin / must be  high on boot
+7	13
+8	36	input only
+9	39	input only
+cs0	2	strapping pin
+cs1	12	strapping pin/ must be low on boot
+MISO	19	
+MOSI	23
+SCK	18
+SCL	22
+SDA	21
+MIDI	5	strapping pin / must be  high on boot
+dac1	25
+dac2	26
 ```
 
