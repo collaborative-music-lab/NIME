@@ -65,6 +65,13 @@ You can check communication in the python script by enabling either one or the o
   * You can also monitor data in the dataMonitoring PD patch, but you have to enable monitoring by clicking the toggle or else you won't see anything.
 
   * Make sure to set these back to 0 after debugging as they slow things down a lot
+  
+* **I can see data in the Arduino monitor but don't see it in another program (Pure Data, max, Python)**
+
+* You may need to turn DTR on for your serial monitoring in these programs:
+https://docs.platformio.org/en/latest/projectconf/section_env_monitor.html#monitor-rts
+* For Max/MSP you can use the attribute @DTR 1 in the serial object.
+* For Python try calling ser.flushInput() after setting up the serial connection
 
 * **I set 'RAW_INCOMING_SERIAL_MONITOR' to 1 and don't see anything in the Python console'**
   * Try reprogramming the ESP32 with a recent firmware
