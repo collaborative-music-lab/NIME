@@ -7,6 +7,39 @@
  * MPR121 Capacitive Sensor
  * 
  *********************************************/
+
+ void checkCapTouched(){
+  static uint32_t timer = 0;
+  static int touchedPins = 0;
+  static int prevTouchedPins=0;
+  
+  if(millis()-timer>2){
+    timer=millis();
+    touchedPins = _MPR121.touched();
+    
+    if(touchedPins !=  prevTouchedPins){
+      //check which pad was touched
+      //and send out raw  value  immediately
+      for(byte  i=0;i<NUM_ELECTRODES;i++){
+        if((touchedPins>>i)&1 != (prevTouchedPins>>i)&1){
+          int val = MPR121_loop(i);
+          SlipOutByte(i+64); //pin, numerical indicator
+          SlipOutInt(val);
+          SendOutSlip();
+        }
+      }
+      if(NUM_ELECTRODES>0){
+      //send out touchedPins
+        SlipOutByte(88); //pin, numerical indicator
+        SlipOutInt(touchedPins);
+        SendOutSlip();  
+      }
+        
+      prevTouchedPins = touchedPins;
+    }
+  }
+ }
+ 
  void MPR121setup(){
  Serial.println("Adafruit MPR121 Capacitive Touch sensor test"); 
  byte count = 0;
@@ -126,4 +159,3 @@ int testPeak(int *peak, int *trough, int val){
  if(val>*peak) *peak = val;
  if(val<*trough) *trough = val;
 }
-

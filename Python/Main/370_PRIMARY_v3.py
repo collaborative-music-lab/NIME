@@ -1,6 +1,7 @@
 # 370_PRIMARY.py
 # Ian Hattwick with Fred Kelly
-# This file created Mar 20  2020
+# This file created July 8  2020
+# adds support for new ESP32  firmware
 #
 # Primary script for interfacing with the ESP32
 # Setup for serial communication, change communication mode below to try wifi with ESP32
@@ -11,7 +12,9 @@
 # 4. reset ESP32 using side button (or power cycling) before running python script
 
 RAW_INCOMING_SERIAL_MONITOR = 0
-PACKET_INCOMING_SERIAL_MONITOR = 0
+PACKET_INCOMING_SERIAL_MONITOR = 0   
+
+CUR_PYTHON_SCRIPT = "370_PRIMARY_v3"
 
 import serial, serial.tools.list_ports, socket, sys
 from pythonosc import osc_message_builder
@@ -21,6 +24,9 @@ from pythonosc.dispatcher import Dispatcher
 import asyncio
 import struct
 import time
+
+import scripts.ledPanel as panel
+
 
 ######################
 # SET COMMUNICATION MODE
@@ -34,70 +40,31 @@ WIFI_ENABLE = 0 #!!!! READ FOLLOWING COMMENT
 ######################
 #SETUP SERIAL PORT
 ######################
-if( SERIAL_ENABLE):
-    #find serial port
-    curSerialPort = "/dev/cu.usbserial-1430"
-    ports = list(serial.tools.list_ports.comports())
+import scripts.SerialSetup as SerialSetup
+ser  = SerialSetup.run(SERIAL_ENABLE, "/dev/cu.usbserial-1430")
 
-    #print ports
-    print("available serial ports:")
-    for x in range(len(ports)): 
-        print(ports[x] )
+serialOutputBuffer= [[0],[0]]
 
-    #check if cur port is available 
-    for x in range(len(ports)):   
-        if curSerialPort in ports[x]:
-            ser = serial.Serial(curSerialPort)
-            ser.baudrate=115200
-            ser.setDTR(False) # Drop DTR
-            time.sleep(0.022)    # Read somewhere that 22ms is what the UI does.
-            ser.setDTR(True)  # UP the DTR back
-            ser.read(ser.in_waiting) # if anything in input buffer, discard it
-            print(curSerialPort + " connected\n")
-            SERIAL_ENABLE = 1
-        else: 
-            print(curSerialPort + " not available\n")  
+import binascii
+
+def addToSerialBuffer(vals):
+    serialOutputBuffer.append(vals)
+
+def sendSerialBuffer():
+    if len(serialOutputBuffer)  <  2: return 0
+    #print("buffer",(serialOutputBuffer[1]))
+    #print("len  of serial  buffer", len(serialOutputBuffer))
+    slipOutPacket(serialOutputBuffer[1])
+    time.sleep(0.002)
+    del(serialOutputBuffer[1])
+
 
 ######################
 #SETUP WIFI
 ######################
-BCAST_HOST = '192.168.1.255'                 # Symbolic name meaning all available interfaces
-BCAST_PORT = 1234              # Arbitrary non-privileged port
-
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-sock.bind((BCAST_HOST, BCAST_PORT))
-sock.setblocking(0)
-
-HOST = '192.168.1.100'                 # Symbolic name meaning all available interfaces
-PORT = 1234              # Arbitrary non-privileged port
-
-if (WIFI_ENABLE):
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.bind((HOST, PORT))
-    s.setblocking(0)
-
-    clientAddress = ('192.168.1.8', 1234)
-
-    wifiCounter = 0
-    while True:
-        print  ("checking WiFi. . . ")
-        try: 
-            data, clientAddress = sock.recvfrom(1024) # buffer size is 1024 bytes
-            print ("received message:", data, "address", clientAddress, "length", len(data))
-            if (len(data) > 0):  
-                print("Wifi connected to ", clientAddress)
-                s.sendto(data, (clientAddress) ) 
-                break
-        
-        except socket.error as ex:
-            print("error", ex)
-        
-        
-        time.sleep(0.1)
-        wifiCounter+=1
-        if(wifiCounter>10): 
-            "No wifi connection established"
-            break
+import scripts.WifiSetup as WifiSetup
+clientAddress = ('192.168.1.8', 1234)
+s =  WifiSetup.run(WIFI_ENABLE, clientAddress)
 
 ######################
 #SETUP OSC
@@ -107,6 +74,8 @@ client = udp_client.SimpleUDPClient("127.0.0.1", 5005)
 # dispatcher in charge of executing functions in response to RECEIVED OSC messages
 dispatcher = Dispatcher()
 print("Sending data to port", 5005)
+client.send_message("/scriptName", CUR_PYTHON_SCRIPT)
+
 
 #sensor inputs
 OSC_ADDRESSES = {
@@ -170,7 +139,7 @@ def setEnables():
         enableMsg[2]=OSC_ADDRESSES[OSC_INDEX_ARRAY[i]]['enable']
         if( SERIAL_ENABLE ): ser.write(bytearray(enableMsg)) 
         if( WIFI_ENABLE ): s.sendto(bytearray(enableMsg), (clientAddress) ) 
-        print('enable', enableMsg[1], enableMsg[2])
+        #print('enable', enableMsg[1], enableMsg[2])
         time.sleep(0.025)
 
 
@@ -181,7 +150,7 @@ def setEnables():
         enableMsg[2]=OSC_ADDRESSES[OSC_INDEX_ARRAY[i]]['rate']
         if( SERIAL_ENABLE ): ser.write(bytearray(enableMsg)) 
         if( WIFI_ENABLE ): s.sendto(bytearray(enableMsg), (clientAddress) ) 
-        print('rate', enableMsg[1], enableMsg[2])
+        #print('rate', enableMsg[1], enableMsg[2])
         time.sleep(0.025)
 
     print('\nsetting sensor data mode <input#><mode>')
@@ -192,7 +161,7 @@ def setEnables():
         enableMsg[2]=ANALOG_MODES[_mode]
         if( SERIAL_ENABLE ): ser.write(bytearray(enableMsg)) 
         if( WIFI_ENABLE ): s.sendto(bytearray(enableMsg), (clientAddress) ) 
-        print('mode', enableMsg[1], enableMsg[2])
+        #print('mode', enableMsg[1], enableMsg[2])
         time.sleep(0.025)
 
 
@@ -217,7 +186,18 @@ def setCapSense():
    
 ######################
 #INTERPRET MESSAGE
-######################    
+######################  
+
+analogBaseAddress = 10
+digitalBaseAddress = 50
+encoderBaseAddress = 100
+capsenseBaseAddress = 150
+imuBaseAddress = 200
+
+import scripts.processSerial as ps
+import sensorInterfaces.capToggle as capToggle
+
+
 
 def interpretMessage(message):
     # print('interp')
@@ -225,61 +205,79 @@ def interpretMessage(message):
         return
 
     if(0):
-        print ('mirror', message)
+        for i in range(len(message)):
+            print ('mirror', message[i])
 
-    if(len(message) < 3):
-        if( SERIAL_ENABLE ): ser.read(ser.in_waiting)
-        return
+    # if(len(message) < 3):
+    #     if( SERIAL_ENABLE ): ser.read(ser.in_waiting)
+    #     return
 
     if( message[0]==1):
         print(message[1],message[2])
         return
 
-    #analog inputs
-    if( message[0] in OSC_INDEX_ARRAY):
-        address = OSC_ADDRESSES[message[0]]['address']
+    # if( message[0]==255):
+    #     sendSerialBuffer()
+    #     return
 
-        val = (message[1]<<8) + message[2]
+    address="/default"
+    val=0
 
-        #scale IMU values  msgs 150-155
-        if(message[0]>=150  and message[0]<156): 
-            val = (val -32767) / 327
-            #val =  '%.3f'%(val)
+    # #analog inputs
+    if( analogBaseAddress <= message[0] < digitalBaseAddress):
+        address = "/analog/" + str(message[0]-analogBaseAddress)
+        val = ps.from_uint16(message[1],message[2])
 
-        if( PACKET_INCOMING_SERIAL_MONITOR ):
-            print(address,val)
+    # #digital inputs
+    if( digitalBaseAddress <= message[0] < encoderBaseAddress):
+        address = "/digital/" + str(message[0]-digitalBaseAddress)
+        val = ps.from_uint8(message[1])
 
-        client.send_message(address, val)
-    #capacitive inputs
-    elif(message[0] >= 64 and message[0]<76):
-        address = '/capsense' + str(message[0]-64);
+    # #encoder inputs
+    if( encoderBaseAddress <= message[0] < capsenseBaseAddress):
+        address = "/encoder/" + str(message[0]-encoderBaseAddress)
+        val = ps.from_int8(message[1]) 
 
-        val = (message[1]<<8) + message[2] - 4096
 
-        if( PACKET_INCOMING_SERIAL_MONITOR ):
-            print(address,val)
+    # #cap inputs
+    # cap input data  consistss of:
+    # -LSB= touch  status
+    # -capacitance is stored in next 10 bits
+    if( capsenseBaseAddress <= message[0] < imuBaseAddress):
+        capNum  = message[0]-capsenseBaseAddress
+        val=ps.from_uint16(message[1],message[2])
+        pinMap =  [9,2,8,1, 7,0,6,11, 5,3,10,4, 12,13]
+        capNum = pinMap[capNum]
 
-        client.send_message(address, val) 
-    #touch state of capacitive pads
-    elif(message[0] == 88):
-        address = '/captouch';
+        address,seq,new = capToggle.input(capNum,val&1) 
+        if new:
+            #print("main",seq)
+            # print("new")
+            ledMap  = [35, 44, 51, 58, 49, 40, 33, 26, 28, 60, 56, 24]
+            for i in range(len(seq)):
+                panel.led[ledMap[i]].set(2,seq[i]*100,seq[i]*(i%2)*50,0)
+                bufferLeds(ledMap[i])
+                #time.sleep(0.01)
+                #print(i)
+            client.send_message(address, seq)
+            writeLed()
 
-        val = (message[1]<<8) + message[2] ;
+        address = "/cap/touch/" + str(capNum)
+        client.send_message(address, message[2]&1)
 
-        if( PACKET_INCOMING_SERIAL_MONITOR ):
-            print(address,val)
+        address = "/cap/val/" + str(capNum)
+        val = val>>1
+            
 
-        client.send_message(address, val) 
-    #encoder inputs
-    elif(message[0] >= 89 and message[0]<99):
-        address = '/encoder' + str(message[0]-89);
+    # #encoder inputs
+    if( imuBaseAddress <= message[0] < 210):
+        address = "/imu/" + str(message[0]-imuBaseAddress)
+        val = ps.from_int8(message[1],message[2])
 
-        val = (message[1]<<8) + message[2] - 4096
 
-        if( PACKET_INCOMING_SERIAL_MONITOR ):
-            print(address,val)
-
-        client.send_message(address, val) 
+    if( PACKET_INCOMING_SERIAL_MONITOR ):
+        print(address,val)
+    client.send_message(address, val)
 
 ######################
 #COMMUNICATION INPUT
@@ -315,7 +313,7 @@ def checkSerial():
             #print ("raw serial: ", int.from_bytes(curByte,byteorder='big'))
             print(int.from_bytes(curByte,byteorder='big'))
 
-        elif (curByte == endByte):
+        if (curByte == endByte):
             #if we reach a true end byte, we've read a full message, return buffer
             msgInProgress = 0
             return bytesTotal
@@ -382,7 +380,7 @@ def checkWiFi():
 
 def slipOutPacket(val = []):
     """Send SLIP encoded values to serial or wifi."""
-    print ('val', val)
+    #print ('val', val)
     outMessage = []
     endByte = bytes([255])
     escByte = bytes([254])
@@ -393,16 +391,58 @@ def slipOutPacket(val = []):
         else :
             outMessage.append(i)
     outMessage += (endByte)
-    print("slip", outMessage)
+    #print("slip", outMessage)
     #outMessage = [0,0,34 ,255]
     ser.write(bytearray(outMessage))
 
 def setLeds(add,num,r,g,b):
     ledMsg = [50,int(num),int(r), int(g),int(b) ]
-    print("setLed", ledMsg)
-    slipOutPacket(bytearray(ledMsg))
+    #print("setLed", ledMsg)
+    addToSerialBuffer(bytearray(ledMsg))
+
+
+def seqLed(add,num):
+    ledMap  = [35, 44, 51, 58, 49, 40, 33, 26, 28, 60, 56, 24]
+    panel.led[ledMap[num]].set(0,0,0,200)
+    bufferLeds(ledMap[num])
+    prev = num-1 if num>0 else 7
+    panel.led[ledMap[prev]].set(0,0,0,0)
+    bufferLeds(ledMap[prev])
+    #print("seqLed", num, ledMap[num],prev, ledMap[prev] )
+    writeLed()
+
+def bufferLeds(num):
+    r=0
+    g=0
+    b=0
+    for i in range(3):
+        #print(num,i,panel.led[num].r[i])
+        cur  = panel.led[num].get(i)
+        r = cur[0] if cur[0]>r else r
+        g = cur[1] if cur[1]>g else g
+        b = cur[2] if cur[2]>b else b
+    ledMsg = [51,int(num),int(r), int(g),int(b) ]
+    #print("bufferLed", ledMsg)
+    addToSerialBuffer(bytearray(ledMsg))
+
+def writeLed():
+    ledMsg = [52]
+    #print("writeLed", ledMsg)
+    addToSerialBuffer(bytearray(ledMsg))
+
+def testLeds():
+    for  i in range(64):
+        setLeds("/led",i,100,0,100)
+        #time.sleep(0.05)
+    #writeLed()
+
+def  updateLed(add,num):
+    for i in range(4):
+        print("update", num, i, panel.led[num].get(i))
 
 dispatcher.map("/led", setLeds)
+dispatcher.map("/seqIndex", seqLed)
+dispatcher.map("/updateLed", updateLed)
 
 
 ######################
@@ -411,23 +451,49 @@ dispatcher.map("/led", setLeds)
 
 async def loop():
     debugVal = 0
+    panel.begin()
     time.sleep(0.1)
-    print("Resetting  ESP32")
-    if SERIAL_ENABLE: ser.flushInput() 
-    time.sleep(2)   
+    if SERIAL_ENABLE: 
+        print("Resetting  ESP32")
+        ser.flushInput()
+        time.sleep(0.1)
+        while(1):
+            currentMessage = readNextMessage()
+            if currentMessage is None:
+                print("waiting")
+            #else: print(currentMessage)
+            elif currentMessage[0] == 1:
+                print("ESP32  found")
+                slipOutPacket([1,1])
+                temp=0
+            elif currentMessage[0] == 2:
+                print("Firmware name", currentMessage[1:].decode("utf-8"))
+                client.send_message("/firmwareName", currentMessage[1:].decode("utf-8"))
+                slipOutPacket([2,2])
+            elif currentMessage[0] == 3:
+                print("Firmware version", currentMessage[1:].decode("utf-8"))
+                client.send_message("/firmwareVersion", currentMessage[1:].decode("utf-8"))
+                slipOutPacket([3,3])
+                break;
+            else:
+                print("looking for ESP32")
+            time.sleep(0.1)
     setEnables()
     setCapSense()
+    #testLeds()
+
     
     while(1):
         currentMessage = readNextMessage() # can be None if nothing in input buffer
         interpretMessage(currentMessage)
+        sendSerialBuffer()
         await asyncio.sleep(0)
         time.sleep(0.001)
 
 async def init_main():
     server = AsyncIOOSCUDPServer(("127.0.0.1", 5006), dispatcher, asyncio.get_event_loop())
     transport, protocol = await server.create_serve_endpoint()
-    #print (ser.timeout)
+    print (ser.timeout)
     if SERIAL_ENABLE: ser.read(ser.in_waiting)
     await loop()
     transport.close()

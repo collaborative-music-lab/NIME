@@ -2,9 +2,9 @@
 
 #include <FastLED.h>
 
-#define LED_PIN     0
+#define LED_PIN     13
 #define NUM_LEDS    64
-#define BRIGHTNESS  0
+#define BRIGHTNESS  100
 #define LED_TYPE    WS2812
 #define COLOR_ORDER GRB
 CRGB leds[NUM_LEDS];
@@ -20,19 +20,25 @@ extern const TProgmemPalette16 myRedWhiteBluePalette_p PROGMEM;
 byte updateLedFlag = 0;
 
 void ledSetup() {
-    delay( 3000 ); // power-up safety delay
+    delay( 100 ); // power-up safety delay
     FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
     FastLED.setBrightness(  BRIGHTNESS );
-    
+
     currentPalette = RainbowColors_p;
     currentBlending = LINEARBLEND;
+
+    for(int  i=0;i<NUM_LEDS;i++) setLed(i,50,0,0);
+    FastLED.show();
+    delay(500);
+    for(int  i=0;i<NUM_LEDS;i++) setLed(i,0,0,0);
+    setLed(32,0,200,0);
 }//ledSetup
 
 void ledLoop(){
   static uint32_t timer = 0;
   int interval = 20;
 
-  ledTest();
+  //ledTest();
 
   if(millis()-timer>interval){
     timer=millis();

@@ -12,7 +12,7 @@
 
 
 RAW_INCOMING_SERIAL_MONITOR = 0
-PACKET_INCOMING_SERIAL_MONITOR = 0
+PACKET_INCOMING_SERIAL_MONITOR = 1
 
 import serial, serial.tools.list_ports, socket, sys
 from pythonosc import osc_message_builder
@@ -27,8 +27,8 @@ import time
 # SET COMMUNICATION MODE
 ######################
 # don't forget to set the ESP32 firmware to match!
-SERIAL_ENABLE = 0
-WIFI_ENABLE = 1 #!!!! READ FOLLOWING COMMENT
+SERIAL_ENABLE = 1
+WIFI_ENABLE = 0 #!!!! READ FOLLOWING COMMENT
 # !!!! WIFI requires that you reset ESP32 before running python script
 
 ######################
@@ -36,7 +36,7 @@ WIFI_ENABLE = 1 #!!!! READ FOLLOWING COMMENT
 ######################
 if( SERIAL_ENABLE):
     #find serial port
-    curSerialPort = "/dev/cu.usbserial-14340"
+    curSerialPort = "/dev/cu.usbserial-1440"
     ports = list(serial.tools.list_ports.comports())
 
     #print ports
@@ -110,9 +110,9 @@ print("Sending data to port", 5005)
 
 #sensor inputs
 OSC_ADDRESSES = {
-    27:{ 'address':'/analog0', 'enable': 1, 'rate':200, 'mode':'MEAN' },
+    27:{ 'address':'/analog0', 'enable': 0, 'rate':200, 'mode':'MEAN' },
     33:{ 'address':'/analog1', 'enable': 1, 'rate':200, 'mode':'MEAN' },
-    32:{ 'address':'/analog2', 'enable': 1, 'rate':20, 'mode':'MEAN' },
+    32:{ 'address':'/analog2', 'enable': 2, 'rate':200, 'mode':'MEAN' },
     14:{ 'address':'/analog3', 'enable': 0, 'rate':200, 'mode':'MEAN' },
     4: { 'address':'/analog4', 'enable': 0, 'rate':200, 'mode':'MEAN' },
     0: { 'address':'/analog5', 'enable': 0, 'rate':200, 'mode':'MEAN' },
@@ -345,7 +345,7 @@ async def loop():
     debugVal = 0
     time.sleep(0.1)
     if SERIAL_ENABLE: ser.flushInput() 
-    time.sleep(0.1)   
+    time.sleep(0.5)   
     setEnables()
     
     while(1):

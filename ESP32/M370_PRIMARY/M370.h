@@ -19,7 +19,7 @@ const byte espPin[] = {27,33,32,14,4,0,15,13,36,39, //analog inputs
   18,19,23,21,22,5, //SPI and I2C digital inputs
   2,12,34,35,25,26 //alternate  analog  inputs
   };
-//addresses for _MPR121
+//virtual pin addresses for _MPR121
 const byte capPins[] = {64,65,66,67,68,69,70,71,72,73,74,75};
 
 //main row of input pins
@@ -46,6 +46,8 @@ const byte pCLK = 18;
 const byte pCS0 = 2; //also present on MIDI jack
 const byte pCS1 = 12;
 const byte MUX_PINS[] = {18,19,23};
+const  byte pSDA=21;
+const  byte pSCL=22;
 
 //LED and buttons on PCB
 const byte LED = 13;
@@ -120,7 +122,7 @@ val: pointer to an array to store sensor readings
 class Sensor{
   public: 
   uint16_t interval = 500;
-  byte enable = 1;
+  byte enable = 0;
   byte state = 1;
   int val[32];
   byte overSample=1;
@@ -155,13 +157,11 @@ class Sensor{
     samplePeriod(interval/_overSample),
     overSample(_overSample),
     sampleProcessMode(_processMode)
-  {
-    if(sampleProcessMode == TRIG) pinMode(pin,OUTPUT);
-    else pinMode(pin,INPUT);
-  }
+  {}
 
   void setup(){
-    pinMode(pin,INPUT);
+    if(sampleProcessMode == TRIG) pinMode(pin,OUTPUT);
+    else pinMode(pin,INPUT);
     if( sampleProcessMode == DIGITAL )  samplePeriod = 1;
   }
 
@@ -302,7 +302,6 @@ class Cap{
   void setup(){}
 
   void loop(byte num){
-    //take sample of current value
     if(curMillis - samplePeriod > sampleMillis){
         sampleMillis = curMillis;
         if(sampleIndex<32){
@@ -311,44 +310,24 @@ class Cap{
         }
     }
 
-    //process samples and output
     if(curMillis - interval > prevMillis){
       prevMillis = curMillis;
 
+      //debug(address, analogRead( pin ));
       if(sampleIndex > 0){
+        int outVal=0;
+
         outVal = Mean(val, sampleIndex);
-        //outVal -= 4096;
-        int curVal = outVal-4096;
+        
         //Serial.println(outVal);
         //delay(100);
 
-//        SlipOutByte(capPins[num]);
-//        SlipOutInt(outVal);
-//        SerialOutSlip();
-//        Serial.print(num);
-//        Serial.print(" ");
-//        Serial.print(curVal);
-//        Serial.println(", ");
+        SlipOutByte(capPins[num]);
+        SlipOutInt(outVal);
+        SendOutSlip();
+
         prevVal = outVal;
         sampleIndex=0;
-
-        //calculate touch state
-        if(curVal > maxVal) maxVal = curVal;
-        if(curVal < minVal) minVal = curVal;
-        
-        if( (curVal > ((maxVal*2)/3))){
-          state = 1;
-          touchedSensors = touchedSensors | (1<<num);
-        } else if ( (curVal < ((maxVal*2)/4))){
-          state = 0;
-          touchedSensors = touchedSensors & ~(1<<num);
-        }
-        if(state != prevState){
-          prevState = state;
-          SlipOutByte(num+110); //pin, numerical indicator
-          SlipOutInt(state);
-          SendOutSlip();
-        }
       } 
     }
   }//loop

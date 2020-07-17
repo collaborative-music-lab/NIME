@@ -45,8 +45,16 @@ void CheckSerial(){
 }//checkSerial
 
 void ProcessSerialMessage(byte message[], byte len){
+  static  byte count = 0;
+  static byte state = 0;
+  byte val =  state * 100;
+  setLed(count,val,val,0);
+  count>63 ?  (count=0,state!=state) : count++;
+  
+  
   if(SERIAL_DEBUG){
     SlipOutByte(1);
+    SlipOutByte(message[0]);
     SlipOutByte(message[1]);
     SlipOutByte(message[2]);
     SerialOutSlip();
@@ -66,22 +74,25 @@ void ProcessSerialMessage(byte message[], byte len){
     break;
 
     case 1: //enable analog inputs
-    if(message[1]<12) sensors[message[1]].enable = message[2]>0; 
-    else if( message[1]<15) accels[message[1]-12].enable = message[2]>0; 
-    else if( message[1]<18) gyros[message[1]-15].enable = message[2]>0; 
-    else if( message[1]<19) temps.enable = message[2]>0; 
+    if(message[1]<22) {
+      sensors[message[1]].enable = message[2]>0; 
+      if( sensors[message[1]].enable ==  1 ) sensors[message[1]].setup();
+      if(message[2]>0) setLed(message[1],100,100,0);
+    }
+    else if( message[1]<25) accels[message[1]-12].enable = message[2]>0; 
+    else if( message[1]<28) gyros[message[1]-15].enable = message[2]>0; 
+    else if( message[1]<29) temps.enable = message[2]>0; 
     break;
 
     case 2: //set analog transmission rate
-    if(message[1]<12)  sensors[message[1]].SetInterval(message[2]);
-    else if( message[1]<15) accels[message[1]-12].SetInterval( message[2]); 
-    else if( message[1]<18) gyros[message[1]-15].SetInterval( message[2]); 
-    else if( message[1]<19) temps.SetInterval(message[2]);
+    if(message[1]<22)  sensors[message[1]].SetInterval(message[2]);
+    //else if( message[1]<25) accels[message[1]-12].SetInterval( message[2]); 
+    //else if( message[1]<28) gyros[message[1]-15].SetInterval( message[2]); 
+    //else if( message[1]<29) temps.SetInterval(message[2]);
     break;
 
     case 3: //set analog mode
- //   PROCESS_MODE type = MEAN;
-    if(message[1]<12) {
+    if(message[1]<22) {
       switch(message[2]){
         case 0: sensors[message[1]].sampleProcessMode = MEAN; break;
         case 1: sensors[message[1]].sampleProcessMode = MEDIAN; break;
@@ -111,6 +122,11 @@ void ProcessSerialMessage(byte message[], byte len){
     
     case 12: //set charge current
     chargeCurrent = message[1];
+    break;
+
+    case  50:
+    setLed(message[1],message[2],message[3],message[4]);
+    //Serial.write(
     break;
   }
 }
