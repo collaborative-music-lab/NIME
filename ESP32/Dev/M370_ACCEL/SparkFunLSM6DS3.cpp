@@ -66,7 +66,7 @@ status_t LSM6DS3Core::beginCore(void)
 	switch (commInterface) {
 
 	case I2C_MODE:
-		Wire.begin(21,22); //added I2C pins for ESP32
+		Wire.begin(23,22); //added I2C pins for ESP32
 		break;
 
 	case SPI_MODE:
@@ -902,4 +902,3 @@ void LSM6DS3::fifoEnd( void ) {
 	// turn off the fifo
 	writeRegister(LSM6DS3_ACC_GYRO_FIFO_CTRL5, 0x00);  //Disable
 }
-

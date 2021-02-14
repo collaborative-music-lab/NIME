@@ -23,16 +23,16 @@
 #include <WiFi.h>
 #include <WiFiUdp.h>
 
-byte SERIAL_ENABLE = 0; //enables communication over USB
-byte WIFI_ENABLE = 1; //enables communication over USB
+byte SERIAL_ENABLE = 1; //enables communication over USB
+byte WIFI_ENABLE = 0; //enables communication over USB
 
 // WiFi network name and password:
 const char * ssid = "MLE";
 const char * password = "mitmusictech";
 
-const byte SERIAL_DEBUG = 1; //for debugging serial communication over USB
+const byte SERIAL_DEBUG = 0; //for debugging serial communication over USB
 const byte WIFI_DEBUG = 0; //for debuggiing wifi communiication
-const byte ANALOG_DEBUG = 0; //for debuggiing analog inputs using arduino console 
+const byte ANALOG_DEBUG = 1; //for debuggiing analog inputs using arduino console 
 
 LSM6DS3 IMU; //Default constructor is I2C, addr 0x6B
 
@@ -145,13 +145,13 @@ LOOP
 void loop() {
   curMillis = millis();
   
-  for(byte i=0;i < numSensors; i++) sensors[i].loop();
+  //for(byte i=0;i < numSensors; i++) sensors[i].loop();
   //for(byte i=0;i < NUM_ELECTRODES; i++) capSense[i].loop(i);
  
   
   //sendCapValues();
-  WiFiLoop();
-  CheckSerial();
+  //WiFiLoop();
+  //CheckSerial();
 
   IMULoop();
   
