@@ -40,8 +40,8 @@ WIFI_ENABLE = 0 #!!!! READ FOLLOWING COMMENT
 ######################
 #SETUP SERIAL PORT
 ######################
-import scripts.SerialSetup as SerialSetup
-ser  = SerialSetup.run(SERIAL_ENABLE, "/dev/cu.usbserial-1430")
+import scripts.SerialSetup as SerialMain
+ser  = SerialMain.run(SERIAL_ENABLE, "/dev/cu.usbserial-1440")
 
 serialOutputBuffer= [[0],[0]]
 
@@ -57,6 +57,23 @@ def sendSerialBuffer():
     slipOutPacket(serialOutputBuffer[1])
     time.sleep(0.002)
     del(serialOutputBuffer[1])
+
+def slipOutPacket(val = []):
+    """Send SLIP encoded values to serial or wifi."""
+    #print ('val', val)
+    outMessage = []
+    endByte = bytes([255])
+    escByte = bytes([254])
+    for i in val:
+        if i == endByte:
+            outMessage.append(escByte)
+            outMessage.append(i)
+        else :
+            outMessage.append(i)
+    outMessage += (endByte)
+    #print("slip", outMessage)
+    #outMessage = [0,0,34 ,255]
+    ser.write(bytearray(outMessage))
 
 
 ######################
@@ -140,7 +157,7 @@ def setEnables():
         if( SERIAL_ENABLE ): ser.write(bytearray(enableMsg)) 
         if( WIFI_ENABLE ): s.sendto(bytearray(enableMsg), (clientAddress) ) 
         #print('enable', enableMsg[1], enableMsg[2])
-        time.sleep(0.025)
+        time.sleep(0.01)
 
 
     print('\nsetting sensor data rate <input#><dataRateInMS>')
@@ -151,7 +168,7 @@ def setEnables():
         if( SERIAL_ENABLE ): ser.write(bytearray(enableMsg)) 
         if( WIFI_ENABLE ): s.sendto(bytearray(enableMsg), (clientAddress) ) 
         #print('rate', enableMsg[1], enableMsg[2])
-        time.sleep(0.025)
+        time.sleep(0.01)
 
     print('\nsetting sensor data mode <input#><mode>')
     for i in range(len(OSC_INDEX_ARRAY)):
@@ -162,7 +179,7 @@ def setEnables():
         if( SERIAL_ENABLE ): ser.write(bytearray(enableMsg)) 
         if( WIFI_ENABLE ): s.sendto(bytearray(enableMsg), (clientAddress) ) 
         #print('mode', enableMsg[1], enableMsg[2])
-        time.sleep(0.025)
+        time.sleep(0.01)
 
 
 ######################
@@ -188,10 +205,12 @@ def setCapSense():
 #MAPPINGS
 ######################  
 import scripts.seq as sequencer
+import scripts.circularSeqMapping as cMap
 
 seq = []
 for i in range(4):
     seq.append(sequencer.defSeq(8)) #number of instances, number of steps
+    seq[i].set([0,0,0,0, 0,0,0,0])
 
 # seq[0].led = [2,5,23,47,61,58,40,16]
 # seq[1].led = [10,13,22,46,53,50,41,17]
@@ -213,7 +232,7 @@ for i in range(4):
 seq[0].led = [22,23,31,39,38,37,29,21]
 seq[1].led = [46,47,55,63,62,61,53,45]
 seq[2].led = [43,44,52,60,59,58,50,42]
-offScalar = 0.01
+offScalar = 0.05
 
 #ledcolors
 ledColors = [
@@ -221,22 +240,6 @@ ledColors = [
     [217,18,4],
     [194,27,190]
 ]
-
-def defineCircles():
-    #define circlesfor each seq
-    #print("defineCircles")
-    mainRows = []
-    mainRows.append([8,9,10,11,12,13,14,22,30,38,46,54,62,61,60,59,58,57,56,48,40,32,24,16])
-    mainRows.append([9,10,11,12,13,14,22,30,38,46,54,53,52,51,50,49,41,33,25,17])
-    mainRows.append([27,28,36,44,43,42,34,26])
-    cOffScale = offScalar/2
-    for i in range(1):
-        for k in range (len(mainRows[i])):
-            panel.led[mainRows[i][k]].set(0,4,4,3)
-            bufferLeds(mainRows[i][k])
-            writeLed()
-            time.sleep(0.01)
-    
 
 # x 0 x x 0 x x 0 
 # x x 1 x 1 x 1 x 
@@ -279,7 +282,7 @@ def capSequencer(pad, val, touch):
                     den = capMinMax[pad][1]-capMinMax[pad][0]
                     if(den != 0):
                         scaledVal = (val*touch- (capMinMax[pad][0]))/(capMinMax[pad][1]-capMinMax[pad][0])
-                        seq[i].set(pad,scaledVal) #-(touch*capMinMax[pad][0]))
+                        seq[i].setStep(pad,scaledVal) #-(touch*capMinMax[pad][0]))
                         address = "/cap/step/" + str(i)
 
                         steps = [i] + seq[i].get()
@@ -298,7 +301,7 @@ def capSequencer(pad, val, touch):
     return "/cap", val
 
 def setSequence(instance, step, val):
-    seq[instance].set(step, val)
+    seq[instance].setStep(step, val)
 
 def getSequence(instance):
     return
@@ -328,17 +331,9 @@ def interpretMessage(message):
         for i in range(len(message)):
             print ('mirror', message[i])
 
-    # if(len(message) < 3):
-    #     if( SERIAL_ENABLE ): ser.read(ser.in_waiting)
-    #     return
-
     if( message[0]==1):
         print(message[1],message[2])
         return
-
-    # if( message[0]==255):
-    #     sendSerialBuffer()
-    #     return
 
     address="/default"
     val=0
@@ -347,23 +342,25 @@ def interpretMessage(message):
     if( analogBaseAddress <= message[0] < digitalBaseAddress):
         address = "/analog/" + str(message[0]-analogBaseAddress)
         val = ps.from_uint16(message[1],message[2])
+        cMap.input("dial", message[0]-analogBaseAddress, val)
 
     # #digital inputs
-    if( digitalBaseAddress <= message[0] < encoderBaseAddress):
+    elif( digitalBaseAddress <= message[0] < encoderBaseAddress):
         address = "/digital/" + str(message[0]-digitalBaseAddress)
         val = ps.from_uint8(message[1])
+        cMap.input("button", message[0]-digitalBaseAddress, val)
 
     # #encoder inputs
-    if( encoderBaseAddress <= message[0] < capsenseBaseAddress):
+    elif( encoderBaseAddress <= message[0] < capsenseBaseAddress):
         address = "/encoder/" + str(message[0]-encoderBaseAddress)
         val = ps.from_int8(message[1]) 
-
+        cMap.input("encoder", message[0]-encoderBaseAddress, val)
 
     # #cap inputs
     # cap input data  consistss of:
     # -LSB= touch  status
     # -capacitance is stored in next 10 bits
-    if( capsenseBaseAddress <= message[0] < imuBaseAddress):
+    elif( capsenseBaseAddress <= message[0] < imuBaseAddress):
         capNum  = message[0]-capsenseBaseAddress
         val=ps.from_uint16(message[1],message[2])
         pinMap =  [9,2,8,1, 7,0,6,11, 5,3,10,4, 12,13]
@@ -372,53 +369,31 @@ def interpretMessage(message):
         address = "/cap/val/"+str(capNum)
         client.send_message(address,val>>1)
 
-        address, val = capSequencer(capNum, val>>1, touch)
-
-        ###below code has leds mirror touched pads
-        ledMap  = [35, 44, 51, 58, 49, 40, 33, 26, 28, 60, 56, 24,63]
-        curVal = panel.led[ledMap[capNum]].get(2)
-
-        # if (curVal[0]>0) != touch:
-        #     if capNum<12:
-        #         #print("touch", capNum, touch)
-
-        #         if capNum<8:
-        #             panel.led[ledMap[capNum]].set(2,touch*100,touch*(capNum%2)*50,0)
-        #         else:
-        #             panel.led[ledMap[capNum]].set(2,touch*100,touch*100,touch*100)
-        #         bufferLeds(ledMap[capNum])
-        #         writeLed()
-
-        ### below code toggles step on and off
-        # address,seq,new = capToggle.input(capNum,val&1) 
-        # if new:
-        #     #print("main",seq)
-        #     # print("new")
-        #     ledMap  = [35, 44, 51, 58, 49, 40, 33, 26, 28, 60, 56, 24]
-        #     for i in range(len(seq)):
-        #         panel.led[ledMap[i]].set(2,seq[i]*100,seq[i]*(i%2)*50,0)
-        #         bufferLeds(ledMap[i])
-        #         #time.sleep(0.01)
-        #         #print(i)
-        #     client.send_message(address, seq)
-        #     writeLed()
-
-        # address = "/cap/touch/" + str(capNum)
-        # client.send_message(address, message[2]&1)
-
-        # address = "/cap/val/" + str(capNum)
-        # val = val>>1
+        output = cMap.input("cap", capNum, [touch,val>>1])
+        #print ( output )
+        if output[0] is not None:
+            #print ( "pass" )
+            for i in range( len(output) ):
+                seqNum = output[i][0]
+                ledNum=output[i][1]
+                ledNum = (ledNum+1)%8
+                ledVal=output[i][2]
+                if ledVal > 0:    
+                    panel.led[seq[seqNum].led[ledNum]].set(2,ledColors[seqNum][0],ledColors[seqNum][1],ledColors[seqNum][2])
+                else:
+                    panel.led[seq[seqNum].led[ledNum]].set(2,ledColors[seqNum][0]*offScalar,ledColors[seqNum][1]*offScalar,ledColors[seqNum][2]*offScalar)
+                bufferLeds(seq[seqNum].led[ledNum])
+                writeLed()
+        #address, val = capSequencer(capNum, val>>1, touch)
             
-
     # #encoder inputs
-    if( imuBaseAddress <= message[0] < 210):
+    elif( imuBaseAddress <= message[0] < 210):
         address = "/imu/" + str(message[0]-imuBaseAddress)
         val = ps.from_int8(message[1],message[2])
 
-
     if( PACKET_INCOMING_SERIAL_MONITOR ):
         print(address,val)
-    client.send_message(address, val)
+    #client.send_message(address, val)
 
 ######################
 #COMMUNICATION INPUT
@@ -427,7 +402,8 @@ def interpretMessage(message):
 def readNextMessage():
     """Reads new messages over Serial or wifi."""
     if SERIAL_ENABLE:
-        return checkSerial()
+        if ser.in_waiting:
+            return checkSerial()
 
     elif WIFI_ENABLE:
         return checkWiFi()
@@ -519,27 +495,10 @@ def checkWiFi():
 #COMMUNICATION  OUTPUT
 ######################
 
-def slipOutPacket(val = []):
-    """Send SLIP encoded values to serial or wifi."""
-    #print ('val', val)
-    outMessage = []
-    endByte = bytes([255])
-    escByte = bytes([254])
-    for i in val:
-        if i == endByte:
-            outMessage.append(escByte)
-            outMessage.append(i)
-        else :
-            outMessage.append(i)
-    outMessage += (endByte)
-    #print("slip", outMessage)
-    #outMessage = [0,0,34 ,255]
-    ser.write(bytearray(outMessage))
-
 def setLeds(add,num,r,g,b):
     ledMsg = [50,int(num),int(r), int(g),int(b) ]
     #print("setLed", ledMsg)
-    addToSerialBuffer(bytearray(ledMsg))
+    SerialMain.addToSerialBuffer(bytearray(ledMsg))
 
 
 def seqLed(add,num,val):
@@ -576,10 +535,10 @@ def seqLed(add,num,val):
     # writeLed()
 
     #send cur step status out
-    curStep = [0]*4
-    for i  in range(4):
-        curStep[i] = seq[i].getStep(cur)
-    client.send_message("/steps", curStep)
+    # curStep = [0]*4
+    # for i  in range(4):
+    #     curStep[i] = seq[i].getStep(cur)
+    # client.send_message("/steps", curStep)
 
 
 def bufferLeds(num):
@@ -663,6 +622,10 @@ async def loop():
 
 async def init_main():
     server = AsyncIOOSCUDPServer(("127.0.0.1", 5006), dispatcher, asyncio.get_event_loop())
+    cMap.server=server
+    cMap.client=client
+    cMap.panel = panel
+    cMap.ser = ser
     transport, protocol = await server.create_serve_endpoint()
     print (ser.timeout)
     if SERIAL_ENABLE: ser.read(ser.in_waiting)
