@@ -1,7 +1,7 @@
 import serial, serial.tools.list_ports, sys
 import time
 
-def run(SERIAL_ENABLE,port):
+def run(SERIAL_ENABLE,port,_baudrate):
     if( SERIAL_ENABLE):
         #find serial port
         curSerialPort = port
@@ -17,7 +17,8 @@ def run(SERIAL_ENABLE,port):
         for x in range(len(ports)):   
             if curSerialPort in ports[x]:
                 ser = serial.Serial(curSerialPort)
-                ser.baudrate=115200
+                #setserial curSerialPort low_latency #https://stackoverflow.com/questions/13126138/low-latency-serial-communication-on-linux
+                ser.baudrate=_baudrate
                 ser.setDTR(False) # Drop DTR
                 time.sleep(0.022)    # Read somewhere that 22ms is what the UI does.
                 ser.setDTR(True)  # UP the DTR back
@@ -30,3 +31,4 @@ def run(SERIAL_ENABLE,port):
         ser = 0
 
     return ser
+

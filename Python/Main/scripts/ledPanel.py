@@ -28,8 +28,6 @@ led = []
 def begin():
 	for i in range(64):
 		led.append(defLed(i))
-		print("ledBegin", i)
-
 
 
 
