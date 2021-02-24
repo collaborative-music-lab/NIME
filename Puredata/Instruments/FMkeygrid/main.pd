@@ -6642,7 +6642,7 @@ and send to the name of the module \, for example [s basic-osc];
 #X obj 629 339 slope 1;
 #X obj 630 311 *~;
 #X obj 351 -108 tgl 45 0 empty empty enable_clock 0 -5 0 10 -262144
--1 -1 1 1;
+-1 -1 0 1;
 #X obj 351 -1 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
 -1;
 #X msg 351 19 1 0 \, 0 1 1;
@@ -6721,7 +6721,6 @@ and send to the name of the module \, for example [s basic-osc];
 #X msg 160 207 10;
 #X msg 56 207 127;
 #X msg 55 233 VCA \$1 5;
-#X obj 55 254 print;
 #X connect 0 0 2 0;
 #X connect 1 0 5 0;
 #X connect 2 0 3 0;
@@ -6731,7 +6730,6 @@ and send to the name of the module \, for example [s basic-osc];
 #X connect 7 0 9 0;
 #X connect 8 0 9 0;
 #X connect 9 0 4 0;
-#X connect 9 0 10 0;
 #X restore 691 -49 pd delay;
 #X obj 613 -119 bng 15 250 50 0 empty empty flush_stuck_notes 17 7
 0 10 -262144 -1 -1;
@@ -6770,7 +6768,7 @@ and send to the name of the module \, for example [s basic-osc];
 #X text 386 -110 comment;
 #X text 481 -66 <-set step speed in ms;
 #X msg 692 -25 set \$1 \$2;
-#X msg 692 -4 2 0;
+#X msg 692 -4 2 2;
 #X connect 13 0 19 0;
 #X connect 14 0 24 0;
 #X connect 15 0 20 0;

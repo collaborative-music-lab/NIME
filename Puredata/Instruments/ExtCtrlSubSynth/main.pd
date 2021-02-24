@@ -6640,7 +6640,7 @@ and send to the name of the module \, for example [s basic-osc];
 #X restore 571 7 pd detune;
 #X f 34;
 #X obj 150 64 basic-osc 3;
-#X obj 93 -165 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
+#X obj 93 -165 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
 #X obj 93 -144 metro 100;
 #X obj 93 -122 snapshot~;
