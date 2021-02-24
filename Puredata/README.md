@@ -17,9 +17,9 @@ One of the quirks of PD and automatonism is that you need to duplicate the ENTIR
 
 ## Notes
 1. If your automatonism modules don't look correct when you first create them, try saving your patch using PD's file->save, or the associated hotkey.
-2. The included pd-refcard is a handy overview of available basic pd modules, and comes from https://puredata.info/docs/tutorials/pd-refcard
+2. The pd-refcard is a handy overview of available basic pd modules, and is available from https://puredata.info/docs/tutorials/pd-refcard
 3. There are different versions of PD. We are using the vanilla version, which contains just the basic objects. Other versions exist with many more objects but they may not be compatible with the Raspberry Pi or other small computers.
-4. For math operations the 'expr' object is extremely useful. Check out its documentation: http://yadegari.org/expr/expr.html
+4. For math operations the 'expr' object is extremely useful. Check out its documentation: http://yadegari.org/expr/expr.html There is also an expr~ object which will work with audio signals.
 
 ### FAQ
 - PD can't find an object, either the console gives a warning or the object outline is dashed.
