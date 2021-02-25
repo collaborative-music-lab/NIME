@@ -46,3 +46,5 @@ Make sure you are in edit mode, and then go to the 'put' menu. All of the availa
 3. https://puredata.info/docs
 4. Miller Puckette's (the creator of PD) book 'Theory and Technique of Electronic Music' http://msp.ucsd.edu/techniques.htm
 5. http://www.pd-tutorial.com
+
+**
