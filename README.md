@@ -79,5 +79,3 @@ https://docs.platformio.org/en/latest/projectconf/section_env_monitor.html#monit
 * **I can see raw data, and packets in python but don't see anything in PD**
   * Make sure there isn't another PD or python script running in the background. Try looking in your activity monitor or other list of running processes and kill any python scripts, and quit and restart PD.
 
-*
-
