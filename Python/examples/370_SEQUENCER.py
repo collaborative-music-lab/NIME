@@ -21,17 +21,19 @@ client = udp_client.SimpleUDPClient("127.0.0.1", 5005)
 dispatcher = Dispatcher()
 print("Sending data to port", 5005)
   
-#sequence can range from MIDI notes 48 to 76
+#sequence is in scale degrees
 sequences = [
-[60, 62,64,65,67,69,71,72],
-[62,63,65,67,71,69,65,64],
-[36,43,48,55,60,67,72,79] #goes below 48
+[0,1,2,3,4,5,6,7],
+[2,0,3,1,4,2,5,3],
+[0,4,7,11,14,18,14,7],
+[1,3,5,6,7,6,5,4]
 ]
 
 def GetSequence(add, num):
     global sequences
 
     address = '/sequence'
+
     if num < len(sequences):
         val = sequences[int(num)]
     else:
@@ -41,7 +43,30 @@ def GetSequence(add, num):
     client.send_message(address, val)
     print("sent")
 
-dispatcher.map("/getSequence", GetSequence)
+def GetSequence2(add, num):
+    global sequences
+
+    address = '/sequence2'
+
+    if num < len(sequences):
+        val = sequences[int(num)]
+    else:
+        print("sequence number out of range")
+        return 0
+
+    outputMsg = ['ONE', 0, 1]
+
+    textNum = ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN', 'EIGHT']
+
+    for i in range(len(val)):
+        outputMsg[0] = textNum[i]
+        outputMsg[1] = (val[i]/27)*127
+
+        client.send_message(address, outputMsg)
+        print("sent", address, outputMsg)
+
+#look for incoming OSC messages
+dispatcher.map("/getSequence", GetSequence2)
 
 ######################
 #LOOP
