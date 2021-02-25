@@ -14,6 +14,7 @@ https://www.sublimetext.com
 
 * **How do I install Python packages?**
 	* Use pip to install modules. In the terminal: `pip install python-osc` and `pip install pyserial`.
+	* You may need to use `pip3` to install modules for python 3
 
 	* If you have python 3 you almost certainly also have pip. If not, you can download it here:
 	* https://pip.pypa.io/en/stable/installing/
