@@ -65,8 +65,15 @@ def GetSequence2(add, num):
         client.send_message(address, outputMsg)
         print("sent", address, outputMsg)
 
+def mirror(add, val):
+    print(add, val)
+    client.send_message(add, val)
+
 #look for incoming OSC messages
 dispatcher.map("/getSequence", GetSequence2)
+dispatcher.map("/paramName", mirror)
+
+
 
 ######################
 #LOOP
