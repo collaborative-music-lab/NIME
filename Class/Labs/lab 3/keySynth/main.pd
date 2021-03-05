@@ -1,4 +1,4 @@
-#N canvas 0 23 1440 855 10;
+#N canvas 0 0 1680 1028 10;
 #X declare -path patch_editor_abs;
 #X obj 16 983 declare -path patch_editor_abs;
 #N canvas 447 23 707 551 patch-editor-do-not-delete 0;
@@ -3382,7 +3382,7 @@
 #X msg 177 81 0;
 #X msg 83 341 \; pd-main.pd obj 200 200 \$1 \$2;
 #X obj 162 280 nbx 5 14 -1e+37 1e+37 0 1 empty empty empty 0 -8 0 10
--262144 -1 -1 1 256;
+-262144 -1 -1 2 256;
 #X obj 64 387 t b b;
 #X msg 64 509 loadbang;
 #X obj 91 411 s SAVE-S;
@@ -6600,7 +6600,7 @@ and send to the name of the module \, for example [s basic-osc];
 #X text 28 967 DO NOT DELETE THESE OBJECTS:;
 #X obj 18 14 cnv 5 5 5 empty empty AUTOMATONISM 0 12 0 15 -262144 -66577
 0;
-#X obj 19 40 bng 15 250 50 0 open-quick-guide! empty <--QUICK-GUIDE
+#X obj 19 39 bng 15 250 50 0 open-quick-guide! empty <--QUICK-GUIDE
 17 7 0 10 -262144 -1 -1;
 #X obj 19 60 bng 15 250 50 0 open-manual! empty <--MANUAL 17 7 0 10
 -262144 -1 -1;
@@ -6615,12 +6615,12 @@ and send to the name of the module \, for example [s basic-osc];
 7 0 10 -262144 -1 -1;
 #X obj 528 413 polysynth 1;
 #X obj 528 632 bob-filter 1;
-#X obj 527 757 maestro4 1;
-#X obj 528 20 manual-triggers 1;
+#X obj 526 877 maestro4 1;
+#X obj 162 -34 manual-triggers 1;
 #X obj 629 109 8steps 1;
-#X obj 322 24 basic-lfo 1;
-#X obj 835 635 scope;
-#X obj 882 379 scope2;
+#X obj 316 -67 basic-lfo 1;
+#X obj 343 728 scope;
+#X obj 797 431 scope2;
 #X obj 628 384 *~;
 #X obj 671 384 *~;
 #X obj 686 361 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
@@ -6630,16 +6630,26 @@ and send to the name of the module \, for example [s basic-osc];
 #X obj 681 336 == 1;
 #X obj 640 360 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
 1;
-#X obj 548 135 r pitchSource;
-#X obj 500 139 *~;
-#X obj 546 153 == 0;
-#X obj 547 182 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
+#X obj 539 -17 r pitchSource;
+#X obj 523 55 *~;
+#X obj 538 6 == 0;
+#X obj 538 29 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
 1;
+#X obj 725 361 r keyPitch;
+#X msg 629 4 1 0 \, 0 1 1;
+#X obj 629 25 vline~;
+#X obj 629 -17 r keyTrig;
+#X obj 690 65 r keyPitch;
+#X obj 565 53 *~;
+#X obj 580 27 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 580 4 == 1;
+#X obj 527 764 vca 2;
 #X connect 11 0 12 0;
+#X connect 11 0 17 0;
 #X connect 11 1 12 0;
 #X connect 11 2 12 1;
-#X connect 11 2 17 0;
-#X connect 12 0 13 0;
+#X connect 12 0 38 0;
 #X connect 14 0 11 0;
 #X connect 14 0 15 0;
 #X connect 15 0 19 0;
@@ -6653,7 +6663,18 @@ and send to the name of the module \, for example [s basic-osc];
 #X connect 24 0 21 0;
 #X connect 25 0 19 1;
 #X connect 26 0 28 0;
+#X connect 26 0 37 0;
 #X connect 27 0 15 0;
 #X connect 27 0 11 0;
 #X connect 28 0 29 0;
 #X connect 29 0 27 1;
+#X connect 30 0 20 0;
+#X connect 31 0 32 0;
+#X connect 32 0 35 0;
+#X connect 32 0 15 3;
+#X connect 33 0 31 0;
+#X connect 34 0 15 1;
+#X connect 35 0 11 0;
+#X connect 36 0 35 1;
+#X connect 37 0 36 0;
+#X connect 38 0 13 0;
