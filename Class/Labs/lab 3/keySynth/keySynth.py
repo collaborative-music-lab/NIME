@@ -95,7 +95,7 @@ def calcBitMap(col,state):
     #print(sum) 
 
     client.send_message('/module', 'polysynth')
-    address = '/param'
+    address = '/param'  
     msg = ['RELEASE', sum*5 + 5, 1]
     client.send_message(address, msg)
 

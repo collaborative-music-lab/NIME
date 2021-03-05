@@ -6625,7 +6625,7 @@ and send to the name of the module \, for example [s basic-osc];
 #X obj 671 384 *~;
 #X obj 686 361 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
-#X obj 688 318 r pitchSource;
+#X obj 651 317 r pitchSource;
 #X obj 641 340 == 0;
 #X obj 681 336 == 1;
 #X obj 640 360 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
