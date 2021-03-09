@@ -15,6 +15,42 @@ from pynput.mouse import Button, Controller
 mouse = Controller()
 
 ######################
+#CONFIGURE TIMEOUT
+######################
+#number of minutes after which python script will automatically
+#cancel itself if it hasn't received an OSC message
+class Timeout: 
+    _interval = 5
+    _unit = 60 # timeout = (interval*unit) seconds
+    _counter = 0
+    _cancel = 0
+    
+    def __init__(self,interval):
+      """ Sets the timeout period"""
+      _interval = interval
+
+    def check(self):
+        if time.perf_counter() - self._counter > self._interval * self._unit:
+            #cancel this script
+            print("cancelled script")
+            return 0
+        if self._cancel == 1:
+            print("cancelled script")
+            return 0
+        return 1
+
+    def update(self):
+        self._counter = time.perf_counter()
+
+    def cancel(self):
+        self._cancel = 1
+
+t = Timeout(5) # argument is number of minutes after which script will cancel itself
+
+#you can also cancel the script by calling t.cancel()
+# sending an OSC "/cancel" message
+
+######################
 #SETUP OSC
 ######################
 #initialize UDP client
@@ -37,6 +73,8 @@ pitchSequence = [
 ]
 
 def keyDown(*args):
+    t.update() #reset timeout
+
     #in this example, key is getting info from the pd keyGrid object, which
     #always sends keypresses in (column,row) format
     #- also remember the first argument sent to an OSC callback is the address
@@ -73,6 +111,7 @@ def keyDown(*args):
 
 
 def keyUp(*args):
+    t.update() #reset timeout
     #handles when keys are released
     #print(args)
     
@@ -99,11 +138,15 @@ def calcBitMap(col,state):
     msg = ['RELEASE', sum*5 + 5, 1]
     client.send_message(address, msg)
 
+def cancelScript(*args):
+    print("cancel")
+    t.cancel()
 
 #look for incoming OSC messages
 #map(OSC address to match, function to call when address is received)
 dispatcher.map("/keydown", keyDown) 
 dispatcher.map("/keyup", keyUp) 
+dispatcher.map("/cancel", cancelScript) 
 
 ######################
 #Track mouse movements
@@ -197,7 +240,7 @@ async def loop():
     debugVal = 0
     time.sleep(0.1)
     
-    while(1):
+    while(t.check()):
         updateMouse(mouse.position)
         await asyncio.sleep(0)
         time.sleep(0.1) #latency in seconds
