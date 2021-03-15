@@ -138,15 +138,22 @@ def calcBitMap(col,state):
     msg = ['RELEASE', sum*5 + 5, 1]
     client.send_message(address, msg)
 
-def cancelScript(*args):
-    print("cancel")
-    t.cancel()
+
 
 #look for incoming OSC messages
 #map(OSC address to match, function to call when address is received)
 dispatcher.map("/keydown", keyDown) 
 dispatcher.map("/keyup", keyUp) 
+
+def cancelScript(*args):
+    print("cancel")
+    t.cancel()
 dispatcher.map("/cancel", cancelScript) 
+
+def testOSC(*args):
+    print(args)
+
+dispatcher.map("/mirror", testOSC) 
 
 ######################
 #Track mouse movements

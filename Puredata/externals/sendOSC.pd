@@ -5,7 +5,6 @@
 #X obj 194 93 list trim;
 #X msg 16 94 connect localhost 5006;
 #X obj 12 60 loadbang;
-#X obj 90 148 print reset;
 #X obj 285 -8 inlet;
 #X text 45 -9 connect from oscformat;
 #X text 324 -7 anything resets;
@@ -14,4 +13,4 @@
 #X connect 3 0 1 0;
 #X connect 4 0 1 0;
 #X connect 5 0 4 0;
-#X connect 7 0 4 0;
+#X connect 6 0 4 0;
