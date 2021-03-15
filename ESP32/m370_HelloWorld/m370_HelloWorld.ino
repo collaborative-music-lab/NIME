@@ -21,7 +21,7 @@
  *  - Serial monitor set to 115200 kbps
  */
 
- #include <pinDefsv4.h>
+ #include "pinDefsv4.h"
 
 //array store previously read values
 float prevVal[6];
