@@ -3,7 +3,7 @@
 
 def processInput(*args):
 	address = args[0][0]
-	val = btoi(args[0][1], args[0][2])
+	val = bto_ui16(args[0][1], args[0][2])
 
 	# I like to write this out longform in case I need
 	#to change the order of sensors in a group
@@ -19,6 +19,6 @@ def processInput(*args):
 
 
 
-def btoi(high,low):
-	#convert two bytes to a single int
+def bto_ui16(high,low):
+	#convert two bytes to a single unsigned 16-bit int
 	return (high << 8) + low 

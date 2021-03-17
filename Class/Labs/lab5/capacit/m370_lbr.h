@@ -27,10 +27,10 @@
 // #include <WiFiUdp.h>
 
 #include "pinDefsv5.h"
-//#include "m370_Sensor.h"
 #include "src/m370_communication.h"
 #include "src/m370_digitalInput.h"
 #include "src/m370_analog.h"
+#include "src/m370_cap.h"
 
 void  debug(String name, int val){
 	Serial.print(name);
