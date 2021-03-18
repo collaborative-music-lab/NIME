@@ -1,4 +1,4 @@
-import math
+import math, time
 global dispatcher
 # import knuckles.dispatcher
 ######################
@@ -60,7 +60,8 @@ def keyDown(*args):
 		x=int(args[1])
 		y= int(args[2])
 		val = 0
-		if enableArray[x][y] == 0: val = 1
+		if enableArray[x][y] == 0: 
+			val = 1
 		toggleEnableArray(x,y,val)
 
 def keyUp(*args): pass
@@ -76,23 +77,37 @@ def toggleEnableArray(x,y,val):
 	address = toggleKeys[math.floor(x/2)]+"_en_"+toggleParam[x%2]+"-r"
 	
 	if y < 2: address = address + str(3-y)
-	#print(address)
+	print(x,y,val)
 	if val != enableArray[x][y]:
 		enableArray[x][y] = val
 		client.send_message("/module", address)
 		client.send_message("/param",val)
 
+#Runs once when python script is run
 def initSynthParams():
-	for i in range(10):
-		for j in range(3): toggleEnableArray(i,j,1)
+	# for i in range(10):
+	# 	for j in range(3): setEnableArray(i,j,1)
+
+	#time.sleep(.1)
 
 	for i in range(10):
-		for j in range(3): toggleEnableArray(i,j,0)
+		for j in range(3): setEnableArray(i,j,0)
 
 	for i in range(3):
 		setDrumEnables(i,1)
 		# client.send_message('/module', 'drumEnable'+str(i)+'-r')
 		# client.send_message('/param', 1)
+
+def setEnableArray(x,y,val):
+	toggleKeys = ["dr1","dr2","dr3","synth","sampler"]
+	toggleParam = ["decay","tone"]
+	address = toggleKeys[math.floor(x/2)]+"_en_"+toggleParam[x%2]+"-r"
+	
+	if y < 2: address = address + str(3-y)
+
+	enableArray[x][y] = val
+	client.send_message("/module", address)
+	client.send_message("/param",["set", val])
 
 
 def handleMouseToggle(*args):
