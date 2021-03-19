@@ -97,7 +97,7 @@ int16_t m370_cap::getVal(byte _num){
   isAvailable[_num] = 0;
   if(index[_num]>0){
     curFiltered[_num] = LPMean(filteredBuffer[_num],index[_num]);
-    curBaseline[_num] = LPMedian(baselineBuffer[_num],index[_num]);
+    curBaseline[_num] = LPMean(baselineBuffer[_num],index[_num]);
     index[_num] = 0;
   }
   return capData(_num);
@@ -117,8 +117,8 @@ int16_t m370_cap::getVal(byte _num, listProcessType _mode){
 int16_t m370_cap::getRaw(byte _num){  
   isAvailable[_num] = 0;
   if(index[_num]>0){
-    curFiltered[_num] = Peak(filteredBuffer[_num],index[_num]);
-    curBaseline[_num] = Trough(baselineBuffer[_num],index[_num]);
+    curFiltered[_num] = LPPeak(filteredBuffer[_num],index[_num]);
+    curBaseline[_num] = LPTrough(baselineBuffer[_num],index[_num]);
     index[_num] = 0;
   }
   return curFiltered[_num];
@@ -150,39 +150,15 @@ void m370_cap::SetFrequency(uint16_t _frequency){
   touchInterval = interval/8;
   interval /= numCapSensors;
 }
-int32_t m370_cap::Peak(int32_t vals[], byte num){
-  SortList(vals, num);
-  return vals[num-1];
-}//median
 
-int32_t m370_cap::Trough(int32_t vals[], byte num){
-  SortList(vals, num);
-  return vals[0];
-}//median
+void m370_cap::SetChargeCurrent(byte _current){
+  if (_current>63) _current=63;
+  mpr121.chargeCurrent(_current); //0-63, def 16
 
-//SORTING ALGORITHM
-//https://forum.arduino.cc/index.php?topic=280486.0
-void m370_cap::SortList(int32_t *ar, uint8_t n)
-{
-  int32_t i, j, gap, swapped = 1;
-  int32_t temp;
+}
 
-  gap = n;
-  while (gap > 1 || swapped == 1)
-  {
-    gap = gap * 10 / 13;
-    if (gap == 9 || gap == 10) gap = 11;
-    if (gap < 1) gap = 1;
-    swapped = 0;
-    for (i = 0, j = gap; j < n; i++, j++)
-    {
-      if (ar[i] > ar[j])
-      {
-        temp = ar[i];
-        ar[i] = ar[j];
-        ar[j] = temp;
-        swapped = 1;
-      }
-    }
-  }
+void m370_cap::SetChargeTime(byte _chargeTime){
+  if(_chargeTime > 7) _chargeTime = 7;
+  else if (_chargeTime < 1) _chargeTime = 1;
+    mpr121.chargeTime(_chargeTime); //1-7, def 1
 }

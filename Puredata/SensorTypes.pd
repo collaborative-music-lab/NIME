@@ -1,10 +1,10 @@
 #N canvas 0 0 1680 1028 12;
 #X obj 72 31 vsl 45 128 0 127 0 0 empty empty potentiometer -15 -9
-0 10 -262144 -1 -1 15500 1;
+0 10 -262144 -1 -1 14400 1;
 #X obj 152 157 vsl 10 64 0 127 0 0 empty empty R2 0 -9 0 10 -262144
--1 -1 7640 1;
+-1 -1 7144 1;
 #X obj 152 48 vsl 10 64 0 127 0 0 empty empty R1 0 -9 0 10 -262144
--1 -1 4960 1;
+-1 -1 5456 1;
 #X obj 142 16 expr 127-$f1;
 #X floatatom 273 247 5 0 0 0 - - -;
 #X text 260 8 Vout = (R2*Vin)/(R1+R2);
@@ -18,9 +18,9 @@
 -66577 0;
 #X text 260 -7 Voltage divider Equation;
 #X obj 477 148 vsl 30 64 0 127 0 0 empty empty R2_variable 0 -9 0 10
--262144 -1 -1 12700 1;
+-262144 -1 -1 7100 1;
 #X obj 476 39 vsl 30 64 0 127 0 0 empty empty R1_fixed 0 -9 0 10 -262144
--1 -1 300 1;
+-1 -1 5400 1;
 #X floatatom 597 238 5 0 0 0 - - -;
 #X obj 475 279 expr ($f1*$f2)/$f3;
 #X obj 596 215 expr ($f1+$f2);
@@ -32,7 +32,7 @@
 -204786 -66577 0;
 #X floatatom 476 243 5 0 0 0 - - -;
 #X obj 763 148 vsl 30 64 0 127 0 0 empty empty Button 0 -9 0 10 -262144
--1 -1 0 1;
+-1 -1 6500 1;
 #X floatatom 883 238 5 0 0 0 - - -;
 #X obj 761 279 expr ($f1*$f2)/$f3;
 #X obj 882 215 expr ($f1+$f2);
@@ -50,7 +50,7 @@
 #X msg 761 370 1;
 #X msg 858 370 0;
 #X obj 761 401 tgl 30 0 empty empty digital_signal 33 7 0 10 -262144
--1 -1 0 1;
+-1 -1 1 1;
 #X obj 761 347 sel 1;
 #X obj 858 347 sel 1;
 #X msg 762 85 12.7;
@@ -185,7 +185,11 @@
 0 1;
 #X obj 1654 159 metro 100;
 #X obj 1683 95 hsl 128 15 0 1 0 0 empty empty Capacitance -2 -8 0 10
--262144 -1 -1 8200 1;
+-262144 -1 -1 13400 1;
+#X obj 103 398 loadbang;
+#X msg 103 421 3.3;
+#X obj 103 444 s Vin;
+#X msg 1096 69 1;
 #X connect 0 0 1 0;
 #X connect 0 0 3 0;
 #X connect 1 0 8 0;
@@ -264,9 +268,13 @@
 #X connect 79 0 77 1;
 #X connect 80 0 70 0;
 #X connect 80 1 79 0;
+#X connect 80 1 92 0;
 #X connect 82 0 84 0;
 #X connect 83 0 84 1;
 #X connect 84 0 85 0;
 #X connect 86 0 87 0;
 #X connect 87 0 82 0;
 #X connect 88 0 83 0;
+#X connect 89 0 90 0;
+#X connect 90 0 91 0;
+#X connect 92 0 75 0;

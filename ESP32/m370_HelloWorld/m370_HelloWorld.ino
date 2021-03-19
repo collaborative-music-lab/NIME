@@ -24,7 +24,7 @@
  #include "pinDefsv4.h"
 
 //array store previously read values
-float prevVal[6];
+float prevVal[8];
    
  void setup() {
   Serial.begin(115200);
@@ -93,10 +93,10 @@ void readButtons(){
     
     //inputs 6-9 are for buttons
     //we will only Serial.print if the value being read changes
-    for(int i=6;i<10;i++){
+    for(int i=0;i<4;i++){
 
       //read the digital input
-      float val = digitalRead(espPin[i]);
+      float val = digitalRead(espPin[i+6]);
 
       if( val != prevVal[i]){
         //only Serial.print if value changes

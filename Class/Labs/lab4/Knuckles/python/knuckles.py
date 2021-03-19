@@ -15,11 +15,13 @@ from pythonosc.dispatcher import Dispatcher
 #m370 python modules
 import scripts.m370_communication as m370_communication
 comms = m370_communication.communication("serial", baudrate = 115200, defaultport="/dev/tty.SLAB_USBtoUART")
+
 import scripts.timeout as timeout
 #you can change the defaultport to the name your PC gives to the ESP32 serial port
 
 import sensorInput as sensor
 import oscMappings as osc
+osc.comms = comms
 
 t = timeout.Timeout(5)
 osc.t = t

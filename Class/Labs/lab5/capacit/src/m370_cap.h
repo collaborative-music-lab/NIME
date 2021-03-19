@@ -17,6 +17,8 @@ class m370_cap{
   m370_cap(byte num, int _frequency, String _name, byte _size);
 
   void SetFrequency(uint16_t _frequency);
+  void SetChargeCurrent(byte _current);
+  void SetChargeTime(byte _chargeTime);
   
   int16_t getVal(byte _num);
   int16_t getVal(byte _num, listProcessType _mode);
@@ -33,9 +35,7 @@ class m370_cap{
   //list _m370_listProcessing();
 
   int16_t capData(byte _num);
-  int32_t Peak(int32_t vals[], byte num);
-  int32_t Trough(int32_t vals[], byte num);
-  void SortList(int32_t *ar, uint8_t n);
+
   
   int32_t *filteredBuffer[12]; 
   int32_t *baselineBuffer[12];

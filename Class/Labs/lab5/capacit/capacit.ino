@@ -1,4 +1,4 @@
-/* capacit.ino
+  /* capacit.ino
  *  Ian Hattwick
  *  created Mar 12 2021
  *  
@@ -10,7 +10,25 @@
  *  - up to 8 digital inputs on p6-p13
  *  - up to 12 capacitive touch and proximity inputs
  *  
- */
+ *  All inputs use the same structure:
+ *  declare the input                                  m370_analog sensorName
+ *  begin the input in setup:                          sensorName.begin()
+ *  run sensor.loop in main loop                       sensorName.loop()
+ *  use sensor.available to see if data is available   sensorName.available()
+ *  use sensor.getVal to get the new values            sensorName.getVal()
+ *  
+ *  To send data to Python:
+ *  - address is an integer:
+ *    - analog addresses begin at 0
+ *    - digital addresses begin at 10
+ *    - capSense addresses begin at 50
+ *  - send data using functions based on data type: 8 or 16-bit, signed or unsigned
+ *  - buffer address first: comms.outu8(address) //unsigned 8-bit
+ *  - buffer data next:     comms.outu16(val)    //unsigned 16-bit
+ *  - send buffered data:   comms.send()
+ *  
+ *  
+ */ 
 #include "m370_lbr.h" 
 
 const byte SERIAL_DEBUG = 0;
@@ -68,9 +86,9 @@ m370_digitalInput sw[8] = {
 I2C SETUP
 *********************************************/
 
-const byte NUM_CAP = 12;
+const byte NUM_CAP = 4; //up to 12 sensors
 
-m370_cap cap(NUM_CAP, 100); //number of capsensors, sampling rate (Hz)
+m370_cap cap(NUM_CAP, 500); //number of capsensors, sampling rate (Hz)
 
 
 /*********************************************
@@ -110,6 +128,12 @@ void loop() {
     byte index=0;
 
     comms.getInput(inBuffer,  &index);
+    if(index > 1){
+      switch(inBuffer[0]){
+        case 50: cap.SetChargeCurrent(inBuffer[1]); break;
+        case 51: cap.SetChargeTime(inBuffer[1]); break;
+      }
+    }
   }
 }//loop
 
@@ -161,33 +185,34 @@ void readPotentiometers(){
 
 void readCap(){
   cap.loop();
+  static uint32_t timer = 0;
+  int interval = 20;
 
-  if(SERIAL_DEBUG){
-    static uint32_t timer = 0;
-    int interval = 50;
-    
-    if(millis()-timer>interval){
+  if(millis()-timer>interval){
       timer=millis();
-  
-      for(int i=0;i<NUM_CAP;i++){
-        if(cap.available(i)){
-            int16_t val  =  cap.getVal(i,TROUGH);
-            Serial.print(val);
-            Serial.print("\t");
+
+      if(SERIAL_DEBUG){
+        
+        for(int i=0;i<NUM_CAP;i++){
+          if(cap.available(i)){
+              int16_t val  =  cap.getVal(i);
+              Serial.print(val);
+              Serial.print("\t");
+           }
          }
-       }
-      Serial.println();
+        Serial.println();
+      }//SERIAL_DEBUG
+     
+      else{
+        for(int i=0;i<NUM_CAP;i++){
+          if(cap.available(i)){
+              int16_t val  =  cap.getVal(i);
+              comms.outu8(i+50);
+              comms.out16(val);
+              comms.send();
+           }
+        }
     }
-  } 
-  else{
-    for(int i=0;i<NUM_CAP;i++){
-      if(cap.available(i)){
-          int16_t val  =  cap.getVal(i,TROUGH);
-          comms.outu8(i+50);
-          comms.out16(val);
-          comms.send();
-       }
-    
   }
 }
 
