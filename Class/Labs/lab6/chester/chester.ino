@@ -31,11 +31,14 @@ ENCODERS SETUP
 *********************************************/
 //encoders rely on the  ESP32Encoder library
 //Esp32Encoder rotaryEncoder = Esp32Encoder(18,2,4);//A,B,Button
-//optional divider argument:
+//optional divider argument
+/arguments:
+// - A and B: digital inputs from encoder
+// - Switch; pin for encoder switch, or -1 for no switch
+// - divider: many encoders put out multiple pulses per detent
+//   The divider helps to make encoder increments match detents
 
 Esp32Encoder enc(p13,p12,p10,4);//A,B,Switch, Divider
-
-m370_digitalInput encSw (p6,500);//pin, rate(Hz)
 
 
 /*********************************************
@@ -110,6 +113,11 @@ void readSw(){
 
 void readEncoder(){
   byte curB = enc.button(); //get current button state
+  //four button states:
+  // - 0 for button is being held down
+  // - 1 for button transition from not pushed to pushed
+  // - 2 for button is not being held down
+  // - 3 for button transition from pushed to not pushed
 
   int val = enc.delta(); //get encoder  count
   if(val!= 0){
