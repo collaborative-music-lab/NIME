@@ -32,7 +32,7 @@ def processInput(*args):
 		return("/enc0", val-(1<<15))
 
 	elif address == 31:
-		return("/encButton0", 1-val)
+		return("/encSw0", 1-val)
 
 	elif 50 <= address <= 70:
 		#capsense

@@ -145,7 +145,7 @@ void readEncoder(){
     if(SERIAL_DEBUG) Serial.println("RELEASED");
     else{
       comms.outu8(31);
-      comms.outu8(0);
+      comms.outu16(0);
       comms.send();
     }
     break;

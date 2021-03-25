@@ -20,7 +20,7 @@ import scripts.timeout as timeout
 
 import sensorInput as sensor
 import oscMappings as osc
-osc.comms = comms
+osc.comms = comms   
 
 t = timeout.Timeout(5)
 osc.t = t
@@ -43,7 +43,8 @@ client.send_message("/scriptName", CUR_PYTHON_SCRIPT)
 
 osc.defineOscHandlers()
 
-#timeout handlers
+    
+#timeout defineOscHandlers
 def updateTimeout(*args): t.update() #reset timeout
 dispatcher.map("/tick", updateTimeout)
 
