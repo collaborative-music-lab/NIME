@@ -1,4 +1,4 @@
-#capacit.py
+#chester.py
 #Ian Hattwick   
 #March 12, 2021
 
@@ -27,7 +27,7 @@ osc.t = t
 
 
 ######################
-#SETUP OSC
+#SETUP osc
 ######################
 #initialize UDP client
 client = udp_client.SimpleUDPClient("127.0.0.1", 5005)
@@ -54,7 +54,7 @@ dispatcher.map("/cancel", cancelScript)
 def unknown_OSC(*args): print("unknown OSC message: ", args)
 dispatcher.set_default_handler(unknown_OSC)
 
-######################
+####################
 #LOOPumjumj
 ######################
 

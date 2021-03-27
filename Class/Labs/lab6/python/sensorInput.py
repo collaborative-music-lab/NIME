@@ -29,7 +29,7 @@ def processInput(*args):
 
 	elif address == 30:
 		#encoder
-		return("/enc0", val-(1<<15))
+		return("/enc0", -(val-(1<<15)))
 
 	elif address == 31:
 		return("/encSw0", 1-val)

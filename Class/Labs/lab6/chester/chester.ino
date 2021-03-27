@@ -32,7 +32,7 @@ ENCODERS SETUP
 //encoders rely on the  ESP32Encoder library
 //Esp32Encoder rotaryEncoder = Esp32Encoder(18,2,4);//A,B,Button
 //optional divider argument
-/arguments:
+//arguments:
 // - A and B: digital inputs from encoder
 // - Switch; pin for encoder switch, or -1 for no switch
 // - divider: many encoders put out multiple pulses per detent
