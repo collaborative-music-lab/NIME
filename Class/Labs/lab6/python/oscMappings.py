@@ -67,8 +67,10 @@ def waveshape(add,val):
 	elif add == '/ws-lfo-depth':  sendOSC('basic-lfo', 1, 'DEPTH', val)
 
 def pitchGlide(add, val):
-	val = scale(val, 0,127,0, 500, 2)
-	sendOSC('pitchGlide', val, val, val )
+	state['pitchGlideLag'] = scale(val, 0,127,0.5, 0.99, 2)
+	state['pitchGlideRange'] = scale(val, 0,127,0, 500, 2)
+	#val = scale(val, 0,127,0, 500, 2)
+	#sendOSC('pitchGlide', val, val, val )
 
 def setMagnitudeSmooth(add, val):
 	tuning['magnitudeSmooth'] = val/127
@@ -104,7 +106,9 @@ state = {
 	'curPitchset': 1,
 	'encSw': 0,
 	'detune': 0,
-	'pitches': [24,0,12,-12] #basePitch, offset1, offset2, sub
+	'pitches': [24,0,12,-12], #basePitch, offset1, offset2, sub
+	'pitchGlideLag': 0.6
+	'pitchGlideRange': 100
 }
 
 prev = {
@@ -122,7 +126,8 @@ prev = {
 	'angleX': 0, 'angleY': 0, 'angleZ': 0,
 	'tiltX':0 , 'tiltY':0, 'tiltZ':0,
 	'tiltaX':0 , 'tiltaY':0, 'tiltaZ':0,
-	'lfo': 0, 'lfoTilt': 0, 'lfoLeak': 0
+	'lfo': 0, 'lfoTilt': 0, 'lfoLeak': 0,
+	'pitchGlide':0
 }
 
 tuning = {
@@ -145,47 +150,53 @@ pitchset = [[0,3,5,7,10,15,17,19,22],
 def mapSensor(add, val):
 	global state
 
-	sensor,num = splitAddress(add)
+	try:
+		sensor,num = splitAddress(add)
 
-	if sensor == "/pot":
-		pass
+		if sensor == "/pot":
+			pass
 
-	elif sensor == "/sw":
-		state['switch'][num] = val
-		updateSwitchVals(num,val)
-		client.send_message( "/sw"+str(num), val)
+		elif sensor == "/sw":
+			state['switch'][num] = val
+			updateSwitchVals(num,val)
+			client.send_message( "/sw"+str(num), val)
 
-	elif sensor == "/cap":
-		pass
+		elif sensor == "/cap":
+			pass
 
-	elif sensor == "/enc":
-		client.send_message("/enc", val)
+		elif sensor == "/enc":
+			client.send_message("/enc", val)
 
-	elif sensor == "/encSw":
-		state['encSw'] = val
-		client.send_message("/encSw", val)
+		elif sensor == "/encSw":
+			state['encSw'] = val
+			client.send_message("/encSw", val)
 
-	elif sensor == "/acc":
-		calcJerk(val)
-		calcVelocity(val)
-		calcMagnitude(val)
-		#calcTiltAccel(val)
+		elif sensor == "/acc":
+			calcJerk(val)
+			calcVelocity(val)
+			calcMagnitude(val)
+			#calcTiltAccel(val)
 
-		calcVoiceGains()
-		calcLPF()
-		calcLFOs()
+			calcVoiceGains()
+			calcLPF()
+			calcLFOs()
+			calcPitchGlide()
 
-		### one and only one of the below can be active ###
-		#calcAccMagnitude(val, 0.5	)
-		#calcSmoothAccel(val, 0.9) #second arg is coefficient
-		sendRawAccel( val)
-		prev['accel'] = state['accel']
-		state['accel'] = val
-	
+			### one and only one of the below can be active ###
+			#calcAccMagnitude(val, 0.5	)
+			#calcSmoothAccel(val, 0.9) #second arg is coefficient
+			sendRawAccel( val)
 
-	elif sensor == "/gyro":
-		calcTilt(val)
-		sendRawGyro( val)
+			prev['accel'] = state['accel']
+			state['accel'] = val
+		
+
+		elif sensor == "/gyro":
+			calcTilt(val)
+			sendRawGyro( val)
+	except:
+		print("unrecognized sensorVal", add, val)
+		print(e)
 
 
 def updateSwitchVals(num, val):
@@ -337,6 +348,18 @@ def sendRawGyro(vals):
 	state['gyro'] = vals
 
 ######SYNTH PARAMS ########
+def calcPitchGlide():
+	outVal = state['magnitude']
+	outVal = state['pitchGlideRange']
+	outVal = state['pitchGlideLag']
+	
+
+	outVal = onepole(state['magnitude'], 'pitchGlide', state['pitchGlideLag'])
+	outVal = scale( abs(outVal), 0, 1, 100, state['pitchGlideRange'])
+	sendOSC('pitchGlide', outVal, outVal, outVal )
+	#sendOSC('/pitchGlide', outVal)
+
+
 def calcVoiceGains():
 	gains = [0]*4
 	#print(state['tilt'][1])
