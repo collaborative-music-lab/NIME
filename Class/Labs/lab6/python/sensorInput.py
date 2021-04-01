@@ -53,16 +53,22 @@ def processInput(*args):
 	elif 71<= address <= 72:
 		#accelerometer
 		if address == 71: # and len(args[0][1]) == 6: 
-			aX = bto_i16(args[0][1], args[0][2]) / (1<<15)
-			aY = bto_i16(args[0][3], args[0][4]) / (1<<15)
-			aZ = bto_i16(args[0][5], args[0][6]) / (1<<15)
-			return("/acc0", [aX,aY,aZ])
+			try:
+				aX = bto_i16(args[0][1], args[0][2]) / (1<<15)
+				aY = bto_i16(args[0][3], args[0][4]) / (1<<15)
+				aZ = bto_i16(args[0][5], args[0][6]) / (1<<15)
+				return("/acc0", [aX,aY,aZ])
+			except: 
+				print(e)
 		#gyroscope
 		elif address == 72: # and len(args[0][1]) == 6: 
-			gX = bto_i16(args[0][1], args[0][2])/ (1<<15)
-			gY = bto_i16(args[0][3], args[0][4])/ (1<<15)
-			gZ = bto_i16(args[0][5], args[0][6])/ (1<<15)
-			return("/gyro0", [gX,gY,gZ])
+			try:
+				gX = bto_i16(args[0][1], args[0][2])/ (1<<15)
+				gY = bto_i16(args[0][3], args[0][4])/ (1<<15)
+				gZ = bto_i16(args[0][5], args[0][6])/ (1<<15)
+				return("/gyro0", [gX,gY,gZ])
+			except: 
+				print(e)
 
 	print("no sensor assigned to this number", args[0][0])
 	return("/none", 0)
