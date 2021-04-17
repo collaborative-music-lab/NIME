@@ -67,10 +67,11 @@ def waveshape(add,val):
 	elif add == '/ws-lfo-depth':  sendOSC('basic-lfo', 1, 'DEPTH', val)
 
 def pitchGlide(add, val):
-	state['pitchGlideLag'] = scale(val, 0,127,0.5, 0.99, 2)
-	state['pitchGlideRange'] = scale(val, 0,127,0, 500, 2)
-	#val = scale(val, 0,127,0, 500, 2)
-	#sendOSC('pitchGlide', val, val, val )
+	state['pitchGlideRange'] = scale(val, 0, 127, 10, 500, 2) #inputVal, inLow, inHigh, outLow, outHigh, exponent
+	state['pitchGlideLag'] = scale(val, 0, 127, 0., 1, tuning['pitchGlideLagCurve'])
+	#print("oscPitchGlide", val, state['pitchGlideRange'])
+	# val = scale(val, 0,127,0, 500, 2)
+	# sendOSC('pitchGlide', val, val, val )
 
 def setMagnitudeSmooth(add, val):
 	tuning['magnitudeSmooth'] = val/127
@@ -107,8 +108,8 @@ state = {
 	'encSw': 0,
 	'detune': 0,
 	'pitches': [24,0,12,-12], #basePitch, offset1, offset2, sub
-	'pitchGlideLag': 0.6
-	'pitchGlideRange': 100
+	'pitchGlideRange': 100, #pitchGlide time in ms
+	'pitchGlideLag': 0.9 #lowpass coefficient
 }
 
 prev = {
@@ -127,7 +128,7 @@ prev = {
 	'tiltX':0 , 'tiltY':0, 'tiltZ':0,
 	'tiltaX':0 , 'tiltaY':0, 'tiltaZ':0,
 	'lfo': 0, 'lfoTilt': 0, 'lfoLeak': 0,
-	'pitchGlide':0
+	'pitchGlide': 0
 }
 
 tuning = {
@@ -139,7 +140,8 @@ tuning = {
 	'velocitySmooth': 1,
 	'lfoScale': 0.4, 
 	'lfoLeak': 0.97,
-	'fmDepth': 64
+	'fmDepth': 64,
+	'pitchGlideLagCurve': 0.5
 }
 
 pitchset = [[0,3,5,7,10,15,17,19,22], 
@@ -348,16 +350,13 @@ def sendRawGyro(vals):
 	state['gyro'] = vals
 
 ######SYNTH PARAMS ########
-def calcPitchGlide():
-	outVal = state['magnitude']
-	outVal = state['pitchGlideRange']
-	outVal = state['pitchGlideLag']
-	
 
-	outVal = onepole(state['magnitude'], 'pitchGlide', state['pitchGlideLag'])
-	outVal = scale( abs(outVal), 0, 1, 100, state['pitchGlideRange'])
-	sendOSC('pitchGlide', outVal, outVal, outVal )
-	#sendOSC('/pitchGlide', outVal)
+def calcPitchGlide():
+	#print('pitchGlide', state['magnitude'], state['pitchGlideRange'], state['pitchGlideLag'])
+	outVal = state['magnitude'] * state['pitchGlideRange']
+	outVal = onepole(outVal,'pitchGlide', state['pitchGlideLag'])
+
+	sendOSC("pitchGlide", outVal, outVal, outVal)
 
 
 def calcVoiceGains():
