@@ -1,10 +1,10 @@
-#optosensor.py
+#minviable.py
 #Ian Hattwick   
 #March 21, 2021
 
 PACKET_INCOMING_SERIAL_MONITOR = 0
 
-CUR_PYTHON_SCRIPT = "optosensor.py"
+CUR_PYTHON_SCRIPT = "minviable.py"
     
 import serial, serial.tools.list_ports, socket, sys, asyncio,struct,time, math
 from pythonosc import osc_message_builder

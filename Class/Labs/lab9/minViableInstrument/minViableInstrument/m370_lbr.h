@@ -19,18 +19,16 @@
 
 #ifndef m370_lbr_h
 #define m370_lbr_h
-
+ 
 #include <Arduino.h>
-
-//#include <Wire.h>
+#include <Wire.h>
 // #include <WiFi.h>
 // #include <WiFiUdp.h>
 
 #include "pinDefsv5.h"
-//#include "m370_Sensor.h"
+#include "src/m370_analog.h"
 #include "src/m370_communication.h"
 #include "src/m370_digitalInput.h"
-#include "src/m370_analog.h"
 #include "src/LSM6.h"
 #include "src/Esp32Encoder.h"
 

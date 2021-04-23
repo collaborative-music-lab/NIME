@@ -42,7 +42,7 @@ ANALOG SETUP
 *********************************************/
 const byte NUM_ANALOG = 2;
 
-m370_analog pot[NUM_ANALOG] = {
+m370_analog ana[NUM_ANALOG] = {
   m370_analog(p0,20), //pin, sampling rate (Hz)
   m370_analog(p1,20)  //pin, sampling rate (Hz)
 };
@@ -61,7 +61,7 @@ m370_digitalInput sw[NUM_DIGITAL] = {
 void setup() {
  
   for(byte i=0;i<NUM_DIGITAL;i++) sw[i].begin();
-  for(byte i=0;i<NUM_ANALOG;i++) pot[i].begin();
+  for(byte i=0;i<NUM_ANALOG;i++) ana[i].begin();
 
   comms.baudRate = 115200;
   comms.begin(FIRMWARE);
@@ -110,11 +110,11 @@ void readButtons(){
 
 void readPotentiometers(){
   for(int i=0;i<NUM_ANALOG;i++){
-    pot[i].loop();
-    if(pot[i].available() ){
-      int outVal = pot[i].getVal();
+    ana[i].loop();
+    if(ana[i].available() ){
+      int outVal = ana[i].getVal();
       if( SERIAL_DEBUG ) {
-        PrintDebug("pot",i,outVal);
+        PrintDebug("analog",i,outVal);
       }
       else {
         comms.outu8(i);

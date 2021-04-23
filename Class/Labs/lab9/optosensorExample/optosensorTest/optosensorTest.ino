@@ -106,6 +106,8 @@ void loop() {
   //output = reading1 - reading 2
   Serial.print("raw: ");
   Serial.print(read1);
+  Serial.print(", off: ");
+  Serial.print(read2);
   Serial.print(", diff: ");
   Serial.println( read1-read2 ); 
   delay(25);
