@@ -26,13 +26,21 @@ def processInput(*args):
 		elif address == 11: return("/sw1", 1-val)
 		elif address == 12: return("/sw2", 1-val)
 		elif address == 13: return("/sw3", 1-val)
+		elif address == 14: return("/sw4", 1-val)
+		elif address == 15: return("/sw5", 1-val)
 
 	elif address == 30:
 		#encoder
 		return("/enc0", -(val-(1<<15)))
 
 	elif address == 31:
-		return("/encSw0", 1-val)
+		return("/enc0", -(val-(1<<15)))
+
+	elif address == 32:
+		return("/encsw0", 1-val)
+
+	elif address == 33:
+		return("/encsw1", 1-val)
 
 	elif 50 <= address <= 70:
 		#capsense
@@ -71,6 +79,26 @@ def processInput(*args):
 				print(e)
 
 	print("no sensor assigned to this number", args[0][0])
+
+	return("/none", 0)
+
+
+def processMidi(msg):
+	if msg[0] is 144:
+		print ("noteon:", msg[1], "velocity:", msg[2] )
+		return("/noteon"+str(msg[1]), msg[1])
+
+	elif msg[0] is 128: #send note off as noteon with velocity 0
+		print ("noteoff:", msg[1] )
+		return("/noteon"+str(msg[1]), 0)
+
+	elif msg[0] is 176:
+		print("cc number:", msg[1], "value:", msg[2])
+		return("/cc"+str(msg[1]), msg[2])
+
+	else: 
+		print("midi msg not mapped", msg)
+
 	return("/none", 0)
 
 

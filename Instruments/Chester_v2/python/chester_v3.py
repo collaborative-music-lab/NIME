@@ -3,6 +3,7 @@
 #April 17, 2021
 
 PACKET_INCOMING_SERIAL_MONITOR = 0
+MIDI_ENABLE = 1
 
 CUR_PYTHON_SCRIPT = "chester_v2.py"
     
@@ -12,19 +13,31 @@ from pythonosc import udp_client
 from pythonosc.osc_server import AsyncIOOSCUDPServer
 from pythonosc.dispatcher import Dispatcher
 
+#import midi.py
+
 #m370 python modules
 import scripts.m370_communication as m370_communication
-comms = m370_communication.communication("wifi", SSID="MLE", password="mitmusictech")
-#comms = m370_communication.communication("serial", baudrate = 115200, defaultport="/dev/tty.SLAB_USBtoUART")
+#comms = m370_communication.communication("wifi", SSID="MLE", password="mitmusictech")
+comms = m370_communication.communication("serial", baudrate = 115200, defaultport="/dev/tty.SLAB_USBtoUART")
 import scripts.timeout as timeout
 #you can change the defaultport to the name your PC gives to the ESP32 serial port
+
+
+#####midi input######
+if MIDI_ENABLE:
+    import midi as midi
+    midi.probePorts()
+    midi_input = midi.input(0)
+
+
+##########
 
 import sensorInput as sensor
 import oscMappings as osc
 osc.comms = comms   
 
 t = timeout.Timeout(5)
-osc.t = t
+osc.t = t 
 
 
 ######################
@@ -69,9 +82,10 @@ async def loop():
 
     while(t.check()): 
         #t.check checks if timeout has triggered to cancel script
-        await asyncio.sleep(0) #listen for OSC
+        await asyncio.sleep(0) #listen for OSC        
 
         while(comms.available() > 0):
+            await asyncio.sleep(0) #listen for OSC
             currentMessage = comms.get() # can be None if nothing in input buffer
             
             if currentMessage != None: 
@@ -87,12 +101,21 @@ async def loop():
                 else:
                     print("packet2", currentMessage)
 
+            if MIDI_ENABLE:
+                msg = midi.input.available()
+                if msg is not None: address, value = sensor.processMidi(msg)
+
+        if MIDI_ENABLE:
+            msg = midi_input.available()
+            if msg is not None: address, value = sensor.processMidi(msg)
+
         time.sleep(0.001) 
 
 
+
 async def init_main():
-    server = AsyncIOOSCUDPServer(("127.0.0.1", 5006), dispatcher, asyncio.get_event_loop())
-    transport, protocol = await server.create_serve_endpoint()
+    serverOSC = AsyncIOOSCUDPServer(("127.0.0.1", 5006), dispatcher, asyncio.get_event_loop())
+    transport, protocol = await serverOSC.create_serve_endpoint()
     await loop()
     transport.close()
 

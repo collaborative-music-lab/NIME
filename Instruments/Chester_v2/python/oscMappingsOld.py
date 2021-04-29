@@ -10,22 +10,85 @@ global dispatcher
 enableIMUmonitoring = 0
 
 def defineOscHandlers():
-	print('define')
+	dispatcher.map("/setPitch", setPitch)
+	dispatcher.map("/synthDetune", setDetune)
+	dispatcher.map("/FMDepth", FMDepth)
+	dispatcher.map("/reverb-size", reverbSize )
+	dispatcher.map("/waveshape", waveshape )
+	dispatcher.map("/ws-lfo-rate", waveshape )
+	dispatcher.map("/ws-lfo-depth", waveshape )
+	dispatcher.map("/pitch-glide", pitchGlide )
+	dispatcher.map("/setMagnitudeSmooth", setMagnitudeSmooth )
+	dispatcher.map("/setTiltSmooth", setTiltSmooth )
+	dispatcher.map("/setVelocitySmooth", setVelocitySmooth )
+	dispatcher.map("/setPitchset", setPitchset )
 	dispatcher.map("/clock", updateClocks )
 
 def initSynthParams():
 	pass
 
+def setPitch(add, num, val):
+	pitchshift = [24,12,7,4,0]
+	index = math.floor(val)
+
+	if num == 0:
+		newVal = math.floor(val/5)+19
+		if newVal != state['pitches'][0]:
+			state['pitches'][0] = newVal
+	
+	elif num == 1: state['pitches'][1] = pitchshift[index]
+	elif num == 2: state['pitches'][2] = pitchshift[index]
+	elif num == 3: state['pitches'][3] = (val) * -12
+
+	updatePitches()
+
+def setDetune(add,val): 
+	state['detune'] = math.pow(val/127,3)/12
+	updatePitches()
+
+def updatePitches():
+	sendOSC("bwl-osc", 4, "PITCH", state['pitches'][0] + state['pitches'][3]) #sub
+	sendOSC("bwl-osc", 1, "PITCH", state['pitches'][0]) #main osc
+	sendOSC("bwl-osc", 2, "PITCH", state['pitches'][1]+state['pitches'][0] + state['pitches'][0]*state['detune'])
+	sendOSC("bwl-osc", 3, "PITCH", state['pitches'][2]+state['pitches'][0] - state['pitches'][0]*state['detune'])
+
+def FMDepth(add,val):
+	for i in range(4):
+		sendOSC("bwl-osc", i, "FM", tuning['fmDepth'])
+		sendOSC("vca", i+10 , "VCA", scale(val, 0,127,0, 127, 3))
+
+def reverbSize(add, val):
+	sendOSC('millerverb', 1, 'REVERB', val)
+	sendOSC('megaverb', 1, 'SIZE', val)
+
+def waveshape(add,val):
+	if add == '/waveshape':
+		for i in range(3): sendOSC('bwl-osc', i+1, 'WSHAPE', val/2)
+	elif add == '/ws-lfo-rate': sendOSC('basic-lfo', 1, 'FREQ', val)
+	elif add == '/ws-lfo-depth':  sendOSC('basic-lfo', 1, 'DEPTH', val)
+
+def pitchGlide(add, val):
+	state['pitchGlideRange'] = scale(val, 0, 127, 10, 500, 2) #inputVal, inLow, inHigh, outLow, outHigh, exponent
+	state['pitchGlideLag'] = scale(val, 0, 127, 0., 1, tuning['pitchGlideLagCurve'])
+	#print("oscPitchGlide", val, state['pitchGlideRange'])
+	# val = scale(val, 0,127,0, 500, 2)
+	# sendOSC('pitchGlide', val, val, val )
+
+def setMagnitudeSmooth(add, val):
+	tuning['magnitudeSmooth'] = val/127
+
+def setTiltSmooth(add, val):
+	tuning['tiltSmooth'] = val/127
+
+def setVelocitySmooth(add, val):
+	tuning['velocitySmooth'] = val/127
+
+def setPitchset(add, val):
+	if val < len(pitchset): state['curPitchset'] = int(val)
+	else: print("pitchset index out of range")
+
 def updateClocks(add, val):
 	clock = val % 64
-	#print(clock)
-	#checkBinRhy(clock)
-
-def checkBinRhy(clock):
-	clock = clock % 4
-	for i in range(4):
-		if (int(state['binRhy'][i]) >> clock) & 1 is 1:
-			print('br', i, 1)
 
 ######################
 #SENSOR MAPPINGS
@@ -33,7 +96,7 @@ def checkBinRhy(clock):
 ######################
 state = {
 	#placeholders for storing most recent data
-	'switch': [0,0,0,0,0],
+	'switch': [0,0,0,0],
 	'accel': [0,0,0],
 	'accelInt': [0,0,0],
 	'accelSmooth': [0,0,0],
@@ -49,14 +112,27 @@ state = {
 	'encSw': 0,
 	'detune': 0,
 	'pitches': [24,0,12,-12], #basePitch, offset1, offset2, sub
-	'binRhy':[8,12,3,7]
+	'pitchGlideRange': 100, #pitchGlide time in ms
+	'pitchGlideLag': 0.9 #lowpass coefficient
 }
 
 prev = {
 	#variables for storing previous sensor data
+	'aX': 0, 'aY': 0, 'aZ': 0,
+	'aiX': 0, 'aiY': 0, 'aiZ': 0,
+	'amX': 0, 'amY': 0, 'amZ': 0,
+	'gX': 0, 'gY': 0, 'gZ': 0,
+	'vX': 0, 'vY': 0, 'vZ': 0,
+	'jX': 0, 'jY': 0, 'jZ': 0,
+	'jiX': 0, 'jiY': 0, 'jiZ': 0,
 	'accel': [0,0,0], 'gyro': [0,0,0], 'velocity': [0,0,0], 'jerk': [0,0,0],
-	'magnitude1': 0,
-	'tiltX':0 , 'tiltY':0, 'tiltZ':0 #keep
+	'aMag': [0,0,0], 'magnitude1': 0, 'magnitude2': 0, 'magnitude3': 0,
+	'angle': [0,0,0],
+	'angleX': 0, 'angleY': 0, 'angleZ': 0,
+	'tiltX':0 , 'tiltY':0, 'tiltZ':0,
+	'tiltaX':0 , 'tiltaY':0, 'tiltaZ':0,
+	'lfo': 0, 'lfoTilt': 0, 'lfoLeak': 0,
+	'pitchGlide': 0
 }
 
 tuning = {
@@ -114,6 +190,7 @@ def mapSensor(add, val):
 
 			### one and only one of the below can be active ###
 			#calcAccMagnitude(val, 0.5	)
+			#calcSmoothAccel(val, 0.9) #second arg is coefficient
 			sendRawAccel( val)
 
 			prev['accel'] = state['accel']
@@ -130,7 +207,7 @@ def mapSensor(add, val):
 
 
 def updateSwitchVals(num, val):
-	'''use our switches to select pitches from a pitchset'''
+	'''use our switches to selet pitches from a pitchset'''
 	state['switch'][num] = val 
 
 	pitchIndex = 0 #which pitch from our set t0 play
@@ -144,11 +221,10 @@ def updateSwitchVals(num, val):
 
 	outVal = pitches[int(pitchIndex)]
 	state['pitch'] = outVal
-	print(state['switch'])
 	#don't play if switch 1/2/3 are not held down
 	if outVal >=  0:
 		outVal += 12 * state['switch'][0] #switch 0 changes ocatve
-		#print('pitch', pitchIndex, outVal, pitches)	
+		print('pitch', pitchIndex, outVal, pitches)	
 		outVal /= 127
 		sendOSC('globalpitch', outVal, outVal, outVal)
 
@@ -215,6 +291,10 @@ def calcMagnitude(vals):
 
 def calcVelocity(vals):
 	#integrate acceleration
+	vel = ['vX','vY','vZ']
+	acc = ['aiX','aiY','aiZ']
+	jerk = ['jiX','jiY','jiZ']
+
 	for i in range(3):
 		#remove gravity
 		state['accelInt'][i] *= tuning['velocitySmooth'] * 0.9
@@ -251,6 +331,14 @@ def calcAccMagnitude(vals, coefficient):
 		state['aMag'][i] = onepole(abs(vals[i]),mag[i], coefficient)
 	#print(state['aMag'])
 	if enableIMUmonitoring == 1:	sendRawAccel(state['aMag'])
+
+def calcSmoothAccel(vals,coefficient):
+	'''simple lowpass filter for accel'''
+	prevAcc = ['aX','aY','aZ']
+	for i in range(3):
+		state['accelSmooth'][i] = onepole((vals[i]),prevAcc[i], coefficient)
+	#print(state['aMag'])
+	sendRawAccel(vals)
 
 def sendRawAccel(vals):
 	if enableIMUmonitoring == 1:

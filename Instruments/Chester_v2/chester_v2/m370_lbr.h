@@ -30,6 +30,7 @@
 #include "src/m370_digitalInput.h"
 #include "src/LSM6.h"
 #include "src/Esp32Encoder.h"
+#include "src/m370_analog.h"
 
 void  debug(String name, int val){
 	Serial.print(name);

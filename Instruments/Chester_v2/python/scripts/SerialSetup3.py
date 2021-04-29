@@ -88,7 +88,7 @@ class serialClass:
                 response = self.comm.read(self.comm.in_waiting) 
                 print(response)
                 if len(response) > 0: 
-                    print(response)
+                    print("serial response", response)
                     serial_connected = 1 
                     print(port + " connected\n")
                 if serial_connected == 1:  break;

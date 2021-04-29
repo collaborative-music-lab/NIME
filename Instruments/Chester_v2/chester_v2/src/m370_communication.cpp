@@ -68,12 +68,12 @@ uint8_t m370_communication::begin( String firmwareNotes[5]){
   //while(1) {Serial.println("opo"); delay(1000);}
   if( mode==APandSERIAL || mode==AP_WIFI){
       WIFI_MODE = 1;
-      //returnVal += wifi_ap_setup();
+      returnVal += wifi_ap_setup();
   } else if ( mode==STAandSERIAL || mode==STA_WIFI ){//STA mode
     WIFI_MODE = 0;
     returnVal += wifi_sta_setup();
   }
-  return returnVal==2;
+  return returnVal>0;
 }
 
 /*
@@ -89,33 +89,44 @@ This allows the ucontroller to perform specific tasks to indicate connect status
 uint8_t m370_communication::connect(){
   //handshaking
   byte numAvailable = available();
+  Serial.print("comms connect available bytes ");
+  Serial.println(numAvailable);
 
-  if(m370_wifiConnectionState==0) {
-    Serial.println("Waiting for connection");
-    Serial.println(numAvailable);
-    delay(100);
-  } 
-  m370_wifiConnectionState = 1;
-  ACTIVE_MODE = 1;
+  // if(m370_wifiConnectionState==0) {
+  //   Serial.println("Waiting for connection");
+  //   Serial.println(numAvailable);
+  //   delay(100);
+  // } 
+  // m370_wifiConnectionState = 1;
+  // ACTIVE_MODE = 1;
 
   if( numAvailable > 0 ){
     // Serial.print('a');
     // Serial.write( _available );
     getInput(inBuffer,&inIndex);
-    for(int i=0;i<inIndex;i++) Serial.println(inBuffer[i]);
-    send();
+    Serial.print("connect input ");
+    for(int i=0; i<inIndex; i++) {
+      Serial.print(inBuffer[i]);
+      Serial.print(" ");
+    }
+    Serial.print("index ");
+    Serial.println(inIndex);
+    //send();
 
     if(inIndex>0){
       if(inBuffer[0]  == 253){
         if (inBuffer[1] == 1 ) WIFI_ENABLE = 0;
         if (inBuffer[1] == 2 ) SERIAL_ENABLE = 0;
         m370_wifiConnectionState = inBuffer[1];  
-        Serial.print(inBuffer[0]);
-        Serial.println(inBuffer[1]);
+        // Serial.print(inBuffer[0]);
+        // Serial.println(inBuffer[1]);
 
       }
     }//else
   }//end handshake
+
+  ACTIVE_MODE = m370_wifiConnectionState;
+
 
   //print firmware notes:
   
@@ -140,6 +151,7 @@ uint8_t m370_communication::connect(){
   //   send();
   //   delay(500);
   // }
+  delay(100);
   return m370_wifiConnectionState;
 }
 
@@ -175,8 +187,9 @@ uint8_t m370_communication::wifi_sta_setup(){
   
   //Initiate connection
   WiFi.begin(ssid, password);
-
+  Serial.print("WIFI STA setup, ");
   Serial.println("Waiting for WIFI connection...");
+  WIFI_ENABLE = 1;
   return 1;
 }
 
@@ -206,8 +219,8 @@ uint16_t m370_communication::available(){
     if(SERIAL_ENABLE){
       while(Serial.available()) {
         ACTIVE_MODE = 1;
-        inWriteIndex<bufSize-1 ? inWriteIndex++ : inWriteIndex=0 ;
-        rawInBuffer[inWriteIndex] = Serial.read();
+       inWriteIndex<bufSize-1 ? inWriteIndex++ : inWriteIndex=0 ;
+        rawInBuffer[inWriteIndex] = Serial.read(); 
         if(COMM_DEBUG){
           Serial.print('w');
           Serial.write( inWriteIndex );
@@ -215,25 +228,23 @@ uint16_t m370_communication::available(){
       }
     }
     if(WIFI_ENABLE){
-      udp.parsePacket();
-      while(udp.available()){
-        //if(ACTIVE_MODE != 2) Serial.println("WiFi found");
-        ACTIVE_MODE = 2;
-        // if(!serverFound){
-        //   if( m370_wifiConnectionState > 0 ){
-        //     serverAddress = udp.remoteIP();
-        //     //serverPort = udp.remotePort();
-        //     Serial.print("server connected, IP: ");
-        //     Serial.print(serverAddress);
-        //     Serial.print(", port: ");
-        //     Serial.println(serverPort);
-        //     serverFound = 1;
-        //   }
-        // }
-        byte val2 = udp.read();
-        Serial.print(val2);
-        rawInBuffer[inWriteIndex] = val2;
-        inWriteIndex<bufSize-1 ? inWriteIndex++ : inWriteIndex=0 ;
+      //read from UDP
+      int size = udp.parsePacket();
+
+      if(size > 0){
+        serverAddress = udp.remoteIP();
+        //serverPort = udp.remotePort();
+        
+        for(int i=0; i<size; i++){
+          inWriteIndex<bufSize-1 ? inWriteIndex++ : inWriteIndex=0 ;
+          rawInBuffer[inWriteIndex] = udp.read();
+          if(COMM_DEBUG) Serial.print("wifi ");
+          if(COMM_DEBUG){
+            Serial.print(rawInBuffer[inWriteIndex]);
+            Serial.print(" ");
+          }
+          if(COMM_DEBUG) Serial.println();
+        }
       }
     }
   }
@@ -376,9 +387,10 @@ uint16_t m370_communication::send(){
       Serial.print("Sending to ");
       Serial.print(serverAddress);
       Serial.print(", ");
-      Serial.print(serverPort);
+      Serial.println(serverPort);
+
       udp.beginPacket(serverAddress,serverPort);
-      udp.write(outBuffer[0]);
+      udp.write(outBuffer, outIndex);
       udp.endPacket();
     }
     uint16_t  returnValue =   outIndex;

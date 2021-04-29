@@ -1,29 +1,21 @@
-#N canvas 76 3 1440 855 12;
+#N canvas 2048 31 1440 855 12;
 #X obj 25 206 receiveOSC;
-#X obj 441 432 sendOSC, f 20;
-#X msg 575 371 0;
-#X obj 575 394 oscformat mirror;
 #X obj 20 -43 vsl 30 128 1.27 127 0 0 empty empty Synth -1 -9 0 10
--262144 -1 -1 16300 1;
+-262144 -1 -1 0 1;
 #X obj 89 -43 vsl 30 128 1.27 127 0 0 empty empty Sub 6 -9 0 10 -262144
--1 -1 19500 1;
+-1 -1 0 1;
 #X obj 136 -43 vsl 30 128 1.27 127 0 0 empty empty Verb 0 -9 0 10 -262144
--1 -1 5400 1;
+-1 -1 0 1;
 #X obj 25 238 s incomingOSC;
 #X obj 26 261 r incomingOSC;
 #X obj 153 224 spigot;
 #X obj 153 247 print;
 #X obj 191 206 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
-#X msg 443 305 0;
-#X obj 443 328 oscformat cancel;
 #X obj 14 428 keyGrid, f 19;
 #X obj 14 455 oscformat keyDown;
 #X obj 32 483 oscformat keyUp;
 #X obj 14 505 s outgoingOSC;
-#X obj 699 393 r outgoingOSC;
-#X obj 577 327 r incomingOSC;
-#X obj 577 350 route init;
 #N canvas 0 23 1283 302 pitchReceives 0;
 #X obj 143 25 r v1-pitch-s;
 #X obj 235 26 r v2-pitch-s;
@@ -109,25 +101,25 @@
 #X obj 362 -44 hsl 128 15 0 127 0 0 magnitude-s magnitude-r magnitude_smoothing
 -2 -8 0 10 -262144 -1 -1 0 1;
 #X obj 365 76 hsl 128 15 0 127 0 0 waveshape-s empty waveshape -2 -8
-0 10 -262144 -1 -1 2400 1;
+0 10 -262144 -1 -1 0 1;
 #X obj 364 42 hsl 128 15 0 127 0 0 FM-depth-s empty FM-depth -2 -8
-0 10 -262144 -1 -1 3100 1;
+0 10 -262144 -1 -1 0 1;
 #X obj 365 139 hsl 128 15 0 127 0 0 waveshape-lfo-depth-s empty waveshape_lfo_depth
--2 -8 0 10 -262144 -1 -1 12400 1;
+-2 -8 0 10 -262144 -1 -1 0 1;
 #X obj 366 170 hsl 128 15 0 127 0 0 reverb-size-s empty reverb_size
--2 -8 0 10 -262144 -1 -1 19100 1;
+-2 -8 0 10 -262144 -1 -1 0 1;
 #X obj 226 211 r incomingOSC;
 #X obj 226 234 route param module;
 #X obj 226 292 s;
 #X obj 284 258 symbol;
 #X obj 54 -43 vsl 30 128 1.27 127 0 0 empty empty V1+V2 0 -9 0 10 -262144
--1 -1 25500 1;
-#X obj 707 289 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
+-1 -1 0 1;
+#X obj 483 400 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
 1;
-#X obj 707 309 metro 1000;
-#X obj 707 266 loadbang;
-#X msg 707 332 0;
-#X obj 707 355 oscformat tick;
+#X obj 483 419 metro 1000;
+#X obj 483 376 loadbang;
+#X msg 483 442 0;
+#X obj 483 465 oscformat tick;
 #X obj 26 284 IMUmonitor;
 #X obj 28 314 r incomingOSC;
 #X obj 28 337 route sw0 sw1 sw2 sw3 enc encSw;
@@ -142,15 +134,14 @@
 #X floatatom 154 363 5 0 0 0 - - -;
 #X obj 201 365 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
-#X obj 424 708 print;
 #X obj 18 -108 cnv 15 600 20 empty empty CHESTER 4 10 0 20 -258113
 -262144 0;
 #X obj 515 -10 hradio 15 1 0 4 pitchset-s empty pitchset 8 -6 0 14
 -262144 -1 -1 1;
 #X obj 365 108 hsl 128 15 0 127 0 0 waveshape-lfo-rate-s empty waveshape_lfo_rate
--2 -8 0 10 -262144 -1 -1 12000 1;
+-2 -8 0 10 -262144 -1 -1 0 1;
 #X obj 517 -48 hsl 128 15 0 127 0 0 pitch-glide-s empty pitch_glide
--2 -8 0 10 -262144 -1 -1 3100 1;
+-2 -8 0 10 -262144 -1 -1 0 1;
 #X text 510 37 VCO pitches;
 #X text 582 128 unison;
 #X text 582 113 third;
@@ -202,7 +193,7 @@
 #X coords 0 0 0.5 0.5 0 0 0;
 #X restore 384 217 pd parameterSends;
 #X obj 540 72 vsl 24 70 0 127 0 0 base-pitch-s base-pitch-r base 0
--9 0 10 -204786 -1 -1 7200 1;
+-9 0 10 -204786 -1 -1 0 1;
 #X obj 632 70 vradio 15 1 0 5 v2-pitch-s v2-pitch-s v2 0 -8 0 10 -262144
 -1 -1 1;
 #X obj 568 70 vradio 15 1 0 5 v1-pitch-s v1-pitch-s v1 0 -8 0 10 -262144
@@ -210,7 +201,7 @@
 #X obj 651 70 vradio 15 1 0 3 sub-pitch-s sub-pitch-s sub 0 -8 0 10
 -262144 -1 -1 1;
 #X obj 514 72 vsl 16 70 0 127 0 0 synthDetune-s synthDetune-r detune
--7 -9 0 8 -261234 -1 -1 3000 1;
+-7 -9 0 8 -261234 -1 -1 0 1;
 #X floatatom 514 150 5 0 0 0 - - -;
 #X text 583 68 2 oct;
 #X text 668 98 -2;
@@ -219,49 +210,92 @@
 #X obj 380 259 r pitchGlide;
 #X obj 380 282 print;
 #X obj 362 -15 hsl 128 15 0 127 0 0 tilt-s tilt-r tilt_smoothing -2
--8 0 10 -262144 -1 -1 20900 1;
+-8 0 10 -262144 -1 -1 0 1;
 #X obj 362 14 hsl 128 15 0 127 0 0 velocity-s velocity-r velocity_smoothing
--2 -8 0 10 -262144 -1 -1 5000 1;
-#X connect 0 0 9 0;
-#X connect 0 0 7 0;
-#X connect 2 0 3 0;
-#X connect 3 0 1 0;
-#X connect 3 0 1 1;
-#X connect 4 0 22 0;
-#X connect 5 0 22 2;
-#X connect 6 0 22 3;
-#X connect 8 0 44 0;
+-2 -8 0 10 -262144 -1 -1 0 1;
+#X obj 619 421 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
+1;
+#X obj 619 465 f;
+#X obj 652 463 + 1;
+#X obj 619 511 oscformat clock;
+#X obj 619 546 sendOSC, f 20;
+#X msg 753 485 0;
+#X obj 753 508 oscformat mirror;
+#X floatatom 680 397 5 0 0 0 - - -;
+#X msg 592 325 0;
+#X obj 592 348 oscformat cancel;
+#X obj 930 378 r enableToggles;
+#X obj 930 456 oscformat enableToggles;
+#X obj 942 488 r outgoingOSC;
+#X obj 930 401 list prepend 0;
+#X obj 930 424 list trim;
+#X obj 755 441 r incomingOSC;
+#X obj 755 464 route init;
+#X obj 680 419 clip 20 1000;
+#X obj 615 376 loadbang;
+#X msg 615 399 1;
+#X obj 734 333 r tempo;
+#X obj 734 356 expr pow($f1/127 \, 2)*400 + 50;
+#X obj 619 441 metro 140;
+#X text 855 554 choose a random tempo on load;
+#X msg 619 486 \$1;
+#X connect 0 0 6 0;
+#X connect 0 0 4 0;
+#X connect 1 0 14 0;
+#X connect 2 0 14 2;
+#X connect 3 0 14 3;
+#X connect 5 0 36 0;
+#X connect 6 0 7 0;
+#X connect 8 0 6 1;
 #X connect 9 0 10 0;
-#X connect 11 0 9 1;
-#X connect 12 0 13 0;
-#X connect 13 0 1 0;
-#X connect 14 0 15 0;
-#X connect 14 1 16 0;
-#X connect 15 0 17 0;
-#X connect 16 0 17 0;
-#X connect 18 0 1 0;
+#X connect 9 1 11 0;
+#X connect 10 0 12 0;
+#X connect 11 0 12 0;
+#X connect 16 0 14 4;
 #X connect 19 0 20 0;
-#X connect 20 0 2 0;
-#X connect 24 0 22 4;
+#X connect 20 0 12 0;
+#X connect 26 0 27 0;
 #X connect 27 0 28 0;
-#X connect 28 0 17 0;
+#X connect 27 1 29 0;
+#X connect 29 0 28 1;
+#X connect 30 0 14 1;
+#X connect 31 0 32 0;
+#X connect 32 0 34 0;
+#X connect 33 0 31 0;
 #X connect 34 0 35 0;
-#X connect 35 0 36 0;
-#X connect 35 1 37 0;
-#X connect 37 0 36 1;
-#X connect 38 0 22 1;
-#X connect 39 0 40 0;
-#X connect 40 0 42 0;
-#X connect 41 0 39 0;
-#X connect 42 0 43 0;
-#X connect 43 0 1 0;
-#X connect 45 0 46 0;
-#X connect 46 0 47 0;
-#X connect 46 1 48 0;
-#X connect 46 2 49 0;
-#X connect 46 3 50 0;
-#X connect 46 4 51 0;
-#X connect 46 5 52 0;
-#X connect 68 0 69 0;
+#X connect 35 0 73 0;
+#X connect 37 0 38 0;
+#X connect 38 0 39 0;
+#X connect 38 1 40 0;
+#X connect 38 2 41 0;
+#X connect 38 3 42 0;
+#X connect 38 4 43 0;
+#X connect 38 5 44 0;
+#X connect 59 0 60 0;
+#X connect 65 0 66 0;
+#X connect 69 0 91 0;
+#X connect 70 0 71 0;
+#X connect 70 0 93 0;
+#X connect 71 0 70 1;
+#X connect 72 0 73 0;
 #X connect 74 0 75 0;
+#X connect 75 0 73 0;
+#X connect 75 0 73 1;
+#X connect 76 0 86 0;
+#X connect 77 0 78 0;
+#X connect 78 0 73 0;
+#X connect 79 0 82 0;
+#X connect 80 0 73 0;
+#X connect 81 0 73 0;
+#X connect 82 0 83 0;
+#X connect 83 0 80 0;
+#X connect 84 0 85 0;
+#X connect 85 0 74 0;
+#X connect 86 0 91 1;
+#X connect 87 0 88 0;
+#X connect 88 0 69 0;
+#X connect 89 0 90 0;
+#X connect 90 0 76 0;
+#X connect 91 0 70 0;
+#X connect 93 0 72 0;
 #X coords 0 0 0.5 0.5 0 0 0;

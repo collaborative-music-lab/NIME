@@ -1,9 +1,8 @@
 #include: wifiSetup and serialSetup
 import scripts.SerialSetup3 
 ser = scripts.SerialSetup3.serialClass()
-#wf = scripts.WifiSetup
-
-import scripts.WifiSetup 
+import scripts.WifiSetup2
+wf = scripts.WifiSetup2.wifiClass()
 
 import asyncio
 import struct
@@ -20,7 +19,7 @@ class communication:
 	escByte = 254
 
 	###INIT ################################################################
-	def __init__( self, mode, baudrate=115200, wifimode="STA", defaultport="none" ):
+	def __init__( self, mode, baudrate=115200, wifimode="STA", defaultport="none", SSID = "none", password = "none" ):
 		"""1 mandatory argument 'mode': serial, wifi, or bluetooth
 
 		Options:
@@ -29,13 +28,13 @@ class communication:
 
 		Bluetooth support not added yet."""
 		self.__mode=mode
-		print("init", self.__mode, baudrate)
+		print("init", self.__mode)
 
 		if self.__mode == "wifi" :
 			if wifimode=="AP" :
-				wf.setupAP()
+				wf.setupAP(network=SSID, password=password)
 			else: 
-				wf.setupSta()
+				wf.setupAP(network=SSID, password=password)
 			print("wifi")
 		elif self.__mode == "serial" :
 			print(baudrate)
@@ -44,6 +43,7 @@ class communication:
 		elif self.__mode == "bluetooth" :
 			print("bluetooth support not added yet. . . .")
 			#todo
+
 
 
 	###SEND ################################################################
@@ -70,7 +70,7 @@ class communication:
 			returnval = wf.available()
 		elif self.__mode == "bluetooth":
 			pass
-
+		#print("available", returnval)
 		return returnval
 
 	#GET ################################################

@@ -4,7 +4,7 @@
 #X floatatom 313 136 5 0 0 0 - store-slot-r -;
 #X floatatom 313 168 5 0 0 0 - recall-slot-r -;
 #X obj 109 261 hsl 115 15 0 127 0 1 morph-slider-s empty MORPH -2 -8
-0 10 -262144 -1 -1 9700 1;
+0 10 -262144 -1 -1 19400 1;
 #X floatatom 194 247 5 0 0 0 (ms) morph-time-r -;
 #X obj 106 571 / 127;
 #X obj 106 593 * 9999;
@@ -20,7 +20,7 @@
 #X obj 106 659 t f f;
 #X obj 150 676 s morph-time-r;
 #X obj 108 196 hsl 115 15 0 127 0 1 scan-cv-att-s empty RECALL-CV 120
-7 0 10 -158136 -1 -1 11400 1;
+7 0 10 -158136 -1 -1 22800 1;
 #X obj 357 394 r recall-location-s;
 #X obj 357 503 + 1;
 #X obj 357 525 i;
@@ -68,7 +68,7 @@
 #X obj 105 149 hradio 15 1 0 16 store-location-s store-location-r STORE
 0 -8 0 10 -262144 -1 -1 3;
 #X obj 105 181 hradio 15 1 0 16 recall-location-s recall-location-r
-RECALL 0 -8 0 10 -262144 -1 -1 2;
+RECALL 0 -8 0 10 -262144 -1 -1 0;
 #X obj 793 420 r store-location-s;
 #X obj 751 353 r STORE-S!;
 #X obj 763 610 s store-location-r;
