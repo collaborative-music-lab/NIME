@@ -12,8 +12,8 @@ def processInput(*args):
 	if 0 <= address <=5:
 		#analog inputs
 		val = bto_ui16(args[0][1], args[0][2])
-		if address == 0: return("/pot1", val)
-		elif address == 1: return("/pot0", val)
+		if address == 0: return("/pot0", val)
+		elif address == 1: return("/pot1", val)
 		elif address == 2: return("/pot2", val)
 		elif address == 3: return("/pot3", val)
 		elif address == 4: return("/pot4", val)
@@ -31,16 +31,16 @@ def processInput(*args):
 
 	elif address == 30:
 		#encoder
-		return("/enc0", -(val-(1<<15)))
+		return("/enc0", (val-(1<<15)))
 
 	elif address == 31:
-		return("/enc0", -(val-(1<<15)))
+		return("/enc1", -(val-(1<<15)))
 
 	elif address == 32:
 		return("/encsw0", 1-val)
 
 	elif address == 33:
-		return("/encsw1", 1-val)
+		return("/encsw1", val)
 
 	elif 50 <= address <= 70:
 		#capsense
@@ -77,6 +77,66 @@ def processInput(*args):
 				return("/gyro0", [gX,gY,gZ])
 			except: 
 				print(e)
+
+	print("no sensor assigned to this number", args[0][0])
+
+	return("/none", 0)
+
+def processInput2(*args):
+	address = args[0][0]
+	val = bto_ui16(args[0][1], args[0][2])
+
+	# I like to write this out longform in case I need
+	#to change the order of sensors in a group
+	if 0 <= address <=5:
+		#analog inputs
+		val = bto_ui16(args[0][1], args[0][2])
+		if address == 0: return("/pot0", val)
+		elif address == 1: return("/pot1", val)
+		elif address == 2: return("/pot2", val)
+		elif address == 3: return("/pot3", val)
+		elif address == 4: return("/pot4", val)
+		elif address == 5: return("/pot5", val)
+
+	elif address < 30:
+		#buttons
+		val = bto_ui16(args[0][1], args[0][2])
+		if address == 10: return("/sw0", 1-val)
+		elif address == 11: return("/sw1", 1-val)
+		elif address == 12: return("/sw2", 1-val)
+		elif address == 13: return("/sw3", 1-val)
+		elif address == 14: return("/sw4", 1-val)
+		elif address == 15: return("/sw5", 1-val)
+
+	elif address == 30:
+		#encoder
+		return("/enc2", (val-(1<<15)))
+
+	elif address == 31:
+		return("/enc3", -(val-(1<<15)))
+
+	elif address == 32:
+		return("/encsw2", 1-val)
+
+	elif address == 33:
+		return("/encsw3", 1-val)
+
+	elif 50 <= address <= 70:
+		#capsense
+		val = bto_i16(args[0][1], args[0][2]) #note using signed integer here
+		if address == 50: return("/cap3", val)
+		elif address == 51: return("/cap7", val)
+		elif address == 52: return("/cap2", val)
+		elif address == 53: return("/cap6", val)
+		elif address == 54: return("/cap4", val)
+		elif address == 55: return("/cap5", val)
+		elif address == 56: return("/cap11", val)
+		elif address == 57: return("/cap1", val)
+		elif address == 58: return("/cap10", val)
+		elif address == 59: return("/cap8", val)
+		elif address == 60: return("/cap0", val)
+		elif address == 61: return("/cap9", val)
+
 
 	print("no sensor assigned to this number", args[0][0])
 

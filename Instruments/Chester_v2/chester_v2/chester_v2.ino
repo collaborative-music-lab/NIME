@@ -78,7 +78,7 @@ void setup() {
 
   byte commsBegin = 0;
   while (commsBegin  ==  0) {
-    if (SERIAL_DEBUG == 2) commsBegin = 1;
+    if (SERIAL_DEBUG == 2) break;
     //Serial.println("comms");
     commsBegin = comms.connect()  ; //sends firmware metadata to begin function
 
@@ -110,7 +110,7 @@ void loop() {
     comms.getInput(inBuffer,  &index);
   }
 }
-
+byte swState[5];
 void readSw() {
   static int count[4];
 
@@ -118,9 +118,10 @@ void readSw() {
     sw[i].loop();
     if ( sw[i].available() ) {
       int outVal = sw[i].getState();
+      swState[i] = outVal;
       if (outVal == 1) count[i]++;
       if ( SERIAL_DEBUG ) {
-        PrintDebug("sw", i, count[i]);
+        PrintDebug("sw", i, sumSwitches());
       }
       else {
         comms.outu8(i + 10);
@@ -129,6 +130,12 @@ void readSw() {
       }
     }
   }
+}
+
+int sumSwitches(){
+  int val =0;
+  for (int i=0;i<5;i++)val+=swState[i];
+  return val;
 }
 
 void readEncoder() {

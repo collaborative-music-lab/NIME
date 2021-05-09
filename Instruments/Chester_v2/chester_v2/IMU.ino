@@ -38,7 +38,7 @@ void imuLoop(){
   static uint32_t sendTimer = 0;
   int interval = 50;
 
-  if(millis()-sendTimer>interval){
+  if(millis()-sendTimer>interval && (sumSwitches() < 5) ){
     sendTimer=millis();
 
     if(SERIAL_DEBUG){

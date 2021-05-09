@@ -3,9 +3,9 @@
 #April 17, 2021
 
 PACKET_INCOMING_SERIAL_MONITOR = 0
-MIDI_ENABLE = 1
+MIDI_ENABLE = 0
 
-CUR_PYTHON_SCRIPT = "chester_v2.py"
+CUR_PYTHON_SCRIPT = "chester_v3.py"
     
 import serial, serial.tools.list_ports, socket, sys, asyncio,struct,time, math
 from pythonosc import osc_message_builder
@@ -17,15 +17,15 @@ from pythonosc.dispatcher import Dispatcher
 
 #m370 python modules
 import scripts.m370_communication as m370_communication
-#comms = m370_communication.communication("wifi", SSID="MLE", password="mitmusictech")
-comms = m370_communication.communication("serial", baudrate = 115200, defaultport="/dev/tty.SLAB_USBtoUART")
+comms = m370_communication.communication("wifi", SSID="MLE", password="mitmusictech")
+comms2 = m370_communication.communication("serial", baudrate = 115200, defaultport="/dev/tty.usbserial-1410")
 import scripts.timeout as timeout
 #you can change the defaultport to the name your PC gives to the ESP32 serial port
 
 
 #####midi input######
 if MIDI_ENABLE:
-    import midi as midi
+    import scripts.midi as midi
     midi.probePorts()
     midi_input = midi.input(0)
 
@@ -99,11 +99,47 @@ async def loop():
                         client.send_message(address,value)
 
                 else:
-                    print("packet2", currentMessage)
+                    print("packet", currentMessage)
+
+            while(comms2.available() > 0):
+                await asyncio.sleep(0) #listen for OSC
+                currentMessage = comms2.get() # can be None if nothing in input buffer
+                
+                if currentMessage != None: 
+                    if PACKET_INCOMING_SERIAL_MONITOR == 0:
+                        if 2 < len(currentMessage) < 16:
+                            #print("packet3", currentMessage)
+                            address, value = sensor.processInput2(currentMessage)
+                            # if address is not "/acc0" or "/gyro0":
+                            #print(address, value)
+                            osc.mapSensor(address,value)
+                            #client.send_message(address,value)
+
+                    else:
+                        print("packet2", currentMessage)
+
+                    
 
             if MIDI_ENABLE:
-                msg = midi.input.available()
+                msg = midi_input.available()
                 if msg is not None: address, value = sensor.processMidi(msg)
+
+        while(comms2.available() > 0):
+            await asyncio.sleep(0) #listen for OSC
+            currentMessage = comms2.get() # can be None if nothing in input buffer
+            
+            if currentMessage != None: 
+                if PACKET_INCOMING_SERIAL_MONITOR == 0:
+                    if 2 < len(currentMessage) < 16:
+                        #print("packet3", currentMessage)
+                        address, value = sensor.processInput2(currentMessage)
+                        # if address is not "/acc0" or "/gyro0":
+                        #print(address, value)
+                        osc.mapSensor(address,value)
+                        #client.send_message(address,value)
+
+                else:
+                    print("packet2", currentMessage)
 
         if MIDI_ENABLE:
             msg = midi_input.available()
