@@ -1,0 +1,126 @@
+#N canvas 240 31 1440 855 12;
+#X obj 25 206 receiveOSC;
+#X obj 25 238 s incomingOSC;
+#X obj 26 261 r incomingOSC;
+#X obj 153 224 spigot;
+#X obj 153 247 print;
+#X obj 191 206 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 14 428 keyGrid, f 19;
+#X obj 14 455 oscformat keyDown;
+#X obj 32 483 oscformat keyUp;
+#X obj 14 505 s outgoingOSC;
+#X obj 17 -82 cnv 15 155 20 empty empty MIXER 4 10 0 14 -203904 -66577
+0;
+#X obj 359 -86 cnv 15 225 20 empty empty tuning 4 10 0 10 -204786 -66577
+0;
+#X obj 16 174 cnv 15 320 20 empty empty MONITOR 4 10 0 14 -203904 -66577
+0;
+#X obj 167 428 r prog-synth-seq-s;
+#X obj 167 451 oscformat progSynthSeq;
+#X obj 226 211 r incomingOSC;
+#X obj 226 234 route param module;
+#X obj 226 292 s;
+#X obj 284 258 symbol;
+#X obj 483 400 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
+1;
+#X obj 483 419 metro 1000;
+#X obj 483 376 loadbang;
+#X msg 483 442 0;
+#X obj 483 465 oscformat tick;
+#X obj 26 284 IMUmonitor;
+#X obj 28 314 r incomingOSC;
+#X obj 28 337 route sw0 sw1 sw2 sw3 enc encSw;
+#X obj 29 367 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 63 365 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 96 368 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 130 366 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X floatatom 154 363 5 0 0 0 - - -;
+#X obj 201 365 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 18 -108 cnv 15 600 20 empty empty CHESTER 4 10 0 20 -258113
+-262144 0;
+#X obj 619 421 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
+1;
+#X obj 619 465 f;
+#X obj 652 463 + 1;
+#X obj 619 511 oscformat clock;
+#X obj 619 546 sendOSC, f 20;
+#X msg 753 485 0;
+#X obj 753 508 oscformat mirror;
+#X floatatom 680 395 5 0 0 0 - - -;
+#X msg 592 325 0;
+#X obj 592 348 oscformat cancel;
+#X obj 930 378 r enableToggles;
+#X obj 930 456 oscformat enableToggles;
+#X obj 942 488 r outgoingOSC;
+#X obj 930 401 list prepend 0;
+#X obj 930 424 list trim;
+#X obj 755 441 r incomingOSC;
+#X obj 755 464 route init;
+#X obj 680 419 clip 20 1000;
+#X obj 615 376 loadbang;
+#X msg 615 399 1;
+#X obj 734 333 r tempo;
+#X obj 734 356 expr pow($f1/127 \, 2)*400 + 50;
+#X obj 619 441 metro 140;
+#X text 855 554 choose a random tempo on load;
+#X msg 619 486 \$1;
+#X obj 473 525 s globalClock;
+#X connect 0 0 3 0;
+#X connect 0 0 1 0;
+#X connect 2 0 24 0;
+#X connect 3 0 4 0;
+#X connect 5 0 3 1;
+#X connect 6 0 7 0;
+#X connect 6 1 8 0;
+#X connect 7 0 9 0;
+#X connect 8 0 9 0;
+#X connect 13 0 14 0;
+#X connect 14 0 9 0;
+#X connect 15 0 16 0;
+#X connect 16 0 17 0;
+#X connect 16 1 18 0;
+#X connect 18 0 17 1;
+#X connect 19 0 20 0;
+#X connect 20 0 22 0;
+#X connect 21 0 19 0;
+#X connect 22 0 23 0;
+#X connect 23 0 38 0;
+#X connect 25 0 26 0;
+#X connect 26 0 27 0;
+#X connect 26 1 28 0;
+#X connect 26 2 29 0;
+#X connect 26 3 30 0;
+#X connect 26 4 31 0;
+#X connect 26 5 32 0;
+#X connect 34 0 56 0;
+#X connect 35 0 36 0;
+#X connect 35 0 58 0;
+#X connect 36 0 35 1;
+#X connect 39 0 40 0;
+#X connect 40 0 38 0;
+#X connect 40 0 38 1;
+#X connect 41 0 51 0;
+#X connect 42 0 43 0;
+#X connect 43 0 38 0;
+#X connect 44 0 47 0;
+#X connect 45 0 38 0;
+#X connect 46 0 38 0;
+#X connect 47 0 48 0;
+#X connect 48 0 45 0;
+#X connect 49 0 50 0;
+#X connect 50 0 39 0;
+#X connect 51 0 56 1;
+#X connect 52 0 53 0;
+#X connect 53 0 34 0;
+#X connect 54 0 55 0;
+#X connect 55 0 41 0;
+#X connect 56 0 35 0;
+#X connect 58 0 37 0;
+#X connect 58 0 59 0;
+#X coords 0 0 0.5 0.5 0 0 0;
