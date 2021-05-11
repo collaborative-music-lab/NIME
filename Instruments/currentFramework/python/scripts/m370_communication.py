@@ -32,9 +32,9 @@ class communication:
 
 		if self.__mode == "wifi" :
 			if wifimode=="AP" :
-				wf.setupSTA(network=SSID, password=password, ip=ip)
+				wf.setupSTA()
 			else: 
-				wf.setupAP(network=SSID, password=password, ip=ip)
+				wf.setupAP()
 			print("wifi setup complete\n___\n")
 		elif self.__mode == "serial" :
 			print(baudrate)

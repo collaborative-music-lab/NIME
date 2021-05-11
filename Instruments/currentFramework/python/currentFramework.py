@@ -2,10 +2,10 @@
 #Ian Hattwick   
 #April 17, 2021
 
-PACKET_INCOMING_SERIAL_MONITOR = 0
+PACKET_INCOMING_SERIAL_MONITOR = 1
 MIDI_ENABLE = 0
 
-CUR_PYTHON_SCRIPT = "chester_v3.py"
+CUR_PYTHON_SCRIPT = "currentFramework.py"
     
 import serial, serial.tools.list_ports, socket, sys, asyncio,struct,time, math
 from pythonosc import osc_message_builder
@@ -19,9 +19,7 @@ from pythonosc.dispatcher import Dispatcher
 import scripts.m370_communication as m370_communication
 
 #for wifi
-#comms = m370_communication.communication("wifi", SSID="MLE", password="mitmusictech")
-#may be necessary to define your wifi IP if it isn't 192.168.1.xxx
-comms = m370_communication.communication("wifi", SSID="mle2", password="mitmusictech")#, ip="192.168.4.1")
+comms = m370_communication.communication("wifi")
 
 comms2 = m370_communication.communication("serial", baudrate = 115200, defaultport="/dev/tty.usbserial-1410")
 import scripts.timeout as timeout
@@ -127,7 +125,11 @@ async def loop():
 
             if MIDI_ENABLE:
                 msg = midi_input.available()
-                if msg is not None: address, value = sensor.processMidi(msg)
+                if msg is not None: 
+                    address, value = sensor.processMidi(msg)
+                    if PACKET_INCOMING_SERIAL_MONITOR == 1: print(address, value)
+                    osc.mapSensor(address,value)
+
 
         while(comms2.available() > 0):
             await asyncio.sleep(0) #listen for OSC

@@ -13,9 +13,6 @@ class wifiClass:
     # ser = 0
     inputBuffer = []
     packetList2 = []
-    ssid = "none"
-    password = "none"
-    IP = "0.0.0.0"
 
      #setup our default wifi interface
     HOST = '0.0.0.0'   # Symbolic name meaning all available interfaces
@@ -25,69 +22,31 @@ class wifiClass:
         self.s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.s.bind((self.HOST, self.PORT))
         self.s.setblocking(0)
-
-        # hostname = socket.gethostname()   
-        # IPAddr = socket.gethostbyname(self.HOST)   
-        # print("Your Computer Name is:" + self.HOST)   
-        # print("Your Computer IP Address is:" + IPAddr)
-
         pass
 
-    def setupAP(self,network,password, ip):
-        self.ssid = network
-        self.password = password
-        self.IP = ip
+    def setupAP(self):
 
         #find serial port
     
         wifi_connected = 0
-        self.checkConnection(wifi_connected, network, password)
+        self.checkConnection(wifi_connected)
 
-    def setupSTA(self,network,password, ip):
-        self.ssid = network
-        self.password = password
-        self.IP = ip
+    def setupSTA(self):
 
         #find serial port
     
         wifi_connected = 0
-        self.checkConnection(wifi_connected, network, password)
-
-    def get_ip(self):
-        q = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        try:
-            # doesn't even have to be reachable
-            q.connect(('10.255.255.255', 1))
-            IP = q.getsockname()[0]
-        except Exception:
-            IP = '127.0.0.1'
-        finally:
-            q.close()
-        return IP
-
-    def setBroadcastIP(self):
-        vals = self.IP.split('.',4)
-        return vals[0]+'.'+vals[1]+'.'+vals[2]+'.'+str(255)
+        self.checkConnection(wifi_connected)
 
 
-    def checkConnection(self, connected, network, password): 
-        # hostname = socket.gethostname()   
-        #IPAddr = socket.gethostbyname(s.gethostname())   
-        # print("Your Computer Name is:" + self.HOST) 
+    def checkConnection(self, connected): 
 
-        
-        #IPAddr = self.get_ip() 
-        #print("Your Computer IP Address is:" + IPAddr + s.gethostname())
-
-        #setup a broadcast wifi interface to look for devices
-        #BCAST_HOST = 192.158.1.255 #self.setBroadcastIP()
-        #BCAST_HOST = '192.168.1.255'                # Symbolic name meaning all available interfaces
         BCAST_PORT = 1234                           # Arbitrary non-privileged port
         #print("broadcast IP: ", BCAST_HOST)
         wifi_connected = connected
         if connected == 1: return 1
 
-        print("Looking for ESP32 on " + network + " port " + str(BCAST_PORT))
+        print("Looking for ESP32 on port " + str(BCAST_PORT))
 
         if (1):
             bcast = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -102,11 +61,11 @@ class wifiClass:
                     bcast_msg = [253,2,1,255]
                     print("broadcast", bcast_msg)
 
-                    #self.s.sendto( bytearray(bcast_msg) , ('192.168.4.1', 1234))
+                    self.s.sendto( bytearray(bcast_msg) , ('192.168.4.1', 1234))
                     bcast.sendto( bytearray(bcast_msg) , ('<broadcast>', 1234))
                     data, clientAddress = self.s.recvfrom(1024) # buffer size is 1024 bytes
                     print("received", data, clientAddress)
-                    print("sdfh")
+
                     if (len(data) > 0):
                         print ("received message:", data, "address", clientAddress, "length", len(data))
                         print("Wifi connected to ", clientAddress)

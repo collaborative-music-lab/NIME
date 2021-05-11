@@ -106,9 +106,9 @@ uint8_t m370_communication::connect(){
   byte tempBuf[] = {0,1,2,3};
   int tempIndex = sizeof(tempBuf);
 
-  udp.beginPacket(serverAddress,serverPort);
-  udp.write(tempBuf, tempIndex);
-  udp.endPacket();
+  // udp.beginPacket(serverAddress,serverPort);
+  // udp.write(tempBuf, tempIndex);
+  // udp.endPacket();
 
 
   byte numAvailable = available();
@@ -155,6 +155,10 @@ uint8_t m370_communication::connect(){
 
   ACTIVE_MODE = m370_wifiConnectionState;
 
+  Serial.print("Sending to IP ");
+  Serial.print(serverAddress);
+  Serial.print(" port: ");
+  Serial.println(serverPort);
 
   //print firmware notes:
   
