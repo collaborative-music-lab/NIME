@@ -10,8 +10,8 @@ WiFiUDP udp;
 int serverPort = 1235;
 
 //Are we currently connected?
-boolean connected2 = false;
-boolean serverFound = false;
+boolean connected = false;
+volatile byte serverFound2 = 0;
 
 extern const char * ssid;
 extern const char * password;
@@ -19,7 +19,7 @@ extern const char * password;
 IPAddress espAddress(192,168,1,100);
 IPAddress castAddress(192,168,1,255);
 IPAddress pcAddress(192,168,1,101);
-IPAddress serverAddress(192,168,1,100);
+IPAddress serverAddress(192,168,4,2);
 
 //must be global so WIFI_EVENT can see iit
   byte m370_wifiConnectionState = 0; //0= no connection, 1= connected to network, 2=handshake completed
@@ -56,6 +56,12 @@ void m370_communication::Init(uint16_t size){
 }
 
 uint8_t m370_communication::begin( String firmwareNotes[5]){
+  Serial.begin(baudRate);
+  delay(200);
+
+  if (COMM_DEBUG ) Serial.println("COMM_DEBUG ENABLED");
+
+
   enable=1;
   inWriteIndex=0;
   inReadIndex=0;
@@ -63,16 +69,23 @@ uint8_t m370_communication::begin( String firmwareNotes[5]){
 
   Init(bufSize);
   uint8_t returnVal=0;
-  
+
   if( mode==SERIAL_ONLY || mode==APandSERIAL || mode==STAandSERIAL) returnVal =  serial_setup();
   //while(1) {Serial.println("opo"); delay(1000);}
   if( mode==APandSERIAL || mode==AP_WIFI){
-      WIFI_MODE = 1;
       returnVal += wifi_ap_setup();
   } else if ( mode==STAandSERIAL || mode==STA_WIFI ){//STA mode
-    WIFI_MODE = 0;
     returnVal += wifi_sta_setup();
   }
+  //Serial.println(returnVal);
+
+  while (serverFound2==0){
+    Serial.print(serverFound2);
+    Serial.println("waiting for connection");
+    delay(100);
+  }
+  Serial.println("Server found");
+
   return returnVal>0;
 }
 
@@ -87,10 +100,25 @@ Typically connect will be called from a while  loop in a setup functtion
 This allows the ucontroller to perform specific tasks to indicate connect status
 */
 uint8_t m370_communication::connect(){
+
   //handshaking
+
+  byte tempBuf[] = {0,1,2,3};
+  int tempIndex = sizeof(tempBuf);
+
+  udp.beginPacket(serverAddress,serverPort);
+  udp.write(tempBuf, tempIndex);
+  udp.endPacket();
+
+
   byte numAvailable = available();
-  Serial.print("comms connect available bytes ");
-  Serial.println(numAvailable);
+
+  if (COMM_DEBUG && numAvailable>0){
+    Serial.print("comms connect available bytes ");
+    Serial.println(numAvailable);
+  }
+  // Serial.print("comms connect available bytes ");
+  // Serial.println(numAvailable);
 
   // if(m370_wifiConnectionState==0) {
   //   Serial.println("Waiting for connection");
@@ -104,13 +132,13 @@ uint8_t m370_communication::connect(){
     // Serial.print('a');
     // Serial.write( _available );
     getInput(inBuffer,&inIndex);
-    Serial.print("connect input ");
-    for(int i=0; i<inIndex; i++) {
-      Serial.print(inBuffer[i]);
-      Serial.print(" ");
-    }
-    Serial.print("index ");
-    Serial.println(inIndex);
+    // Serial.print("connect input ");
+    // for(int i=0; i<inIndex; i++) {
+    //   Serial.print(inBuffer[i]);
+    //   Serial.print(" ");
+    // }
+    // Serial.print("index ");
+    // Serial.println(inIndex);
     //send();
 
     if(inIndex>0){
@@ -151,7 +179,7 @@ uint8_t m370_communication::connect(){
   //   send();
   //   delay(500);
   // }
-  delay(100);
+  delay(500);
   return m370_wifiConnectionState;
 }
 
@@ -163,8 +191,7 @@ SETUP FUNCTIONS
 uint8_t m370_communication::wifi_ap_setup(){
   Serial.println("Initializing Access Point: " + String(ssid));
   WiFi.softAP(ssid, password);
-  WiFi.onEvent(WiFiEvent);
-  server.begin();
+  
   espAddress = WiFi.softAPIP();
   Serial.print("ESP IP address: ");
   Serial.println(espAddress);
@@ -172,8 +199,9 @@ uint8_t m370_communication::wifi_ap_setup(){
   castAddress[3]=255;
   Serial.print("Broadcast IP address: ");
   Serial.println(castAddress);
-  udp.begin(WiFi.localIP(),udpPort);
-
+  WiFi.onEvent(WiFiEvent);
+  WIFI_ENABLE = 1;
+  delay(200);
   return 1;
 }
 
@@ -194,8 +222,7 @@ uint8_t m370_communication::wifi_sta_setup(){
 }
 
 uint8_t m370_communication::serial_setup(){
-  Serial.begin(baudRate);
-  delay(200);
+
   if( COMM_DEBUG ) Serial.println("Serial initialized");
   //m370_wifiConnectionState=1;
   SERIAL_ENABLE = 1;
@@ -213,21 +240,34 @@ INPUT
 //Stores raw slip encoded data in input buffer, and returns
 //number of available bytes
 uint16_t m370_communication::available(){
-  if(1){
-    byte _val[256];
-    byte _index=0;
-    if(SERIAL_ENABLE){
-      while(Serial.available()) {
-        ACTIVE_MODE = 1;
-       inWriteIndex<bufSize-1 ? inWriteIndex++ : inWriteIndex=0 ;
-        rawInBuffer[inWriteIndex] = Serial.read(); 
-        if(COMM_DEBUG){
-          Serial.print('w');
-          Serial.write( inWriteIndex );
-        }
+  if(SERIAL_ENABLE){
+    while(Serial.available()) {
+      ACTIVE_MODE = 1;
+     inWriteIndex<bufSize-1 ? inWriteIndex++ : inWriteIndex=0 ;
+      rawInBuffer[inWriteIndex] = Serial.read(); 
+      if(COMM_DEBUG){
+        Serial.print('w');
+        Serial.write( inWriteIndex );
       }
     }
-    if(WIFI_ENABLE){
+    
+  }
+
+  if(WIFI_ENABLE){
+  //   while(1){
+  //   int size = udp.parsePacket();
+
+  //     if(size > 0){
+
+  //       Serial.println(udp.remoteIP());
+        
+  //       for(int i=0; i<size; i++){
+  //         Serial.println(udp.read());
+  //     }
+  //     //Wait for 1 second
+  //     delay(500);
+  //   }
+  // }
       //read from UDP
       int size = udp.parsePacket();
 
@@ -247,7 +287,7 @@ uint16_t m370_communication::available(){
         }
       }
     }
-  }
+
   _available = (inWriteIndex + bufSize - inReadIndex) % bufSize;
   // if(_available > 0){
   //   Serial.print("check available ");
@@ -384,10 +424,10 @@ uint16_t m370_communication::send(){
     }
     //wifi
     else if(ACTIVE_MODE==2){ //else if(WIFI_ENABLE){
-      Serial.print("Sending to ");
-      Serial.print(serverAddress);
-      Serial.print(", ");
-      Serial.println(serverPort);
+      // Serial.print("Sending to ");
+      // Serial.print(serverAddress);
+      // Serial.print(", ");
+      // Serial.println(serverPort);
 
       udp.beginPacket(serverAddress,serverPort);
       udp.write(outBuffer, outIndex);
@@ -436,16 +476,28 @@ void WiFiEvent(WiFiEvent_t event){
         //This initializes the transfer buffer
         //m370_wifiConnectionState = 1;
         udp.begin(WiFi.localIP(),udpPort);
-        serverFound=1;
+        serverFound2=1;
         break;
     case SYSTEM_EVENT_STA_DISCONNECTED:
         //Serial.println("WiFi lost connection");
-        serverFound = 0;
+        serverFound2 = 0;
         //m370_wifiConnectionState = 1;
         break;
+
     case SYSTEM_EVENT_AP_STACONNECTED:
-        //Serial.print("New device connected "  );
-        serverFound = 1;
+        Serial.print("New device connected "  );
+        serverFound2 = 1;
+
+        
+
+        Serial.print(serverFound2);
+        Serial.print("UDP begun: ");
+        Serial.print(WiFi.softAPIP());
+        Serial.print(" ");
+        Serial.println(udpPort);
+
+        udp.begin(WiFi.softAPIP(), 1234);
+
         //m370_wifiConnectionState = 1;
         break;
     default: break;

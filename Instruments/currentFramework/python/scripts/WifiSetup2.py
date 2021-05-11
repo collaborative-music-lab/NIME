@@ -5,6 +5,9 @@ import socket, sys, time, select
 # from pythonosc.osc_server import AsyncIOOSCUDPServer
 # from pythonosc.dispatcher import Dispatcher
 
+#TODO: how to get wifi ip address reliably across multiple systems
+#for now, you can define an IP address manually
+
 class wifiClass:
 
     # ser = 0
@@ -12,6 +15,7 @@ class wifiClass:
     packetList2 = []
     ssid = "none"
     password = "none"
+    IP = "0.0.0.0"
 
      #setup our default wifi interface
     HOST = '0.0.0.0'   # Symbolic name meaning all available interfaces
@@ -21,28 +25,69 @@ class wifiClass:
         self.s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.s.bind((self.HOST, self.PORT))
         self.s.setblocking(0)
+
+        # hostname = socket.gethostname()   
+        # IPAddr = socket.gethostbyname(self.HOST)   
+        # print("Your Computer Name is:" + self.HOST)   
+        # print("Your Computer IP Address is:" + IPAddr)
+
         pass
 
-    def setupAP(self,network,password):
+    def setupAP(self,network,password, ip):
         self.ssid = network
         self.password = password
+        self.IP = ip
 
         #find serial port
     
         wifi_connected = 0
         self.checkConnection(wifi_connected, network, password)
 
+    def setupSTA(self,network,password, ip):
+        self.ssid = network
+        self.password = password
+        self.IP = ip
+
+        #find serial port
+    
+        wifi_connected = 0
+        self.checkConnection(wifi_connected, network, password)
+
+    def get_ip(self):
+        q = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        try:
+            # doesn't even have to be reachable
+            q.connect(('10.255.255.255', 1))
+            IP = q.getsockname()[0]
+        except Exception:
+            IP = '127.0.0.1'
+        finally:
+            q.close()
+        return IP
+
+    def setBroadcastIP(self):
+        vals = self.IP.split('.',4)
+        return vals[0]+'.'+vals[1]+'.'+vals[2]+'.'+str(255)
+
 
     def checkConnection(self, connected, network, password): 
+        # hostname = socket.gethostname()   
+        #IPAddr = socket.gethostbyname(s.gethostname())   
+        # print("Your Computer Name is:" + self.HOST) 
+
+        
+        #IPAddr = self.get_ip() 
+        #print("Your Computer IP Address is:" + IPAddr + s.gethostname())
 
         #setup a broadcast wifi interface to look for devices
-        BCAST_HOST = '192.168.1.255'                # Symbolic name meaning all available interfaces
+        #BCAST_HOST = 192.158.1.255 #self.setBroadcastIP()
+        #BCAST_HOST = '192.168.1.255'                # Symbolic name meaning all available interfaces
         BCAST_PORT = 1234                           # Arbitrary non-privileged port
-
+        #print("broadcast IP: ", BCAST_HOST)
         wifi_connected = connected
         if connected == 1: return 1
 
-        print("Looking for ESP32 on " + network + " ip " + BCAST_HOST + " " + str(BCAST_PORT))
+        print("Looking for ESP32 on " + network + " port " + str(BCAST_PORT))
 
         if (1):
             bcast = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -56,13 +101,19 @@ class wifiClass:
                 try:
                     bcast_msg = [253,2,1,255]
                     print("broadcast", bcast_msg)
+
+                    #self.s.sendto( bytearray(bcast_msg) , ('192.168.4.1', 1234))
                     bcast.sendto( bytearray(bcast_msg) , ('<broadcast>', 1234))
                     data, clientAddress = self.s.recvfrom(1024) # buffer size is 1024 bytes
                     print("received", data, clientAddress)
+                    print("sdfh")
                     if (len(data) > 0):
                         print ("received message:", data, "address", clientAddress, "length", len(data))
                         print("Wifi connected to ", clientAddress)
-                        self.s.sendto(data, (clientAddress) )
+                        # while(1):
+                        #     self.s.sendto( bytearray(bcast_msg) , ('192.168.4.1', 1234))
+                        #     time.sleep(0.1);
+                        #     print("sending")
                         break
 
                 except socket.error as ex:
@@ -70,9 +121,9 @@ class wifiClass:
 
                 time.sleep(0.1)
                 wifiCounter+=1
-                if(wifiCounter>10):
+                if(wifiCounter>250):
                     print("No wifi connection established")
-                    #break
+                    break
 
         #return s, clientAddress
 
@@ -153,6 +204,6 @@ class wifiClass:
 
     def send( self, data ):
         #print("serial.send", data )
-        self.comm.write(bytearray(data))
+        self.s.send(bytearray(data))
 
 

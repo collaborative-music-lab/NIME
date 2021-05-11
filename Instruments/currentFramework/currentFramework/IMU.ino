@@ -1,7 +1,6 @@
 
-LSM6 imu;
 
-void imuSetup(){
+void beginIMU(){
   Wire.begin(21,22);
 
   if (!imu.init())
@@ -14,7 +13,7 @@ void imuSetup(){
    Serial.println("imu setup");
 }
 
-void imuLoop(){
+void readIMU(){
   static uint32_t readTimer = 0;
   int readInterval = 5;
   static int32_t accel[] = {0,0,0};
@@ -38,7 +37,7 @@ void imuLoop(){
   static uint32_t sendTimer = 0;
   int interval = 50;
 
-  if(millis()-sendTimer>interval && (sumSwitches() < 5) ){
+  if( millis()-sendTimer>interval ){
     sendTimer=millis();
 
     if(SERIAL_DEBUG){

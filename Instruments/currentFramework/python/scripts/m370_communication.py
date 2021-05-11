@@ -19,7 +19,7 @@ class communication:
 	escByte = 254
 
 	###INIT ################################################################
-	def __init__( self, mode, baudrate=115200, wifimode="STA", defaultport="none", SSID = "none", password = "none" ):
+	def __init__( self, mode, baudrate=115200, wifimode="STA", defaultport="none", SSID = "none", password = "none", ip="192.168.1.1" ):
 		"""1 mandatory argument 'mode': serial, wifi, or bluetooth
 
 		Options:
@@ -32,10 +32,10 @@ class communication:
 
 		if self.__mode == "wifi" :
 			if wifimode=="AP" :
-				wf.setupAP(network=SSID, password=password)
+				wf.setupSTA(network=SSID, password=password, ip=ip)
 			else: 
-				wf.setupAP(network=SSID, password=password)
-			print("wifi")
+				wf.setupAP(network=SSID, password=password, ip=ip)
+			print("wifi setup complete\n___\n")
 		elif self.__mode == "serial" :
 			print(baudrate)
 			ser.begin( baudrate, defaultport=defaultport )

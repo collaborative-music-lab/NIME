@@ -13,11 +13,16 @@ from pythonosc import udp_client
 from pythonosc.osc_server import AsyncIOOSCUDPServer
 from pythonosc.dispatcher import Dispatcher
 
-#import midi.py
+#import midi.pyç
 
-#m370 python modules
+#m370 python modules 
 import scripts.m370_communication as m370_communication
-comms = m370_communication.communication("wifi", SSID="MLE", password="mitmusictech")
+
+#for wifi
+#comms = m370_communication.communication("wifi", SSID="MLE", password="mitmusictech")
+#may be necessary to define your wifi IP if it isn't 192.168.1.xxx
+comms = m370_communication.communication("wifi", SSID="mle2", password="mitmusictech")#, ip="192.168.4.1")
+
 comms2 = m370_communication.communication("serial", baudrate = 115200, defaultport="/dev/tty.usbserial-1410")
 import scripts.timeout as timeout
 #you can change the defaultport to the name your PC gives to the ESP32 serial port
