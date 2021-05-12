@@ -114,6 +114,9 @@ class communication:
 
 		global  __outBuffer
 		for i in data:
+			if i > 255: i = 255
+			elif i<0: i=0
+			
 			if i == self.endByte:
 				self.__outBuffer.append(self.escByte)
 				self.__outBuffer.append(i)
@@ -142,7 +145,7 @@ class communication:
 			pass
 
 		self.__outBuffer = bytearray(0)
-		#print("out array", self.__outBuffer)
+		print("out array", self.__outBuffer)
 
 		return returnval
 

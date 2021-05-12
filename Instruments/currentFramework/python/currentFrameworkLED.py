@@ -1,11 +1,14 @@
-#chester_v2.py
+#currentFrameworkLED.py
 #Ian Hattwick   
 #April 17, 2021
+
+#demonstrates controlling WS2811 or similar LEDs connected to the ESP32
+# look in oscMappings.py lines 135 & 759
 
 PACKET_INCOMING_SERIAL_MONITOR = 0
 MIDI_ENABLE = 0
 
-CUR_PYTHON_SCRIPT = "currentFramework.py"
+CUR_PYTHON_SCRIPT = "currentFrameworkLED.py"
     
 import serial, serial.tools.list_ports, socket, sys, asyncio,struct,time, math
 from pythonosc import osc_message_builder
@@ -13,15 +16,13 @@ from pythonosc import udp_client
 from pythonosc.osc_server import AsyncIOOSCUDPServer
 from pythonosc.dispatcher import Dispatcher
 
-#import midi.pyç
-
 #m370 python modules 
 import scripts.m370_communication as m370_communication
 
 #for wifi
 comms = m370_communication.communication("wifi")
 
-comms2 = m370_communication.communication("serial", baudrate = 115200, defaultport="/dev/tty.usbserial-1410")
+#comms = m370_communication.communication("serial", baudrate = 115200, defaultport="/dev/tty.usbserial-1410")
 import scripts.timeout as timeout
 #you can change the defaultport to the name your PC gives to the ESP32 serial port
 
@@ -83,17 +84,16 @@ async def loop():
     osc.initSynthParams()
     client.send_message("/init", 0)
 
-    #ledNum = 0
+    ledNum = 0
 
     while(t.check()): 
         #t.check checks if timeout has triggered to cancel script
         await asyncio.sleep(0) #listen for OSC 
 
-        # ledColor = (bytearray)[ledNum,100,0,200]
-        # comms.send(ledColor)   
-        # ledNum++    
+
 
         while(comms.available() > 0):
+
             await asyncio.sleep(0) #listen for OSC
             currentMessage = comms.get() # can be None if nothing in input buffer
             
@@ -110,24 +110,8 @@ async def loop():
                 else:
                     print("packet", currentMessage)
 
-            while(comms2.available() > 0):
-                await asyncio.sleep(0) #listen for OSC
-                currentMessage = comms2.get() # can be None if nothing in input buffer
+            
                 
-                if currentMessage != None: 
-                    if PACKET_INCOMING_SERIAL_MONITOR == 0:
-                        if 2 < len(currentMessage) < 16:
-                            #print("packet3", currentMessage)
-                            address, value = sensor.processInput2(currentMessage)
-                            # if address is not "/acc0" or "/gyro0":
-                            #print(address, value)
-                            osc.mapSensor(address,value)
-                            #client.send_message(address,value)
-
-                    else:
-                        print("packet2", currentMessage)
-
-                    
 
             if MIDI_ENABLE:
                 msg = midi_input.available()
@@ -136,23 +120,6 @@ async def loop():
                     if PACKET_INCOMING_SERIAL_MONITOR == 1: print(address, value)
                     osc.mapSensor(address,value)
 
-
-        while(comms2.available() > 0):
-            await asyncio.sleep(0) #listen for OSC
-            currentMessage = comms2.get() # can be None if nothing in input buffer
-            
-            if currentMessage != None: 
-                if PACKET_INCOMING_SERIAL_MONITOR == 0:
-                    if 2 < len(currentMessage) < 16:
-                        #print("packet3", currentMessage)
-                        address, value = sensor.processInput2(currentMessage)
-                        # if address is not "/acc0" or "/gyro0":
-                        #print(address, value)
-                        osc.mapSensor(address,value)
-                        #client.send_message(address,value)
-
-                else:
-                    print("packet2", currentMessage)
 
         if MIDI_ENABLE:
             msg = midi_input.available()

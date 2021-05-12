@@ -2,7 +2,9 @@ import math, random
 global dispatcher
 import threading
 
-#mappings for chester.py
+#demonstrates controlling WS2811 or similar LEDs connected to the ESP32
+# look in oscMappings.py lines 135 & 759
+
 ######################
 #INCOMING OSC
 # handle messages sent from PD
@@ -132,6 +134,7 @@ def mapSensor(add, val):
 			if num is 0:
 				outVal = scale(val, 0, 4095, 0, 127, 2)
 				sendOSC('slope', 55, 'FALL', outVal)
+				sendLED(0, outVal,0,255-outVal)
 			elif num is 1:
 				outVal = scale(val, 0, 4095, 0, 127, 2)
 				sendOSC('vca', 71, 'VCA', outVal)
@@ -754,6 +757,12 @@ def processOptoButton(num):
 
         client.send_message("/pitch", outVal)
         #print(num, outVal)
+
+def sendLED(num,r,g,b):
+	ledColor = [100,int(num),int(r),int(g),int(b)]
+	comms.send(ledColor)
+	comms.send([110])
+	print(ledColor)
 
 #gray code:
 # https://mathworld.wolfram.com/GrayCode.html

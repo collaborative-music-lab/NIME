@@ -158,10 +158,12 @@ uint8_t m370_communication::connect(){
 
   ACTIVE_MODE = m370_wifiConnectionState;
 
-  Serial.print("Sending to IP ");
-  Serial.print(serverAddress);
-  Serial.print(" port: ");
-  Serial.println(serverPort);
+  if( mode==APandSERIAL || mode==AP_WIFI){
+    Serial.print("Sending to IP ");
+    Serial.print(serverAddress);
+    Serial.print(" port: ");
+    Serial.println(serverPort);
+  }
 
   //print firmware notes:
   

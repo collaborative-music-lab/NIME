@@ -18,6 +18,9 @@ class wifiClass:
     HOST = '0.0.0.0'   # Symbolic name meaning all available interfaces
     PORT = 1235              # Arbitrary non-privileged port
 
+    clientAddress = '0.0.0.0'
+    clientPort = 1234
+
     def __init__(self):
         self.s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.s.bind((self.HOST, self.PORT))
@@ -103,7 +106,8 @@ class wifiClass:
 
         for s in inready:
             try:
-                wifiInput = list(self.s.recv(1024))
+                wifiInput,self.clientAddress = self.s.recvfrom(1024)
+                wifiInput = list(wifiInput)
                 #print(wifiInput)
             except Exception as e:
                 print(e)
@@ -162,7 +166,7 @@ class wifiClass:
 
 
     def send( self, data ):
-        #print("serial.send", data )
-        self.s.send(bytearray(data))
+        print("serial.send", data, self.clientAddress )
+        self.s.sendto(bytearray(data), (self.clientAddress))
 
 

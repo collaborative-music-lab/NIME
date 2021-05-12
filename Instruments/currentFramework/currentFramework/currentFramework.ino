@@ -38,29 +38,34 @@ There are four main sections:
 #include "m370_lbr.h"
 #include <Wire.h>
 
+//for led control uncomment below and update NUM_LEDS and DATA_PIN
+const int NUM_LEDS = 64;
+const int DATA_PIN = 13;
+//#include "src/m370_FastLED.h"
+
 byte SERIAL_DEBUG = 0;
 
 // WiFi network name and password:
 //const char * ssid = "esp32"; //2.4GHz network only (no 5g)
 //const char * password = "mitmusictech";
 
-const char * ssid = "MLE2"; //2.4GHz network only (no 5g)
+const char * ssid = "MLE"; //2.4GHz network only (no 5g)
 const char * password = "mitmusictech";
 
 ////Firmware metadata
 String FIRMWARE[] = {
-  /*NAME*/ "curentFramework",
-  /*VERSION*/ "0.1",
+  /*NAME*/ "currentFramework",
+  /*VERSION*/ "0.2",
   /*AUTHOR*/ "Ian Hattwick",
-  /*DATE*/ "May 9, 2021",
-  /*NOTES*/ "added wifiAP"
+  /*DATE*/ "May 11, 2021",
+  /*NOTES*/ "added led control"
 };
 
 
 //For wifi, AP mode creates a network and STA mode joins a network
 //available comModes are: SERIAL_ONLY, AP_WIFI, STA_WIFI, APandSERIAL, STAandSERIAL;
 //set default comMode here:
-const comModes comMode = AP_WIFI;
+const comModes comMode = STA_WIFI;
 //const comModes comMode = STAandSERIAL;
 m370_communication comms(comMode);
  
@@ -157,6 +162,9 @@ void setup() {
   //beginIMU(); //funtion defined in IMU tab
   //cap.begin();
 
+  //uncomment if using Leds
+  //beginLeds();
+
   Serial.println("Setup complete");
 }
 
@@ -176,9 +184,17 @@ void loop() {
   //leave uncommented
   if (comms.available()) {
     byte inBuffer[64];
-    byte index = 0;
+    byte index = 0; //number of received bytes
 
     comms.getInput(inBuffer,  &index);
+     for( int i=0;i<index;i++){
+    Serial.print(inBuffer[i]);
+    Serial.print(" ");
+     }
+    Serial.println();
+    //uncomment to use LEDs
+//    if(inBuffer[0]==100) writeOneLed(inBuffer[1],inBuffer[2],inBuffer[3],inBuffer[4]);
+//    else if (inBuffer[0]==110) showLeds();
   }
 }
 

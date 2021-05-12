@@ -11,7 +11,7 @@
 
 //previously allowed the buffer size to be dynamically set. Due to conflicts  between this and
 //the I2C communication  from the MPR121  library the buffer size was set at 256 (although the 
-//eeffective buffer size is still variable) 
+//effective buffer size is still variable) 
 //******************************/
 
 class m370_continuous{
