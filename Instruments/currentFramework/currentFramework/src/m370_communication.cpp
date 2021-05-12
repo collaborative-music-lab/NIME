@@ -73,18 +73,21 @@ uint8_t m370_communication::begin( String firmwareNotes[5]){
   if( mode==SERIAL_ONLY || mode==APandSERIAL || mode==STAandSERIAL) returnVal =  serial_setup();
   //while(1) {Serial.println("opo"); delay(1000);}
   if( mode==APandSERIAL || mode==AP_WIFI){
-      returnVal += wifi_ap_setup();
+    returnVal += wifi_ap_setup();
+
+    while (serverFound2==0){
+      Serial.print(serverFound2);
+      Serial.println("waiting for connection");
+      delay(100);
+    }
+    Serial.println("Server found");
+  
   } else if ( mode==STAandSERIAL || mode==STA_WIFI ){//STA mode
     returnVal += wifi_sta_setup();
   }
   //Serial.println(returnVal);
 
-  while (serverFound2==0){
-    Serial.print(serverFound2);
-    Serial.println("waiting for connection");
-    delay(100);
-  }
-  Serial.println("Server found");
+  
 
   return returnVal>0;
 }
