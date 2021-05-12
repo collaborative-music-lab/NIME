@@ -759,8 +759,14 @@ def processOptoButton(num):
         #print(num, outVal)
 
 def sendLED(num,r,g,b):
+	#message 100 tells the esp32 to save a color for a single led
+	#- but it doesn't actually update the leds
 	ledColor = [100,int(num),int(r),int(g),int(b)]
 	comms.send(ledColor)
+
+	#message 110 tells the esp32 to update the color for all of the leds
+	#- this takes a small amout of time for every led.
+	#- if you update lots (60-180) of leds this can take several milliseconds
 	comms.send([110])
 	print(ledColor)
 
