@@ -1,0 +1,4 @@
+#N canvas 0 22 474 459 12;
+#X obj 78 60 serialInput;
+#X obj 78 89 dataMonitor;
+#X connect 0 0 1 0;
