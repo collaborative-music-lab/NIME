@@ -1,10 +1,12 @@
 # 21M.370 Pure Data Repo
 
-We will use the excellent Automatonism library by Johan Eriksson. 
+We will use a port of the excellent Automatonism library by Johan Eriksson.
 
-https://www.automatonism.com
+https://www.automatonism.com is Johan's website and original version
 
-This library attempts to recreated the Eurorack modular experience within Pure Data, and also simplifies some issues regarding saving the current state of your patch.
+The autoMITonism repo is available here: https://github.com/collaborative-music-lab/autoMITonism
+
+This library attempts to recreated the Eurorack modular experience within Pure Data, and also simplifies some issues regarding saving the current state of your patch. The autoMITonism version just extends the functionality of the original.
 
 To use this, first download the Vanilla version of PD:
 https://puredata.info/downloads/pure-data
