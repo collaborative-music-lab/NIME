@@ -22,6 +22,7 @@ class Timeout:
     def __init__(self,interval):
       """ Sets the timeout period"""
       _interval = interval
+      self._counter = time.perf_counter()
 
     def check(self):
         if time.perf_counter() - self._counter > self._interval * self._unit:
