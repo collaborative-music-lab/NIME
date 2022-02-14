@@ -11,6 +11,9 @@ This firmware was developed using the Arduino IDE and the toolchain provided by 
 
 Any additional downloads will be updated on an as-needed basis.
 
+You will also likely need to download drivers for the [CP2104 USB drivers](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers)
+
+
 ## Hardware settings
 
 Once the ESP32 hardware support is installed:
