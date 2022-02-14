@@ -4,14 +4,15 @@ This firmware was developed using the Arduino IDE and the toolchain provided by 
 
 ## Installing
 
-1. Download a recent version of Arduino (I recommed downloading rather than trying to use the web-based IDE).
+1. Download a recent version of Arduino (You will need to use the downloadable version rather than the web-based IDE).
 
 2. Install hardware support for the ESP32:
-	Follow the instructions from this link to install the drivers for the ESP32, but instead of pasting in the sparkfun github link paste in the following link:
-	`https://dl.espressif.com/dl/package_esp32_index.json`
-	(note that the sparkfun libraries are super useful and we may use them in the future, so it doesn’t hurt to download those as well).
+	Follow the instructions for 'Installing using Boards Manager' from [this link to install the drivers](https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html).
 
-Any additional downloads will be updated on an as-needed basis
+Any additional downloads will be updated on an as-needed basis.
+
+You will also likely need to download drivers for the [CP2104 USB drivers](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers)
+
 
 ## Hardware settings
 
