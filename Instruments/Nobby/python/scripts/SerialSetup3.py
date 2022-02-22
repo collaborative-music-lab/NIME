@@ -90,8 +90,9 @@ class serialClass:
                 if len(response) > 0: 
                     print(response)
                     serial_connected = 1 
+                if serial_connected == 1:  
                     print(port + " connected\n")
-                if serial_connected == 1:  break;
+                    break;
                 self.comm.close
                 time.sleep(0.1)
         except serial.SerialException as e:
