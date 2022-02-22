@@ -65,6 +65,7 @@ uint8_t m370_communication::begin( String firmwareNotes[5]){
   uint8_t returnVal=0;
   
   if( mode==SERIAL_ONLY || mode==APandSERIAL || mode==STAandSERIAL) returnVal =  serial_setup();
+  if( mode==SERIAL_ONLY) ACTIVE_MODE = 1;
   //while(1) {Serial.println("opo"); delay(1000);}
   if( mode==APandSERIAL || mode==AP_WIFI){
       WIFI_MODE = 1;
