@@ -22,8 +22,8 @@ comms = m370_communication.communication("serial", baudrate = 115200, defaultpor
 # SET COMMUNICATION MODE
 ######################
 # don't forget to set the ESP32 firmware to match!
-SERIAL_ENABLE = 1
-WIFI_ENABLE = 0 #!!!! READ FOLLOWING COMMENT
+#SERIAL_ENABLE = 1
+#WIFI_ENABLE = 0 #!!!! READ FOLLOWING COMMENT
 # !!!! WIFI MAY require that you reset ESP32 before running python script
 # !!!! and DOES require that you run the python script AFTER resetting the ESP32
 

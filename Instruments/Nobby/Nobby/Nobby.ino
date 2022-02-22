@@ -76,8 +76,9 @@ void setup() {
     //Serial.println("comms");
     commsBegin = comms.connect()  ; //sends firmware metadata to begin function
   }
-
- Serial.println("setup completed");
+  delay(100);
+ Serial.println("comm mode " + String(commsBegin));
+ Serial.println("setup completed"); 
 }// setup
 
 void loop() {

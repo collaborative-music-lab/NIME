@@ -2,7 +2,7 @@
 #Ian Hattwick
 #Jan 18, 2022
 
-PACKET_INCOMING_SERIAL_MONITOR = 0
+PACKET_INCOMING_SERIAL_MONITOR = 1
 
 CUR_PYTHON_SCRIPT = "Nobby.py"
     
@@ -73,7 +73,7 @@ async def loop():
     while(t.check()): 
         #t.check checks if timeout has triggered to cancel script
         await asyncio.sleep(0) #listen for OSC
-
+        print(comms.available())
         while(comms.available() > 0):
             currentMessage = comms.get() # can be None if nothing in input buffer
             
@@ -87,7 +87,7 @@ async def loop():
                 else:
                     print("packet", currentMessage) #only for unrecognized input
 
-        time.sleep(0.001) 
+        time.sleep(0.1) 
 
 
 async def init_main():
