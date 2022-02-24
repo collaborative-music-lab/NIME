@@ -35,7 +35,10 @@ String FIRMWARE[] = {
 
 
 //comms handles communication with Python
-const comModes comMode = STAandSERIAL;
+//!!setting comMode to SERIAL_ONLY will force the ESP32 to 
+//begin sending serial data immediately, rather than waiting
+//for python to connect
+const comModes comMode = SERIAL_ONLY;
 
 m370_communication comms(comMode);
 

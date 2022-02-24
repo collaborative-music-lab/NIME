@@ -1,10 +1,12 @@
 import math
 
 class sensor:
+
 	def __init__(self, val=0, changeThreshold = 1):
 		self.val = val
 		self.prev = 0
 		self.changeThreshold = changeThreshold
+		print(self.changeThreshold)
 
 	def new(self, val):
 		self.val = val

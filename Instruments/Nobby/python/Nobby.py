@@ -4,6 +4,7 @@
 
 PACKET_INCOMING_SERIAL_MONITOR = 0
 
+
 CUR_PYTHON_SCRIPT = "Nobby.py"
     
 import serial, serial.tools.list_ports, socket, sys, asyncio,struct,time, math
@@ -60,7 +61,7 @@ def unknown_OSC(*args): print("unknown OSC message: ", args)
 dispatcher.set_default_handler(unknown_OSC)
 
 ######################
-#LOOPumjumjç
+#LOOP
 ######################
 
 async def loop():
@@ -88,7 +89,7 @@ async def loop():
                 else:
                     print("packet", currentMessage) #only for unrecognized input
 
-        time.sleep(0.1) 
+        time.sleep(0.001) 
 
 
 async def init_main():

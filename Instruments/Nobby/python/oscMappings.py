@@ -32,26 +32,28 @@ def defineOscHandlers():
 	dispatcher.map("/setPitch", setPitch)
 	dispatcher.map("/synthDetune", setDetune)
 
+
 def clock(*args):
-	global eucClock, synthProgramEnable, synthNewNote, synthClock, synthRange, synthClockDivider
+	global eucClock, synthProgramEnable, synthNewNote, synthClock, synthRange, synthClockDivider, prevTime
 	t.update() #reset timeout
 	curBeat = args[2]%16
-
+	
 	#drum sequencers
 	euclidTrigger = []
 	for i in range(3):
 		euclidTrigger.append( euc[i].get(math.floor(eucClock[i] / eucDivisor[i])) )
-		#if i == 0: print('clock', i, eucClock[i],euclidTrigger[i] )
 		eucClock[i] += 1
 		if eucClock[i] >= 16/eucDivisor[i]: eucClock[i] = 0 
 	
 	for i in range(3):	
-		#if i == 0: print('trig', i, eucClock[i], eucDivisor[i], switch[i].val)
+		# if i == 1: print('trig', i, eucClock[i], eucDivisor[i], switch[i].val)
 		if euclidTrigger[i]>0 and switch[i].val > 0:
+			#if i == 1: print('trig', curBeat, i, eucClock[i], eucDivisor[i], switch[i].val)
 			client.send_message("/trigger", i*2)
 			toneTrigger = i*2-1
 			if toneTrigger < 0: toneTrigger = 5
 			client.send_message("/trigger", toneTrigger)
+
 
 	#synth
 	if curBeat % synthClockDivider == 0: #synth clock is divided by N
@@ -115,7 +117,7 @@ potAmpGain = 4
 
 pot = []
 for i in range(4):
-	pot.append( sensor(0, changeThreshold = 10) )
+	pot.append( sensor(0, 10) ) #initial value, changeThreshold
 
 #change threshold for synth range pot
 pot[0].changeThreshold = 50
@@ -172,8 +174,16 @@ def mapSensor(add, val):
 				#print(pot[0].val)
 
 	elif add == "/pot3":
-		"""for future mapping"""
-		pass
+		if pot[3].new(val) is not None:
+			setSynthTone(val)	
+
+def setSynthTone(val):
+	val = val/4095
+	sendOSC('bob-filter', 1, 'CUTOFF', (val) * 100 + 2)
+	sendOSC('bob-filter', 1, 'FM-/+', (val) * 35 + 60)	
+	sendOSC('slope', 1, 'FALL', (1-(val)) * 75 + 1)
+	sendOSC('decay', 1, 'D', (1-(val)) * 75 + 1)
+
 
 def drumTone(num,val):
 	if switch[num].val > 0:
@@ -227,7 +237,7 @@ def synthAmp(val):
 def setSynthRange(val):
 	global synthRange
 	val = val/4095
-	_range = math.floor(val*15)
+	_range = math.floor(val*15)+1
 
 	if _range != synthRange:
 		synthRange = _range
