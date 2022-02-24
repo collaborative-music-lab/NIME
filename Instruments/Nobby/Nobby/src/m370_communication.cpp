@@ -63,9 +63,11 @@ uint8_t m370_communication::begin( String firmwareNotes[5]){
 
   Init(bufSize);
   uint8_t returnVal=0;
-  
   if( mode==SERIAL_ONLY || mode==APandSERIAL || mode==STAandSERIAL) returnVal =  serial_setup();
-  if( mode==SERIAL_ONLY) ACTIVE_MODE = 1;
+  if( mode==SERIAL_ONLY) {
+    ACTIVE_MODE = 1;
+    m370_wifiConnectionState = 5;
+  }
   //while(1) {Serial.println("opo"); delay(1000);}
   if( mode==APandSERIAL || mode==AP_WIFI){
       WIFI_MODE = 1;
@@ -95,6 +97,13 @@ uint8_t m370_communication::connect(){
     Serial.println("Waiting for connection");
     Serial.println(numAvailable);
   } 
+
+  if(m370_wifiConnectionState==5) {
+    SERIAL_ENABLE = 1;
+    m370_wifiConnectionState = 1;
+    Serial.println("force serial");
+    return m370_wifiConnectionState;
+  }
 
 
   if( numAvailable > 0 ){

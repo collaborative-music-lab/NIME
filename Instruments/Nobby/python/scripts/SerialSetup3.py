@@ -5,7 +5,7 @@ class serialClass:
 
     # ser = 0
     inputBuffer = []
-    packetList = []
+    packetList = [] 
 
     def __init__(self):
         pass
@@ -111,7 +111,7 @@ class serialClass:
 
         while self.comm.in_waiting > 0:
             val = int.from_bytes(self.comm.read(), "big" )
-
+            #print(val)
             if escFlag == 1:
                 self.inputBuffer.append(val)
                 escFlag = 0
