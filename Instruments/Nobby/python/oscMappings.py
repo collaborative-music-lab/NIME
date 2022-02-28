@@ -9,8 +9,8 @@ from sensorInterfaces.euclideanSequencer import Euclid as euclid
 eucDivisor = [1,1,1]
 eucClock = [0,0,0]
 euc = []
-euc.append( euclid(16,3,0)) #bass drum
-euc.append( euclid(16,3,0)) # snare
+euc.append( euclid(8,3,0)) #bass drum
+euc.append( euclid(8,3,0)) # snare
 euc.append( euclid(16,9,0)) #hihat
 
 #########
@@ -20,7 +20,15 @@ synthClock = 0
 synthRange = 0
 synthProgramEnable = 0
 synthNewNote = 0
-synthClockDivider = 2
+synthClockDivider = 1
+
+synthSequences = [
+	#synth sequences notated as scale degrees with 1 being the root
+	[1,2,3,5,3,5,7,8, 9,8,6,5, 4,2,4,2 ],
+	[1,3,5,3, 2,4,6,4, 3,6,8,6, 5,7,5,2]
+]
+currentSynthSequence = 0
+synthPitchOffset = 7 #sets pitch offset in scale degrees, 7 is 1 octave
 
 ######################
 #INCOMING OSC
@@ -127,7 +135,7 @@ for i in range(4):
 	switch.append( sensor(0) )
 
 def mapSensor(add, val):
-	global synthNewNote, synthProgramEnable, synthClock
+	global synthNewNote, synthProgramEnable, synthClock, currentSynthSequence, synthClockDivider
 
 	if add == "/sw0": 
 		if switch[0].new(val) is 1:
@@ -175,7 +183,11 @@ def mapSensor(add, val):
 
 	elif add == "/pot3":
 		if pot[3].new(val) is not None:
-			setSynthTone(val)	
+			setSynthTone(val)
+			synthClockDivider = 3 - math.floor(val/1370)
+			if (val>2048) != currentSynthSequence:	
+				setPitchSequence(synthSequences[val>2048])
+				currentSynthSequence = val>2048
 
 def setSynthTone(val):
 	val = val/4095
@@ -256,6 +268,13 @@ def setSynthSeqStep(num,val):
 	val =  math.floor(val/4095 * 127)
 	sendOSC("16steps", 1, "s"+str(num+1), val)
 	#print("setStep", num, val)
+
+def setPitchSequence(seq):
+	'''write a pitch sequence to 16steps'''
+	for i in range(16):
+		val = math.floor((seq[i]+synthPitchOffset)/28*127)
+		print(i, seq[i], val)
+		sendOSC("16steps", 1, "s"+str(i+1), val)
 
 
 ######################
