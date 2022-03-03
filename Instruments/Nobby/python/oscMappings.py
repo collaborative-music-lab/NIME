@@ -36,7 +36,7 @@ def defineOscHandlers():
 def clock(*args):
 	global eucClock, synthProgramEnable, synthNewNote, synthClock, synthRange, synthClockDivider, prevTime
 	t.update() #reset timeout
-	curBeat = args[2]%16
+	curBeat = args[0]%16
 	
 	#drum sequencers
 	euclidTrigger = []

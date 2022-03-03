@@ -7,7 +7,7 @@ PACKET_INCOMING_SERIAL_MONITOR = 0
 
 CUR_PYTHON_SCRIPT = "Nobby.py"
     
-import serial, serial.tools.list_ports, socket, sys, asyncio,struct,time, math
+import serial, serial.tools.list_ports, socket, sys, asyncio,struct,time, math, random
 from pythonosc import osc_message_builder
 from pythonosc import udp_client
 from pythonosc.osc_server import AsyncIOOSCUDPServer
@@ -26,6 +26,8 @@ osc.comms = comms
 
 t = timeout.Timeout(5)
 osc.t = t
+
+clockTempo = random.random()*20+90
 
 ######################
 # SET COMMUNICATION MODE
@@ -65,14 +67,25 @@ dispatcher.set_default_handler(unknown_OSC)
 ######################
 
 async def loop():
-         
+    global clockTempo
+
+    prevTime = time.time()
+    timeCounter = 0
+    clockInterval = 60/(clockTempo*4)
+
     time.sleep(0.1)
     handshakeStatus = 1 
     print("done setup")
     client.send_message("/init", 0)
+    print("Current tempo is ", clockTempo)
 
     while(t.check()): 
         #t.check checks if timeout has triggered to cancel script
+        if time.time() - clockInterval > prevTime:
+            prevTime = time.time()
+            osc.clock(timeCounter)
+            timeCounter += 1
+
         await asyncio.sleep(0) #listen for OSC
         #print(comms.available())
 
