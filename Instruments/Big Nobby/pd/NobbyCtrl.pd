@@ -2,13 +2,13 @@
 #X obj 25 206 receiveOSC;
 #X obj 20 303 / 32;
 #X obj 20 326 vsl 32 64 0 127 0 0 empty empty empty 0 -9 0 10 -262144
--1 -1 2000 1;
+-1 -1 0 1;
 #X obj 58 305 / 32;
 #X obj 58 327 vsl 32 64 0 127 0 0 empty empty empty 0 -9 0 10 -262144
--1 -1 2440 1;
+-1 -1 0 1;
 #X obj 237 310 tgl 30 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
-#X obj 579 199 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
+#X obj 579 199 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
 #X obj 579 243 f;
 #X obj 612 242 + 1;
@@ -20,11 +20,11 @@
 #X obj 768 471 s trigger;
 #X floatatom 641 162 5 0 0 0 - - -;
 #X obj 19 -22 vsl 15 128 1.27 127 1 0 empty empty BD 0 -9 0 10 -262144
--1 -1 19200 1;
+-1 -1 0 1;
 #X obj 38 -22 vsl 15 128 1.27 127 1 0 empty empty SD 0 -9 0 10 -262144
--1 -1 20200 1;
+-1 -1 0 1;
 #X obj 57 -22 vsl 15 128 1.27 127 1 0 empty empty HH 0 -9 0 10 -262144
--1 -1 11400 1;
+-1 -1 0 1;
 #X obj 25 238 s incomingOSC;
 #X obj 26 261 r incomingOSC;
 #X obj 769 410 r incomingOSC;
@@ -36,7 +36,7 @@
 1;
 #X obj 153 224 spigot;
 #X obj 153 247 print;
-#X obj 191 206 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
+#X obj 191 206 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
 #X obj 323 348 symbol;
 #X obj 305 373 s;
@@ -254,23 +254,23 @@
 #X obj 16 174 cnv 15 320 20 empty empty MONITOR 4 10 0 14 -203904 -66577
 0;
 #X obj 769 441 route trigger;
-#X obj 575 155 loadbang;
+#X obj 575 119 loadbang;
 #X msg 575 177 1;
 #X obj 641 115 r tempo;
 #X obj 258 78 cnv 15 70 20 empty empty tempo 4 10 0 10 -261234 -66577
 0;
 #X obj 263 112 hsl 64 15 0 127 0 0 tempo tempo-r tempo -2 -8 0 10 -261234
--1 -1 5046 1;
+-1 -1 2927 1;
 #X obj 641 138 expr pow($f1/127 \, 2)*400 + 50;
 #X obj 579 220 metro 140;
 #X obj 21 281 route pot0 pot1 pot2 pot3 sw0 sw1 sw2 sw3 module param
 ;
 #X obj 94 305 / 32;
 #X obj 94 328 vsl 32 64 0 127 0 0 empty empty empty 0 -9 0 10 -262144
--1 -1 8232 1;
+-1 -1 0 1;
 #X obj 132 307 / 32;
 #X obj 132 329 vsl 32 64 0 127 0 0 empty empty empty 0 -9 0 10 -262144
--1 -1 2762 1;
+-1 -1 0 1;
 #X floatatom 658 212 5 0 0 0 - - -;
 #N canvas 0 22 450 300 setTempo 0;
 #X obj 53 33 loadbang;
@@ -325,7 +325,6 @@
 #X connect 43 0 38 8;
 #X connect 46 0 38 5;
 #X connect 48 0 14 0;
-#X connect 49 0 50 0;
 #X connect 50 0 6 0;
 #X connect 51 0 54 0;
 #X connect 54 0 15 0;
