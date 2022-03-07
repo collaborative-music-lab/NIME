@@ -1,8 +1,9 @@
 #capacit.py
 #Ian Hattwick   
-#March 12, 2021
+#March 1, 2022
 
 PACKET_INCOMING_SERIAL_MONITOR = 0
+
 
 CUR_PYTHON_SCRIPT = "capacit.py"
     
@@ -15,6 +16,7 @@ from pythonosc.dispatcher import Dispatcher
 #m370 python modules
 import scripts.m370_communication as m370_communication
 comms = m370_communication.communication("serial", baudrate = 115200, defaultport="/dev/tty.SLAB_USBtoUART")
+
 import scripts.timeout as timeout
 #you can change the defaultport to the name your PC gives to the ESP32 serial port
 

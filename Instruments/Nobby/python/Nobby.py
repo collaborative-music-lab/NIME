@@ -84,7 +84,7 @@ async def loop():
                     if 2 < len(currentMessage) < 16:
                         address, value = sensor.processInput(currentMessage)
                         osc.mapSensor(address,value) #send data for mapping
-                        #client.send_message(address,value) #monitor data in PD
+                        client.send_message(address,value) #monitor data in PD
 
                 else:
                     print("packet", currentMessage) #only for unrecognized input
