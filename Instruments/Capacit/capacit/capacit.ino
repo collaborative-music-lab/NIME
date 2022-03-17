@@ -49,7 +49,7 @@ String FIRMWARE[] = {
 
 
 //comms handles communication with Python
-const comModes comMode = STAandSERIAL;
+const comModes comMode = SERIAL_ONLY;
 
 m370_communication comms(comMode);
 
@@ -86,7 +86,7 @@ m370_digitalInput sw[8] = {
 I2C SETUP
 *********************************************/
 
-const byte NUM_CAP = 4; //up to 12 sensors
+const byte NUM_CAP = 12; //up to 12 sensors
 
 m370_cap cap(NUM_CAP, 500); //number of capsensors, sampling rate (Hz)
 
@@ -120,6 +120,7 @@ void loop() {
     readPotentiometers();
     readButtons();
   }
+  readPotentiometers();
   readCap();
 
   //read serial input
