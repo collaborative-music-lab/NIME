@@ -1,0 +1,47 @@
+21M.370 Match 16 Discussion
+
+References:
+
+Kindohm Tidal Cycles https://youtu.be/smQOiFt8e4Q
+
+Kaitlyn Aurelia Smith — 'Existence in the Unfurling,' Live on Soundcheck https://youtu.be/IGCp9KeY9TU
+
+Ryoji Ikeda Presents: test pattern
+https://youtu.be/jCR7KJQtwGE
+https://youtu.be/omDK2Cm2mwo
+
+ELECTRONICOS FANTASTICOS!
+https://youtu.be/kmbIcbuuFRI
+
+
+Nisennen- 22marbles : Véro Marengère et Martin Marier (sponge)
+https://youtu.be/xg6rFnUnqc4
+
+
+
+
+
+Choose three examples instrument, each of which represent on kind of diversity ( micro, mid, and macro). Describe how this kind of diversity affects the performance experience. How did the instrument creators design these kinds of diversity into the instrument?
+
+
+Think about your capacit instrument- what kind of diversity would you like it to encompass? How might you change the design to have different kinds of diversity? How would you then show it to other people and teach them how to play it?
+
+	•	Roli Seaboard - high microdiversity and macrodiversity - great sensing capabilities in addition to convenient timbral alterations for various genres 
+	•	Nobby - high microdiversity, some mid-diversity - very simple to turn knobs in the moment and affect the quality of sound 
+	•	New Turntables (like the Roland DJ202) have many features to add micro diversity such as sampling, tempo changes, but it’s still low microdiversity. 
+	•	Microdiversity is generally most important to performers, allowing performers to develop and demonstrate techniques / individual ‘personality’, ‘getting to know the instrument versus getting the instrument to do what *you* want’ 
+	•	Instrument Designers look at adding more degrees of freedom to their instrument to allow for higher micro diversity. An example would be seeing that guitar players aren’t using their feet so adding something (like pedals for an electric guitar) to the instrument to allow for more microdiversity 
+	•	Modern MIDI controller (e.g. MPK mini) good example of mid-diversity (e.g. structural changes through parameters related to sequencer, such as arpeggio) 
+---
+-MIDI is limited by the fact that it transmits 7 bits of data, Mic-D may be greatly improved by MIDI 2.0’s 16 bits of data
+-The ROLI seaboard exemplifies Mic-D with its emphasis on timbre control.
+-Where does the boundary of an instrument exist? Is an instrument just an array of inputs? This distinction effects whether or not one may see an instrument as “mid-diverse” or not.
+-MacD - the DAW has internal inputs and necessarily must be ready to use for the production/performance of several styles of music.
+-MacD is informed by the societal acceptance/expectation of an instrument. If an instrument “feels out of context”, its presence informs what kind of music it is perceived as, and hence may be less macro-diverse.
+---
+- a single T-stick is mic-d and mid-d, but depending on implementation determines its mac-d. The family of t-sticks 
+
+Macro-diversity
+- does it have to be programmed in?
+- adapt to different musical contexts
+- can depend on micro or mid diversity
