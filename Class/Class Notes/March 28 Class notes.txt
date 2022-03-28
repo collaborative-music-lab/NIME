@@ -1,0 +1,56 @@
+Working with continuous and discrete data
+March 28 2022
+
+discrete vs continuous data
+
+Discrete data:
+* avoiding double triggers
+	- dead time
+	- pattern matching
+	- effect on detecting rapid changes
+* on and off states
+	- toggle and momentary
+	- memory
+* challenges with inconsistent communication
+* converting to continuous data
+* pitch
+
+Continuous data
+* data rates / jitter / dropped data / stairstepping
+* converting to discrete events
+	- thresholds, dead time, schmitt triggers
+* smoothing
+	- running calculations, buffers, sample history
+	- mean, median, filters
+	- fixed length buffer
+		- keep track of sample order
+		- or simply subtract average value
+	- one-pole fiter
+		out = alpha*prev + (1-alpha)*new
+		0 < alpha < 1.0
+		alpha typically between 0.5 and 0.999....
+	- challenges:
+		- responding to changes quickly
+		- calculation efficiency
+		- implementation efficiency
+		- c.f. one-euro filter
+		http://cristal.univ-lille.fr/~casiez/1euro/
+* looking for change / delta
+	- delta = new-prev
+	- also called the derivative
+	- insensitive to static offsets
+	- generally combined with smoothing...
+	- often absolute value of change is useful, for example for accumulation...
+
+Accumulation
+* keeps track of progress of data compared to a reference
+* also called integration
+* c.f. mouse position on screen or trumpet
+* useful metaphor for physical interaction
+* implementations:
+	* pure integration: chording keyboards
+	* leaky integration:
+		- add each new sample to a bucket
+		- for each new sample subtract some value (either fixed leak or fraction of stored value)
+
+Case study: capacitive sensing
