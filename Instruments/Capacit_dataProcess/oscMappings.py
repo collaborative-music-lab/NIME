@@ -56,8 +56,10 @@ def initSynthParams():
 #SENSOR MAPPINGS
 #handle data received from interface
 ######################
-prevNoteTrigger = [0,0,0,0,0,0]
-curAmplitude = [0,0,0,0,0,0]
+prevNoteTrigger = [0,0,0,0]
+curAmplitude = [0,0,0,0]
+
+prevFoo = 0
 
 def mapSensor(add, val):
 	global buttonStates
@@ -65,6 +67,7 @@ def mapSensor(add, val):
 	global maxCapValues
 	global curAmplitude
 	global prevNoteTrigger
+	global prevFoo
 
 	capTouchThreshold = 0.5
 	capProximityThreshold = 0.01
@@ -87,7 +90,12 @@ def mapSensor(add, val):
 			out = clip(scaledVal - capTouchThreshold , 0 , 1) * 127
 			#print("vca", num+1, out)
 			curAmplitude[num] += out
-			sendOSC("vca", num+1, "CV", out)
+			if num == 0:
+				
+				print((val))
+				prevFoo = val
+
+			sendOSC("vca", num+1, "CV", val)
 
 			#FM amount
 			out = clip(scaledVal - capTouchThreshold , 0 , 0.6) * 127
@@ -119,12 +127,9 @@ def mapSensor(add, val):
 					print("trig", num)
 					prevNoteTrigger[num] = 1
 			elif curAmplitude[num] > 60: prevNoteTrigger[num] = 0
+	
 
-			
-
-			
-
-maxCapValues = [100,100,100,100,100,100]
+maxCapValues = [100,100,100,100,100,100,100,100]
 
 def autoScaleCap(num,val):
 	global maxCapValues

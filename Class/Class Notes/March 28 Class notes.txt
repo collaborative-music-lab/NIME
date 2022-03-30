@@ -7,6 +7,10 @@ Discrete data:
 * avoiding double triggers
 	- dead time
 	- pattern matching
+		https://hackaday.com/2015/12/09/embed-with-elliot-debounce-your-noisy-buttons-part-i/
+
+0 0 0 0 0 0 0 0 0 0 00 0 1 0 01 1 1 0 0 1 1 1 1 1 1 1 1 1 1 1
+1 1 1 1 1 10 1 1 0 01 01  01 0 0 0 0 0 0 0 0 
 	- effect on detecting rapid changes
 * on and off states
 	- toggle and momentary
@@ -22,10 +26,20 @@ Continuous data
 * smoothing
 	- running calculations, buffers, sample history
 	- mean, median, filters
+
+avg:
+	buffer[index] = newVal
+	index++
+	buffer.sum / bufferSize
+
+avg:
+	sum *= 0.9
+	sum = sum + newVal
+
 	- fixed length buffer
 		- keep track of sample order
 		- or simply subtract average value
-	- one-pole fiter
+	- one-pole filter
 		out = alpha*prev + (1-alpha)*new
 		0 < alpha < 1.0
 		alpha typically between 0.5 and 0.999....
@@ -49,8 +63,18 @@ Accumulation
 * useful metaphor for physical interaction
 * implementations:
 	* pure integration: chording keyboards
+	- mother of all demos - check it out!
 	* leaky integration:
 		- add each new sample to a bucket
 		- for each new sample subtract some value (either fixed leak or fraction of stored value)
+
+leakyIntegrator:
+	sum *= 0.9 #attenuate the sum
+	# sum -= fixedVal
+	# if sum < 0: sum = 0
+	sum = sum + newVal
+
+Combining sensor inputs
+* position tracking using multiple sensors...
 
 Case study: capacitive sensing

@@ -86,9 +86,9 @@ m370_digitalInput sw[8] = {
 I2C SETUP
 *********************************************/
 
-const byte NUM_CAP = 12; //up to 12 sensors
+const byte NUM_CAP = 6; //up to 12 sensors
 
-m370_cap cap(NUM_CAP, 500); //number of capsensors, sampling rate (Hz)
+m370_cap cap(NUM_CAP, 100); //number of capsensors, sampling rate (Hz)
 
 
 /*********************************************
@@ -117,10 +117,10 @@ void loop() {
   
   //if(1){              //uncomment this line to serial debug pots and buttons as well as capsense
   if( !SERIAL_DEBUG){   //uncomment this line to only serial debug capsense
-    readPotentiometers();
-    readButtons();
+    //readPotentiometers();
+    //readButtons();
   }
-  readPotentiometers();
+  //readPotentiometers();
   readCap();
 
   //read serial input
