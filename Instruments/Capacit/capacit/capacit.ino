@@ -56,7 +56,7 @@ m370_communication comms(comMode);
 /*********************************************
 ANALOG SETUP
 *********************************************/
-const byte NUM_ANALOG = 2;
+const byte NUM_ANALOG = 1;
 const int analogSamplingRate = 20; //in Hz
 
 m370_analog pot[6] = {
@@ -117,8 +117,8 @@ void loop() {
   
   //if(1){              //uncomment this line to serial debug pots and buttons as well as capsense
   if( !SERIAL_DEBUG){   //uncomment this line to only serial debug capsense
-    //readPotentiometers();
-    //readButtons();
+    readPotentiometers();
+    readButtons();
   }
   //readPotentiometers();
   readCap();
