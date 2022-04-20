@@ -24,7 +24,7 @@ String FIRMWARE[] = {
 ////For wifi, AP mode creates a network and STA mode joins a network
 //available comModes are: SERIAL_ONLY, AP_WIFI, STA_WIFI, APandSERIAL, STAandSERIAL;
 //set default comMode here:
-const comModes comMode = AP_WIFI;
+const comModes comMode = SERIAL_ONLY;
 m370_communication comms(comMode);
 
 /*********************************************
