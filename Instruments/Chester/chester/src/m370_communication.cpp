@@ -100,6 +100,7 @@ This allows the ucontroller to perform specific tasks to indicate connect status
 uint8_t m370_communication::connect(){
   //handshaking
   byte numAvailable = available();
+  Serial.println("connect");
 
   if(m370_wifiConnectionState==0) {
     Serial.print("Waiting for connection ");
@@ -201,7 +202,7 @@ uint8_t m370_communication::wifi_sta_setup(){
 }
 
 uint8_t m370_communication::serial_setup(){
-  Serial.begin(baudRate);
+  //Serial.begin(baudRate);
   delay(200);
   if( COMM_DEBUG ) Serial.println("Serial initialized");
   //m370_wifiConnectionState=1;

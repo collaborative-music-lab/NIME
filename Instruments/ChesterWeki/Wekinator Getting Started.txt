@@ -1,0 +1,19 @@
+Getting started with Wekinator
+
+1. Run the ChesterWiki.py script.
+- this will stream acc and gyro data to wekinator
+- wekinators port # is 6448 (set on line 39 of ChesterWiki)
+2. Open Wekinator
+- set output port to 5005 (the port PD listens on)
+- set input # inputs to 6
+- click next
+3. Open the ChesterWiki PD patches (ctrl and main)
+- the wekinator mappings are at the bottom of the ctrl patch
+- wekinator outputs the message /wek/outputs and then a list of floats form 0-1
+- in chesterWikiCtrl these are scaled to 0-127 and sent to automatonism modules
+4. In Wekinator create a mapping by:
+- drag the sliders for outputs 0-5 to change filter frequencies
+- when you’ve found a set of outputs you like, hold the IMU in a fixed position
+- click ‘start recording’ to record the inputs, and stop recording when you’ve gathered some samples
+- repeat with new sets of inputs and outpus
+5. Play your mapping by clicking train and then clicking run

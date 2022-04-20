@@ -194,13 +194,14 @@ def mapSensor(add, val):
 		state['accel'] = val #last to enable calc of difference between new and old data
 
 		#calculate synth params
-		calcVoiceGains()
-		calcLPF()
-		calcLFOs()
-		calcPitchGlide()
+		# calcVoiceGains()
+		# calcLPF()
+		# calcLFOs()
+		# calcPitchGlide()
 
 		#send data to wekinator
-		weki.send_message("/acc", state['accel'])
+		weki.send_message("/wek/inputs", state['accel'] + state['gyro'])
+		#print(state['accel'] + state['gyro'])
 
 
 	elif sensor == "/gyro":
@@ -308,8 +309,8 @@ def calcMagnitude(vals):
 	client.send_message( "/magnitude", state['magnitude'])
 	#print( state['pitch'], state['magnitude'])
 
-	sendOSC("vca", 7, "CV", outVal*127)
-	sendOSC("vca", 8, "CV", outVal*127)
+	# sendOSC("vca", 7, "CV", outVal*127)
+	# sendOSC("vca", 8, "CV", outVal*127)
 
 
 

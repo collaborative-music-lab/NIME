@@ -63,7 +63,7 @@ void setup() {
   byte commsBegin = 0;
   while(commsBegin  ==  0){
     if(SERIAL_DEBUG == 2) commsBegin = 1;
-    //Serial.println("comms");
+    Serial.println("comms");
     commsBegin = comms.connect()  ; //sends firmware metadata to begin function
     
     }

@@ -39,6 +39,7 @@ client = udp_client.SimpleUDPClient("127.0.0.1", 5005)
 weki = udp_client.SimpleUDPClient("127.0.0.1", 6448)
 
 osc.client = client
+osc.weki = weki
 # dispatcher in charge of executing functions in response to RECEIVED OSC messages
 dispatcher = Dispatcher()
 osc.dispatcher = dispatcher
