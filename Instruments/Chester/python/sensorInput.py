@@ -7,6 +7,9 @@ def processInput(*args):
 	address = args[0][0]
 	val = bto_ui16(args[0][1], args[0][2])
 
+	# if address != 71 and address != 72:
+	# 	print(address, val)
+
 	# I like to write this out longform in case I need
 	#to change the order of sensors in a group
 	if 0 <= address <=5:

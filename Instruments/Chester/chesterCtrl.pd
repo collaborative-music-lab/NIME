@@ -4,11 +4,11 @@
 #X msg 575 371 0;
 #X obj 575 394 oscformat mirror;
 #X obj 20 -43 vsl 30 128 1.27 127 0 0 empty empty Synth -1 -9 0 10
--262144 -1 -1 16300 1;
+-262144 -1 -1 0 1;
 #X obj 89 -43 vsl 30 128 1.27 127 0 0 empty empty Sub 6 -9 0 10 -262144
--1 -1 19500 1;
+-1 -1 0 1;
 #X obj 136 -43 vsl 30 128 1.27 127 0 0 empty empty Verb 0 -9 0 10 -262144
--1 -1 5400 1;
+-1 -1 0 1;
 #X obj 25 238 s incomingOSC;
 #X obj 26 261 r incomingOSC;
 #X obj 153 224 spigot;
@@ -109,19 +109,19 @@
 #X obj 362 -44 hsl 128 15 0 127 0 0 magnitude-s magnitude-r magnitude_smoothing
 -2 -8 0 10 -262144 -1 -1 0 1;
 #X obj 365 76 hsl 128 15 0 127 0 0 waveshape-s empty waveshape -2 -8
-0 10 -262144 -1 -1 2400 1;
+0 10 -262144 -1 -1 0 1;
 #X obj 364 42 hsl 128 15 0 127 0 0 FM-depth-s empty FM-depth -2 -8
-0 10 -262144 -1 -1 3100 1;
+0 10 -262144 -1 -1 0 1;
 #X obj 365 139 hsl 128 15 0 127 0 0 waveshape-lfo-depth-s empty waveshape_lfo_depth
--2 -8 0 10 -262144 -1 -1 12400 1;
+-2 -8 0 10 -262144 -1 -1 0 1;
 #X obj 366 170 hsl 128 15 0 127 0 0 reverb-size-s empty reverb_size
--2 -8 0 10 -262144 -1 -1 19100 1;
+-2 -8 0 10 -262144 -1 -1 0 1;
 #X obj 226 211 r incomingOSC;
 #X obj 226 234 route param module;
 #X obj 226 292 s;
 #X obj 284 258 symbol;
 #X obj 54 -43 vsl 30 128 1.27 127 0 0 empty empty V1+V2 0 -9 0 10 -262144
--1 -1 25500 1;
+-1 -1 0 1;
 #X obj 707 289 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
 1;
 #X obj 707 309 metro 1000;
@@ -140,7 +140,7 @@
 #X obj 130 366 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
 #X floatatom 154 363 5 0 0 0 - - -;
-#X obj 201 365 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+#X obj 201 365 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
 1;
 #X obj 424 708 print;
 #X obj 18 -108 cnv 15 600 20 empty empty CHESTER 4 10 0 20 -258113
@@ -148,9 +148,9 @@
 #X obj 515 -10 hradio 15 1 0 4 pitchset-s empty pitchset 8 -6 0 14
 -262144 -1 -1 1;
 #X obj 365 108 hsl 128 15 0 127 0 0 waveshape-lfo-rate-s empty waveshape_lfo_rate
--2 -8 0 10 -262144 -1 -1 12000 1;
+-2 -8 0 10 -262144 -1 -1 0 1;
 #X obj 517 -48 hsl 128 15 0 127 0 0 pitch-glide-s empty pitch_glide
--2 -8 0 10 -262144 -1 -1 3100 1;
+-2 -8 0 10 -262144 -1 -1 0 1;
 #X text 510 37 VCO pitches;
 #X text 582 128 unison;
 #X text 582 113 third;
@@ -202,7 +202,7 @@
 #X coords 0 0 0.5 0.5 0 0 0;
 #X restore 384 217 pd parameterSends;
 #X obj 540 72 vsl 24 70 0 127 0 0 base-pitch-s base-pitch-r base 0
--9 0 10 -204786 -1 -1 7200 1;
+-9 0 10 -204786 -1 -1 0 1;
 #X obj 632 70 vradio 15 1 0 5 v2-pitch-s v2-pitch-s v2 0 -8 0 10 -262144
 -1 -1 1;
 #X obj 568 70 vradio 15 1 0 5 v1-pitch-s v1-pitch-s v1 0 -8 0 10 -262144
@@ -210,18 +210,16 @@
 #X obj 651 70 vradio 15 1 0 3 sub-pitch-s sub-pitch-s sub 0 -8 0 10
 -262144 -1 -1 1;
 #X obj 514 72 vsl 16 70 0 127 0 0 synthDetune-s synthDetune-r detune
--7 -9 0 8 -261234 -1 -1 3000 1;
+-7 -9 0 8 -261234 -1 -1 0 1;
 #X floatatom 514 150 5 0 0 0 - - -;
 #X text 583 68 2 oct;
 #X text 668 98 -2;
 #X text 668 84 -1;
 #X text 671 66 unison;
-#X obj 380 259 r pitchGlide;
-#X obj 380 282 print;
 #X obj 362 -15 hsl 128 15 0 127 0 0 tilt-s tilt-r tilt_smoothing -2
--8 0 10 -262144 -1 -1 20900 1;
+-8 0 10 -262144 -1 -1 0 1;
 #X obj 362 14 hsl 128 15 0 127 0 0 velocity-s velocity-r velocity_smoothing
--2 -8 0 10 -262144 -1 -1 5000 1;
+-2 -8 0 10 -262144 -1 -1 0 1;
 #X connect 0 0 9 0;
 #X connect 0 0 7 0;
 #X connect 2 0 3 0;
@@ -263,5 +261,4 @@
 #X connect 46 4 51 0;
 #X connect 46 5 52 0;
 #X connect 68 0 69 0;
-#X connect 74 0 75 0;
 #X coords 0 0 0.5 0.5 0 0 0;

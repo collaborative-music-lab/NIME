@@ -41,7 +41,7 @@ void imuLoop(){
   if(millis()-sendTimer>interval){
     sendTimer=millis();
 
-    if(SERIAL_DEBUG){
+    if(IMU_DEBUG){
       Serial.print("imu ");
       Serial.print(imu.a.x);
       Serial.print(" ");

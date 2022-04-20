@@ -13,13 +13,18 @@ from pythonosc.osc_server import AsyncIOOSCUDPServer
 from pythonosc.dispatcher import Dispatcher
 
 #m370 python modules
+
 import scripts.m370_communication as m370_communication
-comms = m370_communication.communication("serial", baudrate = 115200, defaultport="/dev/tty.SLAB_USBtoUART")
+#comms = m370_communication.communication("serial", baudrate = 115200, defaultport="/dev/tty.SLAB_USBtoUART")
+comms = m370_communication.communication("wifi", SSID="Chester", ESP_IP="192.168.4.1")
+#NOTE: you can find your ESP_IP by looking at the serial monitor if you are still connected via SUB
+#if you are using your ESP as an Access Pioint (AP) it should be 192.168.4.1
+
 import scripts.timeout as timeout
 #you can change the defaultport to the name your PC gives to the ESP32 serial port
 
 import sensorInput as sensor
-import oscMappings as osc
+import oscMappings2 as osc
 osc.comms = comms   
 
 t = timeout.Timeout(5)
@@ -75,10 +80,10 @@ async def loop():
             
             if currentMessage != None: 
                 if PACKET_INCOMING_SERIAL_MONITOR == 0:
-                    if 2 < len(currentMessage) < 16:
-                        address, value = sensor.processInput(currentMessage)
-                        osc.mapSensor(address,value)
-                        #client.send_message(address,value)
+                    address, value = sensor.processInput(currentMessage)
+                    #print(address, value)
+                    osc.mapSensor(address,value)
+                    #client.send_message(address,value)
 
                 else:
                     print("packet", currentMessage)

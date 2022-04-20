@@ -5,29 +5,30 @@
 #include <Wire.h> 
 
  byte SERIAL_DEBUG = 0;
+ byte IMU_DEBUG = 0;
 
 // WiFi network name and password:
-const char * ssid = "Solaris"; //2.4GHz network only (no 5g)
-const char * password = "grapes24";
+const char * ssid = "Chester"; //2.4GHz network only (no 5g)
+const char * password = ""; //leave blank for AP mode (e.g. password = ""; )
 
 ////Firmware metadata
 String FIRMWARE[] = {
   /*NAME*/ "chester",
   /*VERSION*/ "0.1",
   /*AUTHOR*/ "Ian Hattwick",
-  /*DATE*/ "Mar 15, 2021",
-  /*NOTES*/ "initial test"
+  /*DATE*/ "Apr 18, 2022",
+  /*NOTES*/ "WiFi setup"
 };
 
 
 ////For wifi, AP mode creates a network and STA mode joins a network
 //available comModes are: SERIAL_ONLY, AP_WIFI, STA_WIFI, APandSERIAL, STAandSERIAL;
 //set default comMode here:
-const comModes comMode = STAandSERIAL;
+const comModes comMode = AP_WIFI;
 m370_communication comms(comMode);
 
 /*********************************************
-ENCODERS SETUP
+ENCODERS SETUP 
 *********************************************/
 //encoders rely on the  ESP32Encoder library
 //Esp32Encoder rotaryEncoder = Esp32Encoder(18,2,4);//A,B,Button
