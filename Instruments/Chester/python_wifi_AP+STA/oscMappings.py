@@ -98,6 +98,8 @@ state = {
 	'accel': [0,0,0],
 	'velocity': [0,0,0], #accel integration
 	'jerk': [0,0,0], #accel derivative
+	'jerkMagnitude' : 0, 
+	'peakJerkMagnitude': 0,
 	'magnitude': 0, #total acceleration
 	'accelTilt': [0,0,0],
 
@@ -139,6 +141,11 @@ state = {
 
 
 tuning = {
+	#jerk variables
+	'highThreshold' : 0.9,
+	'lowThreshold': 0.5,
+	'drumState': [0,0],
+
 	#variables for smoothing filters
 	'accelSmooth' : 0.9,
 	'magnitudeSmooth': 0.6,
@@ -304,7 +311,7 @@ def calcMagnitude(vals):
 		else:
 			outVal = onepole2(state['magnitude'], val, 0.95)
 
-	client.send_message( "/magnitude", state['magnitude'])
+	#client.send_message( "/magnitude", val)
 	#print( state['pitch'], state['magnitude'])
 
 	sendOSC("vca", 7, "CV", outVal*127)
@@ -336,13 +343,46 @@ def calcJerk(vals):
 	for i in range(3):
 		outVal[i] = vals[i] - state['accel'][i]
 
+	client.send_message("/aX", outVal[0])
+	client.send_message("/aY", outVal[1])
+	client.send_message("/aZ", outVal[2])
+
 	if enableIMUmonitoring == 1:
 		client.send_message("/jX", outVal[0])
 		client.send_message("/jY", outVal[1])
 		client.send_message("/jZ", outVal[2])
 	#print(state['jerk'])
 
+	# jerk magnitde
+	val = math.sqrt( math.pow(outVal[0],2) + math.pow(outVal[1], 2) + math.pow(outVal[2], 2))
+	state['jerkMagnitude'] = val
+	client.send_message( "/magnitude", val)
+
+	#schmitt trigger
+	if val > tuning['highThreshold'] and tuning['drumState'][0] == 0:
+		tuning['drumState'][0] = 1
+		print("jerk magnitude", val)
+		sendOSC("drumStrike", val, val, val)
+
+		#calc angle of drumstrike
+		angle =  ( math.atan(outVal[1]/outVal[0])  + 1.5708 ) / 3.1416
+		sendOSC("drumAngle", angle, angle, angle)
+
+	elif val < tuning['lowThreshold'] and tuning['drumState'][0] == 1:
+		tuning['drumState'][0] = 0
+		state['peakJerkMagnitude'] = 0
+
+	if tuning['drumState'][0] == 1:
+		if val > state['peakJerkMagnitude']: 
+			state['peakJerkMagnitude'] = val
+			sendOSC("drumMagnitude", val, val, val)
+
+
+
 	return outVal
+
+
+
 
 def calcSmoothAccel(vals,coefficient):
 	'''simple lowpass filter for accel'''

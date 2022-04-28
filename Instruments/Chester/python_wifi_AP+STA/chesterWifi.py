@@ -1,10 +1,11 @@
 #chester.py
 #Ian Hattwick   
-#March 12, 2021
+#April 22, 2021
 
-PACKET_INCOMING_SERIAL_MONITOR = 1
+PACKET_INCOMING_SERIAL_MONITOR = 0
 
-CUR_PYTHON_SCRIPT = "chester.py"
+
+CUR_PYTHON_SCRIPT = "chesterWifi.py"
     
 import serial, serial.tools.list_ports, socket, sys, asyncio,struct,time, math
 from pythonosc import osc_message_builder
@@ -15,8 +16,8 @@ from pythonosc.dispatcher import Dispatcher
 #m370 python modules
 
 import scripts.m370_communication as m370_communication
-comms = m370_communication.communication("serial", baudrate = 115200, defaultport="/dev/tty.SLAB_USBtoUART")
-#comms = m370_communication.communication("wifi", SSID="Chester", ESP_IP="192.168.4.1", port=1234)
+#comms = m370_communication.communication("serial", baudrate = 115200, defaultport="/dev/tty.SLAB_USBtoUART")
+comms = m370_communication.communication("wifi", SSID="Chester", ESP_IP="192.168.4.1", port=1236)
 #comms2 = m370_communication.communication("wifi", SSID="Chester", ESP_IP="192.168.4.1", port=1236)
 #NOTE: you can find your ESP_IP by looking at the serial monitor if you are still connected via SUB
 #if you are using your ESP as an Access Pioint (AP) it should be 192.168.4.1
