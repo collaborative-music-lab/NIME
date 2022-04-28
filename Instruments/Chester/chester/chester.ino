@@ -10,6 +10,8 @@
 // WiFi network name and password:
 const char * ssid = "Chester"; //2.4GHz network only (no 5g)
 const char * password = ""; //leave blank for AP mode (e.g. password = ""; )
+const char * port = "1236"; //leave blank for AP mode (e.g. password = ""; )
+//port must be 4 digits!
 
 ////Firmware metadata
 String FIRMWARE[] = {

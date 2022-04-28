@@ -15,16 +15,19 @@ from pythonosc.dispatcher import Dispatcher
 #m370 python modules
 
 import scripts.m370_communication as m370_communication
-#comms = m370_communication.communication("serial", baudrate = 115200, defaultport="/dev/tty.SLAB_USBtoUART")
-comms = m370_communication.communication("wifi", SSID="Chester", ESP_IP="192.168.4.1")
+comms = m370_communication.communication("serial", baudrate = 115200, defaultport="/dev/tty.SLAB_USBtoUART")
+#comms = m370_communication.communication("wifi", SSID="Chester", ESP_IP="192.168.4.1", port=1234)
+#comms2 = m370_communication.communication("wifi", SSID="Chester", ESP_IP="192.168.4.1", port=1236)
 #NOTE: you can find your ESP_IP by looking at the serial monitor if you are still connected via SUB
 #if you are using your ESP as an Access Pioint (AP) it should be 192.168.4.1
+#ports are defined in pairs, where the port defined here is where python listens
+# and the port python sends to is port+1
 
 import scripts.timeout as timeout
 #you can change the defaultport to the name your PC gives to the ESP32 serial port
 
 import sensorInput as sensor
-import oscMappings2 as osc
+import oscMappings as osc
 osc.comms = comms   
 
 t = timeout.Timeout(5)
@@ -75,7 +78,7 @@ async def loop():
         #t.check checks if timeout has triggered to cancel script
         await asyncio.sleep(0) #listen for OSC
 
-        while(comms.available() > 0):
+        if(comms.available() > 0):
             currentMessage = comms.get() # can be None if nothing in input buffer
             
             if currentMessage != None: 
@@ -87,6 +90,19 @@ async def loop():
 
                 else:
                     print("packet", currentMessage)
+
+        # if(comms2.available() > 0):
+        #     currentMessage = comms2.get() # can be None if nothing in input buffer
+            
+        #     if currentMessage != None: 
+        #         if PACKET_INCOMING_SERIAL_MONITOR == 0:
+        #             address, value = sensor.processInput(currentMessage)
+        #             #print(address, value)
+        #             osc.mapSensor(address,value)
+        #             #client.send_message(address,value)
+
+        #         else:
+        #             print("packet2", currentMessage)
 
         time.sleep(0.001) 
 

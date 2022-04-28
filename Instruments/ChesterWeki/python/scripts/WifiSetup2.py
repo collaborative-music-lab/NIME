@@ -24,10 +24,11 @@ class wifiClass:
         self.s.setblocking(0)
         pass
 
-    def setupAP(self,network,password, IP):
+    def setupAP(self,network,password, IP, port=PORT):
         self.ssid = network
         self.password = password
         self.ESP_IP = IP
+        self.port = port
         #find serial port
     
         wifi_connected = 0
@@ -38,7 +39,7 @@ class wifiClass:
 
         #setup a broadcast wifi interface to look for devices
         BCAST_HOST = '192.168.4.255'                # Symbolic name meaning all available interfaces
-        BCAST_PORT = 1234                           # Arbitrary non-privileged port
+        BCAST_PORT = self.port-1                           # Arbitrary non-privileged port
 
         wifi_connected = connected
         if connected == 1: return 1
@@ -56,10 +57,10 @@ class wifiClass:
                 print  ("checking WiFi. . . ")
                 try:
                     bcast_msg = [253,2,1,255]
-                    print("send to ", self.ESP_IP, " ",  bcast_msg)
-                    self.s.sendto(bytearray(bcast_msg), (self.ESP_IP, 1234) )
-                    print("broadcast to ", BCAST_HOST, " ",  bcast_msg)
-                    bcast.sendto( bytearray(bcast_msg) , ('<broadcast>', 1234))
+                    print("send to ", self.ESP_IP, " ", BCAST_PORT, " ",  bcast_msg)
+                    self.s.sendto(bytearray(bcast_msg), (self.ESP_IP, BCAST_PORT) )
+                    print("broadcast to ", BCAST_HOST, " ", BCAST_PORT, " ", bcast_msg)
+                    bcast.sendto( bytearray(bcast_msg) , ('<broadcast>', BCAST_PORT))
                     data, clientAddress = self.s.recvfrom(1024) # buffer size is 1024 bytes
                     print("received", data, clientAddress)
                     if (len(data) > 0):

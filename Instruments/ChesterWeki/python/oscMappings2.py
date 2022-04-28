@@ -194,7 +194,7 @@ def mapSensor(add, val):
 		state['accel'] = val #last to enable calc of difference between new and old data
 
 		#calculate synth params
-		# calcVoiceGains()
+		calcVoiceGains()
 		# calcLPF()
 		# calcLFOs()
 		# calcPitchGlide()

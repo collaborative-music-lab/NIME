@@ -19,7 +19,7 @@ class communication:
 	escByte = 254
 
 	###INIT ################################################################
-	def __init__( self, mode, baudrate=115200, wifimode="STA", defaultport="none", SSID = "none", password = "none", ESP_IP = "192.168.1.1" ):
+	def __init__( self, mode, baudrate=115200, wifimode="STA", defaultport="none", SSID = "none", password = "none", ESP_IP = "192.168.1.1", port = 1235 ):
 		"""1 mandatory argument 'mode': serial, wifi, or bluetooth
  
 		Options:

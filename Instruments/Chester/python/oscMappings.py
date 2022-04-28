@@ -93,46 +93,54 @@ def setPitchset(add, val):
 state = {
 	#placeholders for storing most recent data
 	'switch': [0,0,0,0],
+
+	#raw data
 	'accel': [0,0,0],
-	'accelInt': [0,0,0],
-	'accelSmooth': [0,0,0],
-	'aMag': [0,0,0],
+	'velocity': [0,0,0], #accel integration
+	'jerk': [0,0,0], #accel derivative
+	'magnitude': 0, #total acceleration
+	'accelTilt': [0,0,0],
+
 	'gyro': [0,0,0],
-	'magnitude': 0,
-	'velocity': [0,0,0],
-	'jerk': [0,0,0],
-	'gAngle': [0,0,0],
+	'angle': [0,0,0], #gyro integration
+
+	#buffers for data
+	'accelIndex': 0,
+	'accelBufferLength': 8,
+	'accelBuffer': [0,0,0] * 8,
+
+	'gyroBuffer': [[0,0,0]],
+	'gyroIndex': 0,
+	'gyroBufferLength': 8,
 	'tilt': [0,0,0],
+
+	#cooked data
+	#smoothed
+	'accelSmooth': [0,0,0], #using onepole
+	'magnitudeSmooth': 0,
+	'accelAvg': [0,0,0], #average of buffer
+	'accelMean': [0,0,0], #mean of buffer
+	'accelMin': [0,0,0], #minimum val in buffer
+	'accelMax': [0,0,0], #maximum val in buffer
+
+	'gyroSmooth': [0,0,0],
+
 	'pitch': -1,
 	'curPitchset': 1,
 	'encSw': 0,
 	'detune': 0,
 	'pitches': [24,0,12,-12], #basePitch, offset1, offset2, sub
 	'pitchGlideRange': 100, #pitchGlide time in ms
-	'pitchGlideLag': 0.9 #lowpass coefficient
-}
-
-prev = {
-	#variables for storing previous sensor data
-	'aX': 0, 'aY': 0, 'aZ': 0,
-	'aiX': 0, 'aiY': 0, 'aiZ': 0,
-	'amX': 0, 'amY': 0, 'amZ': 0,
-	'gX': 0, 'gY': 0, 'gZ': 0,
-	'vX': 0, 'vY': 0, 'vZ': 0,
-	'jX': 0, 'jY': 0, 'jZ': 0,
-	'jiX': 0, 'jiY': 0, 'jiZ': 0,
-	'accel': [0,0,0], 'gyro': [0,0,0], 'velocity': [0,0,0], 'jerk': [0,0,0],
-	'aMag': [0,0,0], 'magnitude1': 0, 'magnitude2': 0, 'magnitude3': 0,
-	'angle': [0,0,0],
-	'angleX': 0, 'angleY': 0, 'angleZ': 0,
-	'tiltX':0 , 'tiltY':0, 'tiltZ':0,
-	'tiltaX':0 , 'tiltaY':0, 'tiltaZ':0,
-	'lfo': 0, 'lfoTilt': 0, 'lfoLeak': 0,
+	'pitchGlideLag': 0.9, #lowpass coefficient
+	'lfoTilt': 0,
+	'lfoLeak': 0,
 	'pitchGlide': 0
 }
 
+
 tuning = {
 	#variables for smoothing filters
+	'accelSmooth' : 0.9,
 	'magnitudeSmooth': 0.6,
 	'magnitudeFade': 0.1,
 	'magnitudeGain': 4,
@@ -141,6 +149,7 @@ tuning = {
 	'lfoScale': 0.4, 
 	'lfoLeak': 0.97,
 	'fmDepth': 64,
+	'pitchGlideLag': 0.5,
 	'pitchGlideLagCurve': 0.5
 }
 
@@ -152,54 +161,55 @@ pitchset = [[0,3,5,7,10,15,17,19,22],
 def mapSensor(add, val):
 	global state
 
-	try:
-		sensor,num = splitAddress(add)
+	sensor,num = splitAddress(add)
 
-		if sensor == "/pot":
-			pass
+	if sensor == "/pot":
+		pass
 
-		elif sensor == "/sw":
-			state['switch'][num] = val
-			updateSwitchVals(num,val)
-			client.send_message( "/sw"+str(num), val)
+	elif sensor == "/sw":
+		state['switch'][num] = val
+		updateSwitchVals(num,val)
+		client.send_message( "/sw"+str(num), val)
 
-		elif sensor == "/cap":
-			pass
+	elif sensor == "/cap":
+		pass
 
-		elif sensor == "/enc":
-			client.send_message("/enc", val)
+	elif sensor == "/enc":
+		client.send_message("/enc", val)
 
-		elif sensor == "/encSw":
-			state['encSw'] = val
-			client.send_message("/encSw", val)
+	elif sensor == "/encSw":
+		state['encSw'] = val
+		client.send_message("/encSw", val)
 
-		elif sensor == "/acc":
-			calcJerk(val)
-			calcVelocity(val)
-			calcMagnitude(val)
-			#calcTiltAccel(val)
+	elif sensor == "/acc":
+		state['jerk'] = calcJerk(val)
+		state['velocity'] = calcVelocity(val)
+		state['magnitude'] = calcMagnitude(val)
+		state['accelTilt'] = calcTiltAccel(val) 
+		bufferAccel(val)
 
-			calcVoiceGains()
-			calcLPF()
-			calcLFOs()
-			calcPitchGlide()
+		state['accelSmooth'] = onepole2(state['accelSmooth'],val,0.9) #old, new, alpha
+		state['magnitudeSmooth'] = onepole2(state['magnitudeSmooth'],state['magnitude'],0.9) #old, new, alpha
 
-			### one and only one of the below can be active ###
-			#calcAccMagnitude(val, 0.5	)
-			#calcSmoothAccel(val, 0.9) #second arg is coefficient
-			sendRawAccel( val)
+		state['accel'] = val #last to enable calc of difference between new and old data
 
-			prev['accel'] = state['accel']
-			state['accel'] = val
-		
+		#calculate synth params
+		calcVoiceGains()
+		calcLPF()
+		calcLFOs()
+		calcPitchGlide()
 
-		elif sensor == "/gyro":
-			calcTilt(val)
-			sendRawGyro( val)
-	except:
-		print("unrecognized sensorVal", add, val)
-		print(e)
+		#sendRawAccel( val)
 
+
+	elif sensor == "/gyro":
+		state['angle'] = calcAngle(val)
+		state['tilt'] = calcTilt(val)
+		sendRawGyro( val)
+		state['gyro'] = val
+
+	# except:
+	# 	print("unrecognized sensorVal", add, val)
 
 def updateSwitchVals(num, val):
 	'''use our switches to selet pitches from a pitchset'''
@@ -224,116 +234,126 @@ def updateSwitchVals(num, val):
 		sendOSC('globalpitch', outVal, outVal, outVal)
 
 
-#####IMU FUNCTIONS #######		
+#####IMU FUNCTIONS #######	
 
 def calcTiltAccel(vals):
 	'''calculates tilt only using a 3-axis accelerometer'''
-	smoothing = 0.0
+	outVal = [0] * 3
 
 	outX = math.atan(vals[0]/ math.sqrt( math.pow(vals[1],2) + math.pow(vals[2],2) ))
 	outY = math.atan(vals[1]/ math.sqrt( math.pow(vals[0],2) + math.pow(vals[2],2) ))
 	outZ = math.atan(vals[2]/ math.sqrt( math.pow(vals[0],2) + math.pow(vals[1],2) ))
 
-	outX = onepole(outX, 'tiltX', smoothing) / 1.57
-	outY = onepole(outY, 'tiltY', smoothing) / 1.57
-	outZ = onepole(outZ, 'tiltZ', smoothing) / 1.57
+	outVal = [outX, outY, outZ]
 
-	client.send_message("/tiltX", outX)
-	client.send_message("/tiltY", outY)
-	client.send_message("/tiltZ", outZ)
+	# client.send_message("/tiltX", outVal[0])
+	# client.send_message("/tiltY", outVal[1])
+	# client.send_message("/tiltZ", outVal[2])
 
-	state['tilt'][0] = outX
-	state['tilt'][1] = outY
-	state['tilt'][2] = outZ
+	return outVal
+
+
+def calcAngle(vals):
+	angleLeak = 0.99
+	outVal = [0] * 3
+
+	for i in range (3): 
+		if abs(vals[i]) > 0.05:
+			filteredGyro = clipBipolar( vals[i] , 0.0, 1000)
+			outVal[i] = state['angle'][i] + (filteredGyro/4 )
+			outVal[i] *= angleLeak
+		else: outVal[i] = state['angle'][i] * 0.999
+
+
+	#print(vals[2], outVal[2])
+
+	# client.send_message("/tiltX", outVal[0])
+	# client.send_message("/tiltY", outVal[1])
+	# client.send_message("/tiltZ", outVal[2])
+
+	return outVal
 
 def calcTilt(vals):
 	'''calculate tilt XYZ using a complementary filter'''
-	Gweight = 0.9 #weighting for complementary filter
+	Gweight = 0.95 #weighting for complementary filter
 
 	outAngle = [0] * 3
 
-	#integrate gyroscope and highpass
-	for i in range (3): 
-		state['gAngle'][i] += vals[i]/10
-		state['gAngle'][i] *= (tuning['tiltSmooth']/10 + 0.9)
-		outAngle[i] = state['gAngle'][i]
-
 	#calculate complementary filter
 	for i in range(3): 
-		outAngle[i] = (state['gAngle'][i] * Gweight + state['accel'][i] * (1-Gweight) )
+		outAngle[i] = state['angle'][i] * 1 + state['accelTilt'][i] * (1-Gweight) 
 
 	client.send_message("/tiltX", outAngle[0])
 	client.send_message("/tiltY", outAngle[1])
 	client.send_message("/tiltZ", outAngle[2])
-	for i in range(3):	state['tilt'][i] = outAngle[i]
+
+	return outAngle
 
 def calcMagnitude(vals):
-	'''calculate magnitude as the sum of all velocity vectors'''
-	val = math.sqrt( math.pow(state['velocity'][0],2) + math.pow(state['velocity'][1], 2) + math.pow(state['velocity'][2], 2))
-	
+	'''calculate magnitude as the sum of all acceleration vectors'''
+	val = math.sqrt( math.pow(vals[0],2) + math.pow(vals[1], 2) + math.pow(vals[2], 2))
+	val = abs(val-0.5) #remove static acceleration
+	outVal = 0
+
 	#if no finger is down fade to silence
-	if state['pitch'] < 0 : val = onepole(0, 'magnitude1', tuning['magnitudeFade'])
+	if state['pitch'] < 0 : 
+		outVal = onepole2(state['magnitude'], 0, 0.3)
+	else: 	
+		if (val - state['magnitude']) > 0.1: #increase in magnitude
+			outVal = onepole2(state['magnitude'], val, 0.2)
+		else:
+			outVal = onepole2(state['magnitude'], val, 0.95)
 
-	#Smooth and scale the output
-	else: val = onepole(val, 'magnitude1', tuning['magnitudeSmooth'])
-	val*= tuning['magnitudeGain']
+	client.send_message( "/magnitude", state['magnitude'])
+	#print( state['pitch'], state['magnitude'])
 
-	client.send_message( "/magnitude", val)
-	state['magnitude'] = val
+	sendOSC("vca", 7, "CV", outVal*127)
+	sendOSC("vca", 8, "CV", outVal*127)
 
-	sendOSC("vca", 7, "CV", (val)*127)
-	sendOSC("vca", 8, "CV", (val)*127)
+
+
+	return outVal
 
 def calcVelocity(vals):
 	#integrate acceleration
-	vel = ['vX','vY','vZ']
-	acc = ['aiX','aiY','aiZ']
-	jerk = ['jiX','jiY','jiZ']
+	velocityLeak = 0.9
+	outVal = [0] * 3
 
 	for i in range(3):
-		#remove gravity
-		state['accelInt'][i] *= tuning['velocitySmooth'] * 0.9
-		state['accelInt'][i] += state['jerk'][i]
-		 
-		state['velocity'][i]*= tuning['velocitySmooth'] * 0.95
-		state['velocity'][i] += state['accelInt'][i]/5 
+		outVal[i] += vals[i]
+		outVal[i] *= velocityLeak
 
-		state['velocity'][i] *= scale( 1-tuning['velocitySmooth'], 0, 1, 1, 2, 2 )
-		
-
-	client.send_message("/velocityX", state['velocity'][0])
-	client.send_message("/velocityY", state['velocity'][1])
-	client.send_message("/velocityZ", state['velocity'][2])
+	client.send_message("/velocityX", outVal[0])
+	client.send_message("/velocityY", outVal[1])
+	client.send_message("/velocityZ", outVal[2])
 	#print(tuning['velocitySmooth'])
+
+	return outVal
 
 def calcJerk(vals):
 	'''derivative of acceleration'''
 	outVal = [0]*3
 	for i in range(3):
 		outVal[i] = vals[i] - state['accel'][i]
-		prev['jerk'][i] = state['jerk'][i]
-		state['jerk'][i] = outVal[i]
+
 	if enableIMUmonitoring == 1:
-		client.send_message("/jX", state['jerk'][0])
-		client.send_message("/jY", state['jerk'][1])
-		client.send_message("/jZ", state['jerk'][2])
+		client.send_message("/jX", outVal[0])
+		client.send_message("/jY", outVal[1])
+		client.send_message("/jZ", outVal[2])
 	#print(state['jerk'])
 
-def calcAccMagnitude(vals, coefficient):
-	'''calculates magnitude of a single axis'''
-	mag = ['amX','amY','amZ']
-	for i in range(3):
-		state['aMag'][i] = onepole(abs(vals[i]),mag[i], coefficient)
-	#print(state['aMag'])
-	if enableIMUmonitoring == 1:	sendRawAccel(state['aMag'])
+	return outVal
 
 def calcSmoothAccel(vals,coefficient):
 	'''simple lowpass filter for accel'''
-	prevAcc = ['aX','aY','aZ']
+	tuning['accelSmooth']
+	outVal = [0] * 3
 	for i in range(3):
-		state['accelSmooth'][i] = onepole((vals[i]),prevAcc[i], coefficient)
+		outVal[i] = onepole2(vals[i],state['accel'], tuning['accelSmooth'])
 	#print(state['aMag'])
 	sendRawAccel(vals)
+
+	return outVal
 
 def sendRawAccel(vals):
 	if enableIMUmonitoring == 1:
@@ -342,19 +362,22 @@ def sendRawAccel(vals):
 		client.send_message("/aZ", vals[2])
 
 def sendRawGyro(vals):
-	prev['gyro'] = vals
 	if enableIMUmonitoring == 1:
 		client.send_message("/gX", vals[0])
 		client.send_message("/gY", vals[1])
 		client.send_message("/gZ", vals[2])
-	state['gyro'] = vals
+
+def bufferAccel(vals):
+	state['accelIndex'] += 1
+	if state['accelIndex'] >= state['accelBufferLength']: state['accelIndex'] = 0
+	state['accelBuffer'][state['accelIndex']] = vals
 
 ######SYNTH PARAMS ########
 
 def calcPitchGlide():
 	#print('pitchGlide', state['magnitude'], state['pitchGlideRange'], state['pitchGlideLag'])
 	outVal = state['magnitude'] * state['pitchGlideRange']
-	outVal = onepole(outVal,'pitchGlide', state['pitchGlideLag'])
+	outVal = onepole2(state['pitchGlide'], outVal, tuning['pitchGlideLag'])
 
 	sendOSC("pitchGlide", outVal, outVal, outVal)
 
@@ -382,12 +405,15 @@ def calcLFOs():
 	val = clip ( state['tilt'][0], -0.5, 0.5)
 
 	#use a highpass filter to remove DC offset
-	val = val - onepole(val, 'lfoTilt', 0.98)
+	state['lfoTilt'] = onepole2(state['lfoTilt'], val, 0.98)
+	val = val - state['lfoTilt']
 	
 	#remove small values
 	val = clipBipolar(val, 0.02, 1)
 
-	val = leakyInt( val, 'lfoLeak', tuning['lfoLeak'])
+	state['lfoLeak'] = leakyInt( state['lfoLeak'], val, tuning['lfoLeak'])
+	val = state['lfoLeak']
+
 	clip(val, -1, 1)
 	val1 = scale( -val, -1, 1, -tuning['lfoScale'], tuning['lfoScale'])
 	val2 = scale( val, -1, 1, -tuning['lfoScale'], tuning['lfoScale'])
@@ -410,18 +436,24 @@ def calcLFOs():
 	sendOSC('slope', 3, "FALL", val*-20 + 34)
 	sendOSC('slope', 4, "FALL", val*20 + 0)
 
-def onepole(val, name, coefficient): 
+def onepole2(old, new, coefficient):
+	if isinstance(new, int) is True or isinstance(new, float) is True:
+		old = [old]
+		new = [new]
+	outVal = [0] * len(old)
 	clip (coefficient, 0, 1)
-	outVal = (val*(1-coefficient) + prev[name]*coefficient)
-	prev[name] = outVal
+
+	for i in range(len(old)):
+		outVal[i] = (new[i]*(1-coefficient) + old[i]*coefficient)
+
+	if len(outVal) == 1:
+		return outVal[0]
 	return outVal
 
-def leakyInt(val, name, leak):
-	outVal = prev[name]
-	outVal *= leak 
-	outVal += val
-	prev[name] = outVal
-	return outVal
+def leakyInt(bucket, val, leak):
+	bucket *= leak 
+	bucket += val
+	return bucket
 
 ######################
 #Helper functions

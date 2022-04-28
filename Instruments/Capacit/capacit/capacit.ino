@@ -117,8 +117,8 @@ void loop() {
   
   //if(1){              //uncomment this line to serial debug pots and buttons as well as capsense
   if( !SERIAL_DEBUG){   //uncomment this line to only serial debug capsense
-    readPotentiometers();
-    readButtons();
+    //readPotentiometers();
+    //readButtons();
   }
   //readPotentiometers();
   readCap();

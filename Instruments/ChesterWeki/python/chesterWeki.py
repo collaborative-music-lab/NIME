@@ -15,10 +15,12 @@ from pythonosc.dispatcher import Dispatcher
 #m370 python modules
 
 import scripts.m370_communication as m370_communication
-comms = m370_communication.communication("serial", baudrate = 115200, defaultport="/dev/tty.SLAB_USBtoUART")
-#comms = m370_communication.communication("wifi", SSID="Chester", ESP_IP="192.168.4.1")
+#comms = m370_communication.communication("serial", baudrate = 115200, defaultport="/dev/tty.SLAB_USBtoUART", port=1234)
+comms = m370_communication.communication("wifi", SSID="Chester", ESP_IP="192.168.4.1", port=1234)
 #NOTE: you can find your ESP_IP by looking at the serial monitor if you are still connected via SUB
 #if you are using your ESP as an Access Pioint (AP) it should be 192.168.4.1
+#ports are defined in pairs, where the port defined here is where python listens
+# and the port python sends to is port+1
 
 import scripts.timeout as timeout
 #you can change the defaultport to the name your PC gives to the ESP32 serial port
