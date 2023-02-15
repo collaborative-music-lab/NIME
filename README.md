@@ -3,6 +3,7 @@
 Repo for MIT course 21M.370 Digital Instrument Design
 Taught by Ian Hattwick
 - created Spring 2020
+- this branch for Spring 2023
 
 ## Getting started
 
