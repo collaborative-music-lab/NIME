@@ -22,5 +22,18 @@ https://www.sublimetext.com
 * **How can I run Python3 scripts in Sublime?**
 	* You'll need to set up a custom build system. It's easy - here's a video tutorial:
 		* https://youtu.be/xqcTfplzr7c
+		* The steps are:
+			1. Go to sublime->tools->build system->New Build system
+			2. Go to the terminal(mac)/command line(windows) and search for the filepath to your python3 install
+				- for mac, type 'which python3' in terminal
+				- copy the address
+			3. Paste the following into the template opened when you select new build system:
+			    "cmd": ["/Library/Frameworks/Python.framework/Versions/3.11/bin/python3", "-u", "$file"],
+			    "selector": "source.python",
+			    "file_regex": "^\\s*File \"(...*?)\", line ([0-9]*)"
+		    	4. Replace the file path above with the filepath to your computers Python3 install
+			5. Save your new build systeam as 'Python 3' or similar
+			6. Select this build system under sublime->tools->build system
+			7. Run one of the example python scripts like '370_SEQUENCER.py'
 
 	* Once you have the Python 3 build system set up and selected under Tools->Build System, then you can hit Cmd/Ctrl-B to run a script, and Ctrl-C to cancel a running script.
