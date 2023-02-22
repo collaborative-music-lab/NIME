@@ -35,7 +35,10 @@ One of the quirks of PD and automatonism is that you need to duplicate the ENTIR
 ### FAQ
 - PD can't find an object, either the console gives a warning or the object outline is dashed.
 
-This normally happens if your file preferences aren't set correctly. I recommend having two folders on your computer: one for the github repo,  which will only contain files pulled from github and another folder for your own files. In PD->Preferences->Path make sure to add both folders. You may also need to directly include the externals folder from NIME/Puredata/externals
+First off, you must set your file paths so PD knows where to find custom objects. There is at least one folder you must include- github/NIME/Puredata/externals
+- PD isn't aware of subfolders so set each folder individually
+
+This can also happen if your file preferences aren't set correctly. I recommend having two folders on your computer: one for the github repo,  which will only contain files pulled from github and another folder for your own files. In PD->Preferences->Path make sure to add both folders. You may also need to directly include the externals folder from NIME/Puredata/externals
 
 - PD doesn't remember my filepaths even though I set them
 
