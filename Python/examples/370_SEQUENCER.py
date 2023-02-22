@@ -26,8 +26,8 @@ class Timeout:
     def check(self):
         if time.perf_counter() - self._counter > self._interval * self._unit:
             #cancel this script
-            print("cancelled script")
-            return 0
+            #print("cancelled script")
+            return 1
         return 1
 
     def update(self):
