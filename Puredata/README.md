@@ -1,5 +1,14 @@
 # 21M.370 Pure Data Repo
 
+## Note RE MacOS 13
+For those of you with Macs having trouble, this version of PD seems to be working OK for me. In my tests it is stable except when switching audio devices - in particular something about having my iphone show up as an input over wifi seems to cause problems. 
+
+Hopefully this ends up being a stable solution for all of us. Let me know if you run into any unexpected problems, and we can take a look together on tuesday.
+
+http://msp.ucsd.edu/Software/pd-0.53-2test1.macos.zip
+
+## Automatonism
+
 We will use a port of the excellent Automatonism library by Johan Eriksson.
 
 https://www.automatonism.com is Johan's website and original version
