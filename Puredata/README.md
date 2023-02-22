@@ -7,6 +7,10 @@ Hopefully this ends up being a stable solution for all of us. Let me know if you
 
 http://msp.ucsd.edu/Software/pd-0.53-2test1.macos.zip
 
+If the link above doesn't work you can try the downloads page:
+http://msp.ucsd.edu/Software/
+and search for pd-0.53-2test1.mac
+
 ## Automatonism
 
 We will use a port of the excellent Automatonism library by Johan Eriksson.
