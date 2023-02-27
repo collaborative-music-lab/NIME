@@ -64,18 +64,20 @@ void readPotentiometers(){
   //we use the variables timer and interval to read the inputs
   //at a fixed interval. This syntax will be extremely common.
   static uint32_t timer = 0; //note the static keyword so timer remembers its value
-  int interval = 10; //interval is in milliseconds (ms)
+  int interval = 25; //interval is in milliseconds (ms)
 
-  static float prevVal[2]; //for onepole filter
+  static float prevVal[4]; //for onepole filter
 
   if(millis()-timer>interval){
     timer = millis();
 
     //the first two inputs are for potentiometers
     //we will Serial.print the values every time the function is called
-    for(int i=0;i<2;i++){
+    for(int i=0;i<4;i++){
       //read the analog input
-      float val = analogRead(espPin[i]);
+      if(i==3) i==4;
+
+      float val = 0;
       float prev = prevVal[i];
 
       for(int k=0;k<10;k++){
@@ -87,14 +89,15 @@ void readPotentiometers(){
         prevVal[i] = val;
       }
       
-      if(abs(val-prev)>2){
-        //Serial.print to arduino serial monitor
-        Serial.print("\tpot ");
-        Serial.print(i);
-        Serial.print(": ");
-        Serial.println(val);
-      }
+      // if(abs(val-prev)>5){
+      //   //Serial.print to arduino serial monitor
+      //   Serial.print("\tpot ");
+      //   Serial.print(i);
+      //   Serial.print(": ");
+      //   Serial.println(val, DEC);
+      // }
     }
+    Serial.println( String(prevVal[0]) + "\t" + String(prevVal[1]) + "\t" + String(prevVal[2]) + "\t" + String(prevVal[3]) );
     //Serial.println();
   }
 }
