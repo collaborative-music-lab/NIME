@@ -14,10 +14,11 @@ def processInput(*args):
 	
 	elif 10 <= address <= 14:
 		#buttons
-		if address == 10: return("/sw3	", val)
-		if address == 11: return("/sw2", val)
+		#print("button", address)
+		if address == 10: return("/sw1", val)
+		if address == 11: return("/sw3", val)
 		if address == 12: return("/sw0", val)
-		if address == 13: return("/sw1", val)
+		if address == 13: return("/sw2", val)
 
 
 

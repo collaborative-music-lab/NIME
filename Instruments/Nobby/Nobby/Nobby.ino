@@ -62,7 +62,7 @@ m370_digitalInput sw[NUM_DIGITAL] = {
   m370_digitalInput(p6),//pin
   m370_digitalInput(p7),//pin
   m370_digitalInput(p8),//pin
-  m370_digitalInput(p9)//pin
+  m370_digitalInput(p13)//pin
 };
 
 void setup() {

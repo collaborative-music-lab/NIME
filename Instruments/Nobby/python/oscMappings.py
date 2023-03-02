@@ -130,13 +130,13 @@ def mapSensor(add, val):
 	global synthNewNote, synthProgramEnable, synthClock
 
 	if add == "/sw0": 
-		if switch[0].new(val) is 1:
+		if switch[0].new(val) == 1:
 			eucClock[0] = 0
 	elif add == "/sw1": 
-		if switch[1].new(val) is 1:
+		if switch[1].new(val) == 1:
 			eucClock[1] = 0
 	elif add == "/sw2": 
-		if switch[2].new(val) is 1:
+		if switch[2].new(val) == 1:
 			eucClock[2] = 0
 	elif add == "/sw3": 
 		if switch[3].new(val) is not None:
