@@ -101,8 +101,6 @@ void readPotentiometers(){
         Serial.println(val);
       }
     }
-    //Serial.println( String(prevAnalog[0]) + "\t" + String(prevAnalog[1]) + "\t" + String(prevAnalog[2]) + "\t" + String(prevAnalog[3]) );
-    //Serial.println();
   }
 }
 
