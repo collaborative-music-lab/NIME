@@ -22,12 +22,12 @@ const byte p5 = 34;
 //digital input pins
 const byte p6 = 13;
 const byte p7 = 14;
-const byte p6 = 25;
-const byte p7 = 26;
-const byte p6 = 27;
-const byte p7 = 4;
-const byte p6 = 0;
-const byte p7 = 15;
+const byte p8 = 25;
+const byte p9 = 26;
+const byte p10 = 27;
+const byte p11 = 4;
+const byte p12 = 0;
+const byte p13 = 15;
 
 //MUX and SPI control pins
 const byte pMISO = 19;
