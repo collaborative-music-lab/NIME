@@ -203,7 +203,7 @@ def drumTone(num,val):
 		outVal = math.pow(val*0.8+0.2,2)
 		if num == 1: outVal = math.pow(val*0.8+0.2,2)
 		if num == 2: outVal = math.pow(val*0.9+0.1,2)
-		sendOSC("decay", num+2, "D", outVal*127)
+		sendOSC("decay", num+2, "D", outVal*127) #module name, instance, parameter name, value
 		sendOSC("decay", num+12, "D", math.pow(outVal,2)*127)
 
 def drumPattern(num,val):

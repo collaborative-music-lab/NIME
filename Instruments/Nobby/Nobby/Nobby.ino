@@ -48,7 +48,7 @@ ANALOG SETUP
 const byte NUM_ANALOG = 4;
 
 m370_analog ana[NUM_ANALOG] = {
-  m370_analog(p0,20), //pin, sampling rate (Hz)
+  m370_analog(p0,20), //pin, sampling rate (Hz) F = 1/T, T = 1/F
   m370_analog(p1,20),  //pin, sampling rate (Hz)
   m370_analog(p2,20), //pin, sampling rate (Hz)
   m370_analog(p3,20)  //pin, sampling rate (Hz)
@@ -108,7 +108,7 @@ void readButtons(){
         PrintDebug("sw",i,count[i]);
       }
       else {
-        comms.outu8(i+10);
+        comms.outu8(i+10); 
         comms.outu16(outVal);
         comms.send();
       }
@@ -132,6 +132,7 @@ void readPotentiometers(){
     }
   }
 }
+
 
 void PrintDebug(String name, int num, int val){
   Serial.print(name);

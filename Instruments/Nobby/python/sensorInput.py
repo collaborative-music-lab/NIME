@@ -1,5 +1,5 @@
-#knuckles sensor input
-#two pots and four buttons
+#nobby sensor input
+#four pots and four buttons
 
 def processInput(*args):
 	address = args[0][0]
@@ -7,7 +7,8 @@ def processInput(*args):
 
 	# I like to write this out longform in case I need
 	#to change the order of sensors in a group
-	if address == 0: return("/pot0", val)
+	#print(address, val)
+	if address == 0: return("/pot0", 4095-val)
 	elif address == 1: return("/pot3", val)
 	elif address == 2: return("/pot2", 4095-val)
 	elif address == 3: return("/pot1", val)

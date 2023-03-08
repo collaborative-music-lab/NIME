@@ -4,7 +4,6 @@
 
 PACKET_INCOMING_SERIAL_MONITOR = 0
 
-
 CUR_PYTHON_SCRIPT = "Nobby.py"
     
 import serial, serial.tools.list_ports, socket, sys, asyncio,struct,time, math
