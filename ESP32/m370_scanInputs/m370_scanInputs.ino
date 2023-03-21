@@ -21,7 +21,7 @@
  *  - Serial monitor set to 115200 kbps
  */
 
- #include <pinDefsv4.h>
+ #include <pinDefs.h>
 
 //set the number of pins to monitor
 //6 analog pins are available on pins 0-5
