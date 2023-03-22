@@ -1,15 +1,11 @@
-#N canvas 0 26 1216 1002 12;
+#N canvas 0 32 1216 1002 12;
 #X obj 25 206 receiveOSC;
 #X obj 20 303 / 32;
-#X obj 20 326 vsl 32 64 0 127 0 0 empty empty empty 0 -9 0 10 -262144
--1 -1 0 1;
+#X obj 20 326 vsl 32 64 0 127 0 0 empty empty empty 0 -9 0 10 #fcfcfc #000000 #000000 0 1;
 #X obj 58 305 / 32;
-#X obj 58 327 vsl 32 64 0 127 0 0 empty empty empty 0 -9 0 10 -262144
--1 -1 0 1;
-#X obj 237 310 tgl 30 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
-1;
-#X obj 579 199 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
-1;
+#X obj 58 327 vsl 32 64 0 127 0 0 empty empty empty 0 -9 0 10 #fcfcfc #000000 #000000 0 1;
+#X obj 237 310 tgl 30 0 empty empty empty 17 7 0 10 #fcfcfc #000000 #000000 0 1;
+#X obj 579 199 tgl 15 0 empty empty empty 17 7 0 10 #fcfcfc #000000 #000000 0 1;
 #X obj 579 243 f;
 #X obj 612 242 + 1;
 #X msg 579 265 0 \$1;
@@ -18,26 +14,19 @@
 #X msg 862 176 0;
 #X obj 862 199 oscformat mirror;
 #X obj 768 471 s trigger;
-#X floatatom 641 162 5 0 0 0 - - -;
-#X obj 19 -22 vsl 15 128 1.27 127 1 0 empty empty BD 0 -9 0 10 -262144
--1 -1 0 1;
-#X obj 38 -22 vsl 15 128 1.27 127 1 0 empty empty SD 0 -9 0 10 -262144
--1 -1 0 1;
-#X obj 57 -22 vsl 15 128 1.27 127 1 0 empty empty HH 0 -9 0 10 -262144
--1 -1 0 1;
+#X floatatom 641 162 5 0 0 0 - - - 0;
+#X obj 19 -22 vsl 15 128 1.27 127 1 0 empty empty BD 0 -9 0 10 #fcfcfc #000000 #000000 0 1;
+#X obj 38 -22 vsl 15 128 1.27 127 1 0 empty empty SD 0 -9 0 10 #fcfcfc #000000 #000000 0 1;
+#X obj 57 -22 vsl 15 128 1.27 127 1 0 empty empty HH 0 -9 0 10 #fcfcfc #000000 #000000 0 1;
 #X obj 25 238 s incomingOSC;
 #X obj 26 261 r incomingOSC;
 #X obj 769 410 r incomingOSC;
-#X obj 267 310 tgl 30 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
-1;
-#X obj 177 310 tgl 30 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
-1;
-#X obj 207 310 tgl 30 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
-1;
+#X obj 267 310 tgl 30 0 empty empty empty 17 7 0 10 #fcfcfc #000000 #000000 0 1;
+#X obj 177 310 tgl 30 0 empty empty empty 17 7 0 10 #fcfcfc #000000 #000000 0 1;
+#X obj 207 310 tgl 30 0 empty empty empty 17 7 0 10 #fcfcfc #000000 #000000 0 1;
 #X obj 153 224 spigot;
 #X obj 153 247 print;
-#X obj 191 206 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
-1;
+#X obj 191 206 tgl 15 0 empty empty empty 17 7 0 10 #fcfcfc #000000 #000000 0 1;
 #X obj 323 348 symbol;
 #X obj 305 373 s;
 #X msg 443 154 0;
@@ -235,50 +224,35 @@
 #X connect 18 0 19 0;
 #X restore 19 114 pd gains;
 #X f 31;
-#X obj 81 -22 vsl 24 128 1.27 127 1 0 empty empty SYN 0 -9 0 10 -262144
--1 -1 0 1;
-#X obj 107 -22 vsl 24 128 1.27 127 1 0 empty empty SAMP 0 -9 0 10 -262144
--1 -1 0 1;
-#X obj 183 -21 vsl 15 128 1.27 127 1 0 empty empty DR 0 -9 0 10 -204786
--1 -1 0 1;
-#X obj 203 -21 vsl 15 128 1.27 127 1 0 empty empty SYN 0 -9 0 10 -204786
--1 -1 0 1;
-#X obj 223 -21 vsl 15 128 1.27 127 1 0 empty empty SAM 0 -9 0 10 -204786
--1 -1 0 1;
-#X obj 17 -61 cnv 15 155 20 empty empty MIXER 4 10 0 14 -203904 -66577
-0;
-#X obj 180 -61 cnv 15 60 20 empty empty reverb 4 10 0 14 -204786 -66577
-0;
-#X obj 139 -22 vsl 32 128 1.27 127 1 0 empty empty MASTER 0 -9 0 10
--203904 -1 -1 0 1;
-#X obj 16 174 cnv 15 320 20 empty empty MONITOR 4 10 0 14 -203904 -66577
-0;
+#X obj 81 -22 vsl 24 128 1.27 127 1 0 empty empty SYN 0 -9 0 10 #fcfcfc #000000 #000000 0 1;
+#X obj 107 -22 vsl 24 128 1.27 127 1 0 empty empty SAMP 0 -9 0 10 #fcfcfc #000000 #000000 0 1;
+#X obj 183 -21 vsl 15 128 1.27 127 1 0 empty empty DR 0 -9 0 10 #c4fcc4 #000000 #000000 0 1;
+#X obj 203 -21 vsl 15 128 1.27 127 1 0 empty empty SYN 0 -9 0 10 #c4fcc4 #000000 #000000 0 1;
+#X obj 223 -21 vsl 15 128 1.27 127 1 0 empty empty SAM 0 -9 0 10 #c4fcc4 #000000 #000000 0 1;
+#X obj 17 -61 cnv 15 155 20 empty empty MIXER 4 10 0 14 #c4c4fc #404040 0;
+#X obj 180 -61 cnv 15 60 20 empty empty reverb 4 10 0 14 #c4fcc4 #404040 0;
+#X obj 139 -22 vsl 32 128 1.27 127 1 0 empty empty MASTER 0 -9 0 10 #c4c4fc #000000 #000000 0 1;
+#X obj 16 174 cnv 15 320 20 empty empty MONITOR 4 10 0 14 #c4c4fc #404040 0;
 #X obj 769 441 route trigger;
 #X obj 575 119 loadbang;
 #X msg 575 177 1;
 #X obj 641 115 r tempo;
-#X obj 258 78 cnv 15 70 20 empty empty tempo 4 10 0 10 -261234 -66577
-0;
-#X obj 263 112 hsl 64 15 0 127 0 0 tempo tempo-r tempo -2 -8 0 10 -261234
--1 -1 2927 1;
+#X obj 258 78 cnv 15 70 20 empty empty tempo 4 10 0 10 #fcc4c4 #404040 0;
+#X obj 263 112 hsl 64 15 0 127 0 0 tempo tempo-r tempo -2 -8 0 10 #fcc4c4 #000000 #000000 0 1;
 #X obj 641 138 expr pow($f1/127 \, 2)*400 + 50;
 #X obj 579 220 metro 140;
-#X obj 21 281 route pot0 pot1 pot2 pot3 sw0 sw1 sw2 sw3 module param
-;
+#X obj 21 281 route pot0 pot1 pot2 pot3 sw0 sw1 sw2 sw3 module param;
 #X obj 94 305 / 32;
-#X obj 94 328 vsl 32 64 0 127 0 0 empty empty empty 0 -9 0 10 -262144
--1 -1 0 1;
+#X obj 94 328 vsl 32 64 0 127 0 0 empty empty empty 0 -9 0 10 #fcfcfc #000000 #000000 0 1;
 #X obj 132 307 / 32;
-#X obj 132 329 vsl 32 64 0 127 0 0 empty empty empty 0 -9 0 10 -262144
--1 -1 0 1;
-#X floatatom 658 212 5 0 0 0 - - -;
+#X obj 132 329 vsl 32 64 0 127 0 0 empty empty empty 0 -9 0 10 #fcfcfc #000000 #000000 0 1;
+#X floatatom 658 212 5 0 0 0 - - - 0;
 #N canvas 0 22 450 300 setTempo 0;
 #X obj 53 33 loadbang;
 #X obj 53 56 delay 1000;
-#X obj 33 59 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
--1;
+#X obj 33 59 bng 15 250 50 0 empty empty empty 17 7 0 10 #fcfcfc #000000 #000000;
 #X obj 53 127 s tempo-r;
-#X floatatom 8 128 5 0 0 0 - - -;
+#X floatatom 8 128 5 0 0 0 - - - 0;
 #X obj 53 79 random 25;
 #X obj 53 102 + 50;
 #X text 5 6 choose a random tempo on load;
