@@ -21,6 +21,9 @@ def processInput(*args):
 		if address == 12: return("/sw0", val)
 		if address == 13: return("/sw2", val)
 
+	else: 
+		return("/none", 0)
+
 
 
 def bto_ui16(high,low):
