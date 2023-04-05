@@ -55,8 +55,9 @@ def mapSensor(add, val):
 prevTine = [0]*6
 tineBaseline = [0]*6
 tineLowPass = [0]*6
-tineGain = [1,1,2,1,2.5,1.5]
+tineGain = [1,1,2,1.5,2.5,1.5]
 deltaTine = [0]*6
+accelTine = [0]*6
 
 def processTine(num, val):
 	num = 5-num #reverse order of tines
@@ -72,29 +73,46 @@ def processTine(num, val):
 
 	curVal = (tineBaseline[num] - val)
 	curVal = curVal * tineGain[num]
+	curVal = prevTine[num]*0.8 + curVal*.2
+	#offset small values
+	curVal = 0 if (curVal < 5) else curVal-5
+
+	#lowpass filter for small values
+	if curVal < 20: curVal = prevTine[num]*0.9 + curVal*.1
+	elif curVal < 15: curVal = prevTine[num]*0.5 + curVal*.5
+	#lowpass filter for high values
+	else : curVal = prevTine[num]*0. + curVal*1
 
 	#calculate sudden changes
 	delta = curVal - prevTine[num]
-	if delta <30: deltaTine[num] = 0
-	elif delta>30 and delta-30 > deltaTine[num]: 
-		deltaTine[num] = delta-30
-		# sendOSC('vca', num*10+1, 'CV', deltaTine[num] * 4)
-		# sendOSC('trigger', num+1, num+1, num+1)
-		# print(delta-30)
-	else: deltaTine[num] = delta - 30
+	#if abs(delta) <5: delta = 0
+	accelTine[num] = delta - deltaTine[num]
+	deltaTine[num] = delta
+	accelThreshold = .5 * curVal + .1
+	if accelTine[num] <accelThreshold: accelTine[num] = 0
+	elif accelTine[num]>accelThreshold: 
+		accelTine[num] = accelTine[num]-accelThreshold
+		sendOSC('vca', num*10+1, 'CV', accelTine[num] * 20 + 25)
+		sendOSC('trigger', num+1, num+1, num+1)
+		print(accelTine[num]-accelThreshold)
+	else: accelTine[num] = accelTine[num] - accelThreshold
+	if num == 5: print(accelTine)
 
+	# deltaThreshold = .1
+	# if delta <deltaThreshold: deltaTine[num] = 0
+	# elif delta>deltaThreshold and delta-deltaThreshold > deltaTine[num]: 
+	# 	deltaTine[num] = delta-deltaThreshold
+	# 	sendOSC('vca', num*10+1, 'CV', deltaTine[num] * 4 + 25)
+	# 	sendOSC('trigger', num+1, num+1, num+1)
+	# 	print(delta-deltaThreshold)
+	# else: deltaTine[num] = delta - deltaThreshold
 
-	#lowpass filter for small values
-	if curVal < 50: curVal = prevTine[num]*0.95 + curVal*.05
-	#lowpass filter for small values
-	else : curVal = prevTine[num]*0.5 + curVal*.5
-
-	#offset small values
-	curVal = 0 if (curVal < 5) else curVal-5
 
 	
 
 	prevTine[num] = curVal
+	#if num == 5: print(prevTine)
+
 	# if num == 5:
 	#print( deltaTine)
 	#if abs(deltaTine[num]) > 5: print(deltaTine[num])

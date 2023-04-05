@@ -38,7 +38,7 @@ ANALOG SETUP
 *********************************************/
 const byte NUM_ANALOG = 6;
 
-byte analog_polling_rate = 100;
+byte analog_polling_rate = 1000;
 
 m370_analog ana[NUM_ANALOG] = {
   m370_analog(p0,analog_polling_rate), //pin, sampling rate (Hz) F = 1/T, T = 1/F
@@ -48,6 +48,9 @@ m370_analog ana[NUM_ANALOG] = {
   m370_analog(p4,analog_polling_rate),
   m370_analog(p5,analog_polling_rate)
 };
+
+uint32_t analogSum[NUM_ANALOG];
+uint32_t analogCount[NUM_ANALOG];
 /*********************************************
 DIGITAL INPUT SETUP
 *********************************************/
@@ -107,22 +110,34 @@ void readDigital(){
 }
 
 void readAnalog(){
+  static uint32_t timer = 0;
+  int printInterval = 10;
+
   for(int i=0;i<NUM_ANALOG;i++){
     ana[i].loop();
     if(ana[i].available() ){
       int outVal = ana[i].getVal();
-      if( SERIAL_DEBUG ) {
-        //PrintDebug("analog",i,outVal);
-        Serial.print(outVal);
-        Serial.print("\t");
-      }
-      else {
+      analogSum[i] += outVal;
+      analogCount[i]++;
+    }
+  }
+  if(millis()-timer > printInterval){
+      timer = millis();
+      for(int i=0;i<NUM_ANALOG;i++){
+        if( SERIAL_DEBUG ) {
+          //PrintDebug("analog",i,outVal);
+          Serial.print(analogSum[i]/analogCount[i]);
+          Serial.print("\t");
+        }
+        else {
         comms.outu8(i);
-        comms.outu16(outVal);
+        comms.outu16(analogSum[i]/analogCount[i]);
         comms.send();
       }
-      if(SERIAL_DEBUG && i>4) Serial.println();
+      analogSum[i] = 0;
+      analogCount[i] = 0;
     }
+    if(SERIAL_DEBUG) Serial.println();
   }
 }
 
