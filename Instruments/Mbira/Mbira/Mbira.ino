@@ -38,7 +38,7 @@ ANALOG SETUP
 *********************************************/
 const byte NUM_ANALOG = 6;
 
-byte analog_polling_rate = 20;
+byte analog_polling_rate = 100;
 
 m370_analog ana[NUM_ANALOG] = {
   m370_analog(p0,analog_polling_rate), //pin, sampling rate (Hz) F = 1/T, T = 1/F

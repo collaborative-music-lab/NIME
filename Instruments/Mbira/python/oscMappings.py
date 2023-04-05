@@ -30,10 +30,6 @@ def clock(*args):
 # #change threshold for synth range pot
 # pot[0].changeThreshold = 50
 
-prevTine = [0,0,0,0,0,0]
-
-tineBaseline = [0,0,0,0,0,0]
-
 def mapSensor(add, val):
 	global prevTine
 
@@ -56,13 +52,16 @@ def mapSensor(add, val):
 		processTine(5, val)
 		#print("tine5 ", val)
 
-		
-tineLowPass = [0,0,0,0,0,0]
-tineGain = [1,1,2,1,2,1]
+prevTine = [0]*6
+tineBaseline = [0]*6
+tineLowPass = [0]*6
+tineGain = [1,1,2,1,2.5,1.5]
+deltaTine = [0]*6
 
 def processTine(num, val):
-	num = 5-num
-	#global prevTine, tineBaseline
+	num = 5-num #reverse order of tines
+
+	#update baseline data
 	if tineBaseline[num] == 0:
 		tineBaseline[num] = val
 	if tineBaseline[num] > val:
@@ -70,19 +69,35 @@ def processTine(num, val):
 	else:
 		tineBaseline[num] = 0.9*tineBaseline[num]  + 0.1*val
 
-	curVal = (tineBaseline[num] - val)
 
+	curVal = (tineBaseline[num] - val)
 	curVal = curVal * tineGain[num]
 
-	if curVal < 50: curVal = prevTine[num]*0.8 + curVal*.2
+	#calculate sudden changes
+	delta = curVal - prevTine[num]
+	if delta <30: deltaTine[num] = 0
+	elif delta>30 and delta-30 > deltaTine[num]: 
+		deltaTine[num] = delta-30
+		# sendOSC('vca', num*10+1, 'CV', deltaTine[num] * 4)
+		# sendOSC('trigger', num+1, num+1, num+1)
+		# print(delta-30)
+	else: deltaTine[num] = delta - 30
 
+
+	#lowpass filter for small values
+	if curVal < 50: curVal = prevTine[num]*0.95 + curVal*.05
+	#lowpass filter for small values
+	else : curVal = prevTine[num]*0.5 + curVal*.5
+
+	#offset small values
 	curVal = 0 if (curVal < 5) else curVal-5
+
+	
 
 	prevTine[num] = curVal
 	# if num == 5:
-	# 	print(val, curVal)
-
-	print( prevTine)
+	#print( deltaTine)
+	#if abs(deltaTine[num]) > 5: print(deltaTine[num])
 
 	pitches = [48,52,55,60,64,67]
 
