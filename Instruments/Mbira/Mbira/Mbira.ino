@@ -8,7 +8,7 @@
  */
 #include "m370_lbr.h" 
 
-const byte SERIAL_DEBUG = 0;
+const byte SERIAL_DEBUG = 1;
 
 // WiFi network name and password:
 // ignore this for now
@@ -40,7 +40,7 @@ const byte NUM_ANALOG = 6;
 
 byte analog_polling_rate = 1000;
 
-m370_analog ana[NUM_ANALOG] = {
+m370_analog ana[6] = {
   m370_analog(p0,analog_polling_rate), //pin, sampling rate (Hz) F = 1/T, T = 1/F
   m370_analog(p1,analog_polling_rate),
   m370_analog(p2,analog_polling_rate),
@@ -51,6 +51,8 @@ m370_analog ana[NUM_ANALOG] = {
 
 uint32_t analogSum[NUM_ANALOG];
 uint32_t analogCount[NUM_ANALOG];
+uint32_t analogValues[NUM_ANALOG][20];
+byte analogIndex[NUM_ANALOG];
 /*********************************************
 DIGITAL INPUT SETUP
 *********************************************/
@@ -117,22 +119,41 @@ void readAnalog(){
     ana[i].loop();
     if(ana[i].available() ){
       int outVal = ana[i].getVal();
-      analogSum[i] += outVal;
+      analogSum[i] += outVal*outVal;
       analogCount[i]++;
     }
   }
   if(millis()-timer > printInterval){
       timer = millis();
+
       for(int i=0;i<NUM_ANALOG;i++){
+
+        //PrintDebug("analog",i,outVal);
+          static int32_t prevSum[NUM_ANALOG];
+          static int32_t prevDelta[NUM_ANALOG];
+          static int32_t prevAccel[NUM_ANALOG];
+          int32_t delta = (int32_t)prevSum[i] - (int32_t)analogSum[i]/(analogCount[i]*128);
+          int32_t accel = prevDelta[i] - delta;
+          int32_t jerk = prevAccel[i] - accel;
+          prevDelta[i] = delta;
+          prevSum[i] = (int32_t)analogSum[i]/(analogCount[i]*128);
+          prevAccel[i] = accel;
+
         if( SERIAL_DEBUG ) {
           //PrintDebug("analog",i,outVal);
-          Serial.print(analogSum[i]/analogCount[i]);
-          Serial.print("\t");
+          Serial.print(jerk);
+          Serial.print(",\t");
         }
         else {
         comms.outu8(i);
-        comms.outu16(analogSum[i]/analogCount[i]);
+        comms.outu16(prevSum[i]);
         comms.send();
+
+        if(jerk > 200){
+          comms.outu8(i + NUM_ANALOG);
+          comms.outu16(jerk);
+          comms.send();
+        }
       }
       analogSum[i] = 0;
       analogCount[i] = 0;

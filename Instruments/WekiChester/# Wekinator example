@@ -1,0 +1,11 @@
+# Wekinator example
+
+In the video:
+1. connecting to WIFI
+2. setting up OSC to send to and listen from wekinator
+3. creating functions to send to and receive from wekinator
+4. creating our first mapping using wekinator
+
+## Setting up WiFi for the ESP32
+
+1. Make sure you 

@@ -212,10 +212,10 @@ def mapSensor(add, val):
 	# 	print("unrecognized sensorVal", add, val)
 
 def updateSwitchVals(num, val):
-	'''use our switches to selet pitches from a pitchset'''
+	'''use our switches to select pitches from a pitchset'''
 	state['switch'][num] = val 
 
-	pitchIndex = 0 #which pitch from our set t0 play
+	pitchIndex = 0 #which pitch from our set to play
 	#below we map which switches are pushed down to which pitch we select from our set
 	for i in range( len(state['switch']) -  1): pitchIndex += math.pow(2, i) * state['switch'][i+1]
 
@@ -380,7 +380,6 @@ def calcPitchGlide():
 	outVal = onepole2(state['pitchGlide'], outVal, tuning['pitchGlideLag'])
 
 	sendOSC("pitchGlide", outVal, outVal, outVal)
-
 
 def calcVoiceGains():
 	gains = [0]*4

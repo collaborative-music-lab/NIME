@@ -58,9 +58,14 @@ tineLowPass = [0]*6
 tineGain = [1,1,2,1.5,2.5,1.5]
 deltaTine = [0]*6
 accelTine = [0]*6
+tineVal = [0]*6
 
 def processTine(num, val):
 	num = 5-num #reverse order of tines
+
+	tineVal[num] = val
+	#if abs(tineVal[num]) < 5: tineVal[num] = 0
+	if num == 5: print(tineVal)
 
 	#update baseline data
 	if tineBaseline[num] == 0:
@@ -72,6 +77,11 @@ def processTine(num, val):
 
 
 	curVal = (tineBaseline[num] - val)
+
+	# tineVal[num] = curVal
+	# if abs(tineVal[num]) < 5: tineVal[num] = 0
+	# if num == 5: print(tineVal)
+
 	curVal = curVal * tineGain[num]
 	curVal = prevTine[num]*0.8 + curVal*.2
 	#offset small values
@@ -82,6 +92,8 @@ def processTine(num, val):
 	elif curVal < 15: curVal = prevTine[num]*0.5 + curVal*.5
 	#lowpass filter for high values
 	else : curVal = prevTine[num]*0. + curVal*1
+
+	if curVal < 1: curVal = 1
 
 	#calculate sudden changes
 	delta = curVal - prevTine[num]
@@ -94,9 +106,9 @@ def processTine(num, val):
 		accelTine[num] = accelTine[num]-accelThreshold
 		sendOSC('vca', num*10+1, 'CV', accelTine[num] * 20 + 25)
 		sendOSC('trigger', num+1, num+1, num+1)
-		print(accelTine[num]-accelThreshold)
+		#print(accelTine[num]-accelThreshold)
 	else: accelTine[num] = accelTine[num] - accelThreshold
-	if num == 5: print(accelTine)
+	#if num == 5: print(prevTine)
 
 	# deltaThreshold = .1
 	# if delta <deltaThreshold: deltaTine[num] = 0
@@ -106,9 +118,6 @@ def processTine(num, val):
 	# 	sendOSC('trigger', num+1, num+1, num+1)
 	# 	print(delta-deltaThreshold)
 	# else: deltaTine[num] = delta - deltaThreshold
-
-
-	
 
 	prevTine[num] = curVal
 	#if num == 5: print(prevTine)
