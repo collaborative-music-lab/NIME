@@ -24,6 +24,8 @@ def defineOscHandlers():
 	dispatcher.map("/setVelocitySmooth", setVelocitySmooth )
 	dispatcher.map("/setPitchset", setPitchset )
 
+# note this OSC handler functions receives six input variables:
+# the first is the OSC address, the following 5 are the weki outputs
 def processWeki(a,b,c,d,e,f):
 	output = [a,b,c,d,e,f]
 	print("received from weki", output)
