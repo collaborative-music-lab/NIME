@@ -112,6 +112,8 @@ uint8_t m370_communication::connect(){
 
   if(m370_wifiConnectionState==0) {
     Serial.print("Waiting for connection ");
+    espAddress = WiFi.localIP(); 
+    Serial.print(espAddress);
     Serial.println(numAvailable);
     Serial.println("wifi " + String(WIFI_ENABLE));
   } 

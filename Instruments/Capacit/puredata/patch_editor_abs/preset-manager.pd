@@ -1,11 +1,9 @@
 #N canvas 47 23 1191 720 10;
-#X obj 350 149 bng 15 250 50 0 STORE-S! empty STORE 17 7 0 10 -262144
--226533 -1;
-#X floatatom 313 136 5 0 0 0 - store-slot-r -;
-#X floatatom 313 168 5 0 0 0 - recall-slot-r -;
-#X obj 109 261 hsl 115 15 0 127 0 1 morph-slider-s empty MORPH -2 -8
-0 10 -262144 -1 -1 9700 1;
-#X floatatom 194 247 5 0 0 0 (ms) morph-time-r -;
+#X obj 350 149 bng 15 250 50 0 STORE-S! empty STORE 17 7 0 10 #fcfcfc #dc4c90 #000000;
+#X floatatom 313 136 5 0 0 0 - store-slot-r - 0;
+#X floatatom 313 168 5 0 0 0 - recall-slot-r - 0;
+#X obj 109 261 hsl 115 15 0 127 0 1 morph-slider-s empty MORPH -2 -8 0 10 #fcfcfc #000000 #000000 9700 1;
+#X floatatom 194 247 5 0 0 0 (ms) morph-time-r - 0;
 #X obj 106 571 / 127;
 #X obj 106 593 * 9999;
 #X obj 106 637 i;
@@ -19,17 +17,14 @@
 #X obj 106 700 s preset-manager-morph-s;
 #X obj 106 659 t f f;
 #X obj 150 676 s morph-time-r;
-#X obj 108 196 hsl 115 15 0 127 0 1 scan-cv-att-s empty RECALL-CV 120
-7 0 10 -158136 -1 -1 11400 1;
+#X obj 108 196 hsl 115 15 0 127 0 1 scan-cv-att-s empty RECALL-CV 120 7 0 10 #9898dc #000000 #000000 11400 1;
 #X obj 357 394 r recall-location-s;
 #X obj 357 503 + 1;
 #X obj 357 525 i;
 #X obj 357 571 s recall-slot-r;
 #X obj 303 727 s preset-manager-store-slot;
-#X obj 154 127 cnv 5 5 5 empty empty MANAGER 0 0 0 12 -262144 -66577
-0;
-#X obj 105 127 cnv 5 5 5 empty empty PRESET 0 0 0 12 -262144 -66577
-0;
+#X obj 154 127 cnv 5 5 5 empty empty MANAGER 0 0 0 12 #fcfcfc #404040 0;
+#X obj 105 127 cnv 5 5 5 empty empty PRESET 0 0 0 12 #fcfcfc #404040 0;
 #X obj 573 100 inlet~;
 #X text 570 83 SCAN CV IN;
 #X obj 846 128 inlet~;
@@ -48,15 +43,11 @@
 #X msg 846 172 bang;
 #X obj 846 194 f;
 #X obj 878 194 + 1;
-#X obj 376 118 bng 15 250 50 0 STEP-S! empty empty 17 7 0 10 -262144
--226533 -1;
+#X obj 376 118 bng 15 250 50 0 STEP-S! empty empty 17 7 0 10 #fcfcfc #dc4c90 #000000;
 #X obj 781 111 r STEP-S!;
-#X obj 103 111 cnv 5 5 5 empty empty RECALL(CV) 0 0 0 8 -262144 -158136
-0;
-#X obj 373 111 cnv 5 5 5 empty empty STEP! 0 0 0 8 -262144 -226533
-0;
-#X obj 231 261 hradio 15 1 1 3 empty empty empty 0 -8 0 10 -262144
--1 -1 0;
+#X obj 103 111 cnv 5 5 5 empty empty RECALL(CV) 0 0 0 8 #fcfcfc #9898dc 0;
+#X obj 373 111 cnv 5 5 5 empty empty STEP! 0 0 0 8 #fcfcfc #dc4c90 0;
+#X obj 231 261 hradio 15 1 1 3 empty empty empty 0 -8 0 10 #fcfcfc #000000 #000000 0;
 #X text 230 247 10;
 #X text 245 247 30;
 #X text 260 247 60;
@@ -65,15 +56,12 @@
 #X obj 244 576 t b f;
 #X msg 261 419 29999;
 #X msg 278 450 59999;
-#X obj 105 149 hradio 15 1 0 16 store-location-s store-location-r STORE
-0 -8 0 10 -262144 -1 -1 3;
-#X obj 105 181 hradio 15 1 0 16 recall-location-s recall-location-r
-RECALL 0 -8 0 10 -262144 -1 -1 2;
+#X obj 105 149 hradio 15 1 0 16 store-location-s store-location-r STORE 0 -8 0 10 #fcfcfc #000000 #000000 0;
+#X obj 105 181 hradio 15 1 0 16 recall-location-s recall-location-r RECALL 0 -8 0 10 #fcfcfc #000000 #000000 0;
 #X obj 793 420 r store-location-s;
 #X obj 751 353 r STORE-S!;
 #X obj 763 610 s store-location-r;
-#X obj 106 279 bng 15 250 50 0 STOP-MORPH! empty STOP! 17 7 0 10 -262144
--1 -1;
+#X obj 106 279 bng 15 250 50 0 STOP-MORPH! empty STOP! 17 7 0 10 #fcfcfc #000000 #000000;
 #X obj 468 576 i;
 #X obj 778 472 f;
 #X obj 715 498 delay 500;
@@ -82,14 +70,13 @@ RECALL 0 -8 0 10 -262144 -1 -1 2;
 #X obj 357 547 t f f;
 #X obj 495 543 i;
 #X obj 468 675 s recall-slot-r;
-#X floatatom 572 422 5 0 0 0 - - -;
+#X floatatom 572 422 5 0 0 0 - - - 0;
 #X obj 573 393 i;
 #X obj 641 245 metro 100;
-#X obj 35 74 hsl 128 15 0 127 0 0 empty scan-avoid-clicks-r SCAN 133
-7 0 10 -262144 -1 -1 0 1;
+#X obj 35 74 hsl 128 15 0 127 0 0 empty scan-avoid-clicks-r SCAN 133 7 0 10 #fcfcfc #000000 #000000 0 1;
 #X obj 31 252 / 127;
 #X obj 31 318 i;
-#X floatatom 31 340 5 0 0 0 - - -;
+#X floatatom 31 340 5 0 0 0 - - - 0;
 #X obj 28 475 s recall-location-r;
 #X obj 778 494 t f f;
 #X obj 850 572 s recall-location-r;
@@ -102,7 +89,7 @@ RECALL 0 -8 0 10 -262144 -1 -1 2;
 #X obj 276 693 t f f;
 #X obj 1008 328 r recall-location-s;
 #X obj 993 360 f;
-#X floatatom 993 382 5 0 0 0 - - -;
+#X floatatom 993 382 5 0 0 0 - - - 0;
 #X obj 979 284 loadbang;
 #X obj 846 281 s recall-location-r;
 #X obj 993 440 s recall-location-r;
@@ -174,15 +161,11 @@ RECALL 0 -8 0 10 -262144 -1 -1 2;
 #X obj 573 346 * 15;
 #X obj 495 565 clip 1 16;
 #X obj 31 274 * 15;
-#X obj 291 276 tgl 15 0 attenuators-s attenuators-r ATTENUATORS 17
-7 0 10 -262144 -1 -1 0 1;
-#X obj 291 246 tgl 15 0 frequencies-s frequencies-r FREQUENCIES 17
-7 0 10 -262144 -1 -1 0 1;
-#X obj 291 261 tgl 15 0 parameters-s parameters-r PARAMETERS 17 7 0
-10 -262144 -1 -1 0 1;
+#X obj 291 276 tgl 15 0 attenuators-s attenuators-r ATTENUATORS 17 7 0 10 #fcfcfc #000000 #000000 0 1;
+#X obj 291 246 tgl 15 0 frequencies-s frequencies-r FREQUENCIES 17 7 0 10 #fcfcfc #000000 #000000 0 1;
+#X obj 291 261 tgl 15 0 parameters-s parameters-r PARAMETERS 17 7 0 10 #fcfcfc #000000 #000000 0 1;
 #X text 290 230 MORPH-SELECTOR:;
-#X obj 105 220 cnv 5 290 5 empty empty empty 20 12 0 14 -233017 -66577
-0;
+#X obj 105 220 cnv 5 290 5 empty empty empty 20 12 0 14 #e0e0e0 #404040 0;
 #X obj 846 216 + 1;
 #X connect 3 0 136 0;
 #X connect 5 0 6 0;
