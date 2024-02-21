@@ -59,39 +59,18 @@ def GetSequence(add, num):
     t.update() #reset timeout 
     global sequences
 
-    address = '/sequence'
-
-    if num < len(sequences):
-        val = sequences[int(num)]
-    else:
-        print("sequence number out of range")
-        return 0
-
-    client.send_message(address, val)
-    print("sent")
-
-def GetSequence2(add, num):
-    t.update() #reset timeout 
-    global sequences
-
-    address = '/sequence2'
-
-    if num < len(sequences):
-        val = sequences[int(num)]
-    else:
-        print("sequence number out of range")
-        return 0
-
-    outputMsg = ['ONE', 0, 1]
-
     textNum = ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN', 'EIGHT']
 
-    for i in range(len(val)):
-        outputMsg[0] = textNum[i]
-        outputMsg[1] = (val[i]/27)*127
+    if num < len(sequences):
+        val = sequences[int(num)]
+    else:
+        print("sequence number out of range")
+        return 0
 
-        client.send_message(address, outputMsg)
-        print("sent", address, outputMsg)
+    for i in range(len(val)):
+        sendOSC('8steps', 1, textNum[i], (val[i]/27)*127)
+        print("sent", '8steps', textNum[i], (val[i]/27)*127, 1)
+        #Sequence
 
 def mirror(add, val):
     t.update() #reset timeout 
@@ -102,9 +81,14 @@ def cancelScript():
     t.cancel() #reset timeout 
 
 #look for incoming OSC messages
-dispatcher.map("/getSequence", GetSequence2)
+dispatcher.map("/getSequence", GetSequence)
 dispatcher.map("/paramName", mirror)
 dispatcher.map("/cancel", cancelScript)
+
+def sendOSC(module, instance, param, val):
+    client.send_message('/module', module)
+    msg = [param, val, instance]
+    client.send_message('/param', msg)
 
 
 ######################
