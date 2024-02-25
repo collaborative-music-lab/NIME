@@ -52,8 +52,10 @@ sequences = [
 [0,1,2,3,4,5,6,7],
 [2,0,3,1,4,2,5,3],
 [0,4,7,11,14,18,14,7],
-[1,3,5,6,7,6,5,4]
+[0,2,4,7,1,3,5,8]
 ]
+
+decayTime = [20,50, 90,127]
 
 def GetSequence(add, num):
     t.update() #reset timeout 
@@ -71,6 +73,8 @@ def GetSequence(add, num):
         sendOSC('8steps', 1, textNum[i], (val[i]/27)*127)
         print("sent", '8steps', textNum[i], (val[i]/27)*127, 1)
         #Sequence
+
+    sendOSC('decay', 1, 'D', decayTime[int(num)])
 
 def mirror(add, val):
     t.update() #reset timeout 

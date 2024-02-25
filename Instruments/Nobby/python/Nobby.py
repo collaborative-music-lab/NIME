@@ -1,7 +1,9 @@
 #Nobby.py
 #Ian Hattwick
-#Jan 18, 2022
+#Jan 18, 2024
 
+#uncommet to see the raw packets coming from the ESP32
+# - a quick way to make sure serial communication is working
 PACKET_INCOMING_SERIAL_MONITOR = 0
 
 CUR_PYTHON_SCRIPT = "Nobby.py"
@@ -14,23 +16,29 @@ from pythonosc.dispatcher import Dispatcher
 
 #m370 python modules
 import scripts.m370_communication as m370_communication
-comms = m370_communication.communication("serial", baudrate = 115200, defaultport="/dev/tty.SLAB_USBtoUART")
-
-import scripts.timeout as timeout
 #you can change the defaultport to the name your PC gives to the ESP32 serial port
-
-import sensorInput as sensor
-import oscMappings as osc
-osc.comms = comms
-
-t = timeout.Timeout(5)
-osc.t = t
+comms = m370_communication.communication("serial", baudrate = 115200, defaultport="/dev/tty.SLAB_USBtoUART")
 
 ######################
 # SET COMMUNICATION MODE
 ######################
 SERIAL_ENABLE = 1
 WIFI_ENABLE = 0 
+
+####################
+####################
+#you don't want to change anything below this point
+####################
+####################
+
+#the oscMappings and sensorInput files are loaded as osc and sensor
+import sensorInput as sensor
+import oscMappings as osc
+
+osc.comms = comms
+import scripts.timeout as timeout
+t = timeout.Timeout(5)
+osc.t = t
 
 ######################
 #SETUP OSC
@@ -42,11 +50,8 @@ osc.client = client
 dispatcher = Dispatcher()
 osc.dispatcher = dispatcher
 
-
-
 print("Sending OSC to port", 5005, "on localhost")
 client.send_message("/scriptName", CUR_PYTHON_SCRIPT)
-
 osc.defineOscHandlers()
 
 #timeout handlers

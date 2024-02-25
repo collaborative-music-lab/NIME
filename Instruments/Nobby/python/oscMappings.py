@@ -1,17 +1,21 @@
 import math, time
 global dispatcher
 from sensorInterfaces.m370_sensor import sensor as sensor 
-from sensorInterfaces.euclideanSequencer import Euclid as euclid
+from scripts.euclideanSequencer import Euclid as euclid
 
 #########
 #EUCLIDIAN SEQUENCER
 #########
+# the code for this is in scripts/euclideanSequencer
 eucDivisor = [1,1,1]
 eucClock = [0,0,0]
 euc = []
-euc.append( euclid(16,3,0)) #bass drum
-euc.append( euclid(16,3,0)) # snare
-euc.append( euclid(16,9,0)) #hihat
+#euclid parameters are number of beats, number of hits, rotation
+euc.append( euclid(16,16,0)) #bass drum
+euc.append( euclid(16,16,0)) # snare
+euc.append( euclid(16,16,0)) #hihat
+
+monitorEuclidPatterns = 0
 
 #########
 #SYNTH AND SEQUENCER
@@ -26,7 +30,6 @@ synthClockDivider = 2
 #INCOMING OSC
 # handle messages sent from PD
 ######################
-
 def defineOscHandlers():
 	dispatcher.map("/clock", clock)
 	dispatcher.map("/setPitch", setPitch)
@@ -36,14 +39,16 @@ def defineOscHandlers():
 def clock(*args):
 	global eucClock, synthProgramEnable, synthNewNote, synthClock, synthRange, synthClockDivider, prevTime
 	t.update() #reset timeout
-	curBeat = args[2]%16
+	curBeat = args[2]%16 #clock is just an ascending integer
 	
 	#drum sequencers
 	euclidTrigger = []
 	for i in range(3):
 		euclidTrigger.append( euc[i].get(math.floor(eucClock[i] / eucDivisor[i])) )
+		if switch[i].val > 0 and monitorEuclidPatterns is 1: print(eucClock[i] , euc[i].pattern)
 		eucClock[i] += 1
-		if eucClock[i] >= 16/eucDivisor[i]: eucClock[i] = 0 
+		if eucClock[i] >= 16/eucDivisor[i]: 
+			eucClock[i] = 0 
 	
 	for i in range(3):	
 		# if i == 1: print('trig', i, eucClock[i], eucDivisor[i], switch[i].val)
@@ -109,12 +114,15 @@ def setSynthAmpSense(*args):
 
 potAmpGain = 4
 
-
 ######################
 #SENSOR MAPPINGS
 #handle data received from interface
 ######################
 
+#Store potentiometer data and only process when the potentiometer is moved
+#the sensor class code is in sensorInterfaces/m370_sensor
+#but you don't need to change anything in it
+#the code below shows how to use it
 pot = []
 for i in range(4):
 	pot.append( sensor(0, 10) ) #initial value, changeThreshold
@@ -130,7 +138,7 @@ def mapSensor(add, val):
 	global synthNewNote, synthProgramEnable, synthClock
 
 	if add == "/sw0": 
-		if switch[0].new(val) == 1:
+		if switch[0].new(val) == 1: #sensor.new lets us know if there is new data
 			eucClock[0] = 0
 	elif add == "/sw1": 
 		if switch[1].new(val) == 1:
