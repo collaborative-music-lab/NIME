@@ -31,7 +31,7 @@ float prevVal[8];
 
   //input 0 and 1 are analog for potentiometers
   // analog inputs do not support pullup resistors
-  for(int i=0;i<2;i++){
+  for(int i=0;i<6;i++){
     pinMode(espPin[i], INPUT);
   }
 

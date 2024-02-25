@@ -21,16 +21,15 @@
  *  - Serial monitor set to 115200 kbps
  */
 
- #include <pinDefs.h>
+ #include "pinDefs.h"
 
 //set the number of pins to monitor
 //6 analog pins are available on pins 0-5
 //8 digital pins are available on pins 6-13
-const byte NUMBER_ANALOG_PINS = 4;
+const byte NUMBER_ANALOG_PINS = 6;
 const byte NUMBER_DIGITAL_PINS = 8;
 
-int minAnalogChange = 25; //the analog value must change more than this to trigger a new print message.
-int prevAnalog[NUMBER_ANALOG_PINS]; //remember our values so we only print when it changes by minAnalogChange
+int buttonState[8]; //remember the state of our buttons
 
 void setup() {
   Serial.begin(115200);
@@ -39,7 +38,6 @@ void setup() {
   // analog inputs do not support pullup resistors
   for(int i=0;i<NUMBER_ANALOG_PINS;i++){
     pinMode(espPin[i], INPUT);
-    prevAnalog[i] = analogRead(espPin[i]);
   }
 
   //inputs 6-13 are for buttons
@@ -50,6 +48,8 @@ void setup() {
     pinMode(espPin[i], INPUT_PULLUP);
   }
 
+  for(byte i=0;i<14;i++) Serial.print( String(espPin[i]) + "\t");
+  Serial.println(); 
   Serial.println("Hello Arduino!");
   Serial.println("Setup completed");
 
@@ -60,9 +60,13 @@ void setup() {
 
 void loop() {
 
+  //these two functions read the pots and buttons individually
   readPotentiometers();
   readButtons();
 
+  //you can also uncomment these to see just the raw input data
+  // monitorRawAnalogInput();
+  //monitorRawDigitalInput();
 }//loop
 
 void readPotentiometers(){
@@ -73,33 +77,26 @@ void readPotentiometers(){
 
   if(millis()-timer>interval){
     timer = millis();
+    byte button_is_pushed = 0;
+
+    //only print analog pins if no button is pushed
+    for(int i=0;i<NUMBER_DIGITAL_PINS;i++){
+      if( buttonState[i] == 0 ) button_is_pushed = 1;
+    }
 
     //the first six inputs are for potentiometers
     //we will Serial.print the values every time the function is called
-    for(int i=0; i<NUMBER_ANALOG_PINS;i++){
-      //read the analog input
-      float val = analogRead(espPin[i]);
+    if( button_is_pushed != 1) {
+      Serial.print("analog in: ");
+      for(int i=0; i<NUMBER_ANALOG_PINS;i++){
+        //read the analog input
+        float val = analogRead(espPin[i]);
 
-      int prev = prevAnalog[i]; //for calculating change
-
-      //lowpass smoothing filter
-      //output = x*prev + (1-x)*input
-      // float factor = 0.75;
-      // float smoothedVal = factor*(float)prevAnalog[i] + (1.-factor)*val;
-
-      // prevAnalog[i] = int(smoothedVal);
-      prevAnalog[i] = val;
-      
-      int changeInValue = abs(prevAnalog[i]-prev) ;
-      if(changeInValue > minAnalogChange ){
         //Serial.print to arduino serial monitor
-        Serial.print("pot ");
-        Serial.print(i);
-        Serial.print(":\t");
-        Serial.print(changeInValue);
-        Serial.print(" ");
-        Serial.println(val);
+        Serial.print(val);
+        Serial.print("\t");    
       }
+      Serial.println();
     }
   }
 }
@@ -114,6 +111,7 @@ void readButtons(){
 
     //read the digital input
     int val = digitalRead( espPin[ i+6 ] ); //digital pins begin on espPin[6]
+    buttonState[i] = val;
 
     if( val != prevVal[i]){
       //only Serial.print if value changes

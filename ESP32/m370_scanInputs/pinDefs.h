@@ -16,7 +16,7 @@ const byte p0 = 32;
 const byte p1 = 36;
 const byte p2 = 39;
 const byte p3 = 35;
-const byte p4 = 33
+const byte p4 = 33;
 const byte p5 = 34;
 
 //digital input pins
