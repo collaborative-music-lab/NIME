@@ -1,6 +1,6 @@
   /* capacit.ino
  *  Ian Hattwick
- *  created Mar 12 2021
+ *  edited Mar 7 2024
  *  
  *  21M.370 example instrument
  *  
@@ -114,22 +114,13 @@ void setup() {
 }// setup
 
 void loop() {
-  // static long timer = 0;
-  // if(millis()-timer>100){
-  //   timer = millis();
-  //   for(int i=0;i<6;i++){
-  //     Serial.print(analogRead(espPin[i]));
-  //     Serial.print("\t");
-  //   }
-  //   Serial.println();
-  // }
-  
+
   //if(1){              //uncomment this line to serial debug pots and buttons as well as capsense
   if( !SERIAL_DEBUG){   //uncomment this line to only serial debug capsense
     //readPotentiometers();
     //readButtons();
   }
-  readPotentiometers();
+  //readPotentiometers();
   readCap();
 
   //read serial input

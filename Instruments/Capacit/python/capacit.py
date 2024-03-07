@@ -1,9 +1,8 @@
 #capacit.py
 #Ian Hattwick   
-#March 1, 2022
+#March 7, 2024
 
 PACKET_INCOMING_SERIAL_MONITOR = 0
-
 
 CUR_PYTHON_SCRIPT = "capacit.py"
     
@@ -43,8 +42,6 @@ osc.client = client
 dispatcher = Dispatcher()
 osc.dispatcher = dispatcher
 
-
-
 print("Sending OSC to port", 5005, "on localhost")
 client.send_message("/scriptName", CUR_PYTHON_SCRIPT)
 
@@ -61,7 +58,7 @@ def unknown_OSC(*args): print("unknown OSC message: ", args)
 dispatcher.set_default_handler(unknown_OSC)
 
 ######################
-#LOOPumjumj
+#LOOP
 ######################
 
 async def loop():
