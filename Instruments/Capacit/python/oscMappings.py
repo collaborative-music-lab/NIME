@@ -201,7 +201,10 @@ def splitAddress(name):
 	for i in range(len(name)):
 		if name[i].isdigit():
 			num = int(name[i])
-			return out, num
+			if (i == len(name)-1):
+				return out, num
+			else:
+				return out, int(str(num) + name[i+1])
 		else: out = out + (name[i])
 
 def clip(input, low, hi):
