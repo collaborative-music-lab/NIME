@@ -1,0 +1,36 @@
+#N canvas 0 23 1200 803 12;
+#X obj 463 18 wave-sampler 0;
+#X obj 28 533 cnv 15 400 30 empty empty OUTPUTS: 20 12 0 14 -158136
+-262144 0;
+#X obj 25 231 cnv 15 400 30 empty empty CONTROLS: 20 12 0 14 -158136
+-262144 0;
+#X obj 27 369 cnv 15 400 30 empty empty INPUTS: 20 12 0 14 -158136
+-262144 0;
+#X obj 20 17 cnv 15 400 30 empty empty WAVE-SAMPLER: 20 12 0 14 -150893
+-262144 0;
+#X text 29 269 RATE - playback speed of sample;
+#X text 29 288 START - point in the sample to begin playing back;
+#X text 29 310 LENGTH - how much of the sample to play back;
+#X text 29 331 LINK - links RATE and LENGTH so changes in LENGTH result
+in a consistent pitch;
+#X text 31 634;
+#X text 31 608 EOC - triggers when the sampler loops;
+#X text 31 579 OUT - audio output;
+#X text 32 487 START - cv input for START;
+#X text 32 505 LENGTH - trigger input for LENGTH;
+#X text 31 456 RATE - cv input for RATE. Note that this is in Hz \,
+and adds to the slider value.;
+#X text 31 407 TRIG - trigger input to play sample in 1SHOT mode. This
+inlet also accepts 'read <filename>' \, 'open' (opens file browser)
+\, and 'link <0/1>' messages.;
+#X text 25 52 The WAVE-SAMPLER module can load a single sample \, and
+play the sample back with variable speed and length. The rate control
+determines the playback speed of the sample \, with a value of 1 (furthest
+right on the slider) playing the sample at its original speed and pitch.
+The segment of the sample that is played is determined by the START
+and LENGTH controls. Start determines how far into the sample it begins
+to play back \, and length the amount of the sample to play back. The
+LINK control links RATE and LENGTH so that the pitch determined by
+RATE is maintained as LENGTH is modulated. Note that the RATE is not
+always updated in sync with length \, so it may take a cycle for the
+rate to catch up to changes in length.;
