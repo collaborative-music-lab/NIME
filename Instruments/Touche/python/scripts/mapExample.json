@@ -1,0 +1,30 @@
+/*
+mapExample.json
+
+
+
+*/
+
+{
+	"inputSources"	:	{
+		"opto/0" : {
+			"range"	: [0,4095],
+			"curve" : 1
+		},
+		"opto/1" : {
+			"range"	: [0,3095],
+			"curve" : 1
+		},
+		"opto/2" : {
+			"range"	: [0,2095],
+			"curve" : 1
+		},
+		"opto/3" : {
+			"range"	: [0,1095],
+			"curve" : 1
+		},
+	},
+	"outputDestination"	:	{
+		
+	}
+}
