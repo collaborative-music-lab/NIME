@@ -259,12 +259,10 @@ def setSynthRange(val):
 		msg = ['END', _range, 1]
 		client.send_message('/param', msg)
 
-
 def setSynthSeqStep(num,val):
 	val =  math.floor(val/4095 * 127)
 	sendOSC("16steps", 1, "s"+str(num+1), val)
 	#print("setStep", num, val)
-
 
 ######################
 #Helper functions
@@ -274,7 +272,6 @@ def sendOSC(module, instance, param, val):
 	client.send_message('/module', module)
 	msg = [param, val, instance]
 	client.send_message('/param', msg)
-
 
 class leakyIntegrator:
     #keeps a bucket of all input values

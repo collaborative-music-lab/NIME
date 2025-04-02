@@ -136,7 +136,7 @@ def mapSensor(add, val):
 def calcTiltAccel(vals):
 	'''calculates tilt only using a 3-axis accelerometer'''
 	outVal = [0] * 3
-
+	#print(vals)
 	outX = math.atan(vals[0]/ math.sqrt( math.pow(vals[1],2) + math.pow(vals[2],2) ))
 	outY = math.atan(vals[1]/ math.sqrt( math.pow(vals[0],2) + math.pow(vals[2],2) ))
 	outZ = math.atan(vals[2]/ math.sqrt( math.pow(vals[0],2) + math.pow(vals[1],2) ))

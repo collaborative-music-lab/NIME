@@ -62,7 +62,12 @@ def processInput(*args):
 				aX = bto_i16(args[0][1], args[0][2]) / (1<<15)
 				aY = bto_i16(args[0][3], args[0][4]) / (1<<15)
 				aZ = bto_i16(args[0][5], args[0][6]) / (1<<15)
-				return("/acc0", [aX,aY,aZ])
+				#check valid data is coming in
+				if aX+aY+aZ == 0: 
+					print ("No IMU Found")
+					return("/acc0", [-1,-1,-1])
+				else: 
+					return("/acc0", [aX,aY,aZ])
 			except: 
 				print(e)
 		#gyroscope

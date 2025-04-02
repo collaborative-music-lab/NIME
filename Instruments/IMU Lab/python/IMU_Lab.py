@@ -2,7 +2,7 @@
 #Ian Hattwick   
 #April 15, 2024
 
-PACKET_INCOMING_SERIAL_MONITOR = 0
+PACKET_INCOMING_SERIAL_MONITOR = 1
 
 CUR_PYTHON_SCRIPT = "imu_lab.py"
     
@@ -15,13 +15,13 @@ from pythonosc.dispatcher import Dispatcher
 #m370 python modules
 
 import scripts.m370_communication as m370_communication
-comms = m370_communication.communication("serial", baudrate = 115200, defaultport="/dev/tty.SLAB_USBtoUART")
-#comms = m370_communication.communication("wifi", SSID="Chester", ESP_IP="192.168.4.1", port=1234)
-#comms2 = m370_communication.communication("wifi", SSID="Chester", ESP_IP="192.168.4.1", port=1236)
-#NOTE: you can find your ESP_IP by looking at the serial monitor if you are still connected via SUB
+#comms = m370_communication.communication("serial", baudrate = 115200, defaultport="/dev/tty.SLAB_USBtoUART")
+comms = m370_communication.communication("wifi", SSID="MIT SECURE", ESP_IP="10.29.185.110", port=1234)
+#comms2 = m370_communication.communication("wifi", SSID="MIT SECURE", ESP_IP="10.29.164.79", port=1236)
+#NOTE: you can find your ESP_IP by looking at the serial monitor if you are still connected via USB
 #if you are using your ESP as an Access Pioint (AP) it should be 192.168.4.1
-#ports are defined in pairs, where the port defined here is where python listens
-# and the port python sends to is port+1
+#ports are defined in pairs, where the port defined here is where python sends
+# and the port python listens to is port+1
 
 import scripts.timeout as timeout
 #you can change the defaultport to the name your PC gives to the ESP32 serial port
@@ -90,18 +90,18 @@ async def loop():
                 else:
                     print("packet", currentMessage)
 
-        # if(comms2.available() > 0):
-        #     currentMessage = comms2.get() # can be None if nothing in input buffer
+        if(comms2.available() > 0):
+            currentMessage = comms2.get() # can be None if nothing in input buffer
             
-        #     if currentMessage != None: 
-        #         if PACKET_INCOMING_SERIAL_MONITOR == 0:
-        #             address, value = sensor.processInput(currentMessage)
-        #             #print(address, value)
-        #             osc.mapSensor(address,value)
-        #             #client.send_message(address,value)
+            if currentMessage != None: 
+                if PACKET_INCOMING_SERIAL_MONITOR == 0:
+                    address, value = sensor.processInput(currentMessage)
+                    #print(address, value)
+                    osc.mapSensor(address,value)
+                    #client.send_message(address,value)
 
-        #         else:
-        #             print("packet2", currentMessage)
+                else:
+                    print("packet2", currentMessage)
 
         time.sleep(0.001) 
 
